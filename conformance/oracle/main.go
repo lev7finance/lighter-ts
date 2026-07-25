@@ -143,18 +143,18 @@ type nonCanonicalExample struct {
 }
 
 type goldilocksCase struct {
-	A        string  `json:"a"`
-	B        string  `json:"b"`
-	Add      string  `json:"add"`
-	Sub      string  `json:"sub"`
-	Mul      string  `json:"mul"`
-	SquareA  string  `json:"squareA"`
-	DoubleA  string  `json:"doubleA"`
-	NegA     string  `json:"negA"`
-	Exp      string  `json:"exp"`      // a^b
-	ExpPow2  string  `json:"expPow2"`  // a^(2^7)
-	IsQRA    bool    `json:"isQuadraticResidueA"`
-	SqrtA    *string `json:"sqrtA"` // nil when a is not a QR
+	A       string  `json:"a"`
+	B       string  `json:"b"`
+	Add     string  `json:"add"`
+	Sub     string  `json:"sub"`
+	Mul     string  `json:"mul"`
+	SquareA string  `json:"squareA"`
+	DoubleA string  `json:"doubleA"`
+	NegA    string  `json:"negA"`
+	Exp     string  `json:"exp"`     // a^b
+	ExpPow2 string  `json:"expPow2"` // a^(2^7)
+	IsQRA   bool    `json:"isQuadraticResidueA"`
+	SqrtA   *string `json:"sqrtA"` // nil when a is not a QR
 }
 
 type goldilocksEncoding struct {
@@ -168,35 +168,35 @@ type fp5Vectors struct {
 }
 
 type fp5Case struct {
-	A            []string  `json:"a"`
-	B            []string  `json:"b"`
-	Add          []string  `json:"add"`
-	Sub          []string  `json:"sub"`
-	Mul          []string  `json:"mul"`
-	SquareA      []string  `json:"squareA"`
-	DoubleA      []string  `json:"doubleA"`
-	TripleA      []string  `json:"tripleA"`
-	NegA         []string  `json:"negA"`
-	InverseA     []string  `json:"inverseA"`
-	DivAB        []string  `json:"divAB"`
-	FrobeniusA   []string  `json:"frobeniusA"`
-	Frobenius2A  []string  `json:"frobenius2A"`
-	ScalarMulA   []string  `json:"scalarMulA"` // a * b[0] (base-field scalar)
-	LegendreA    string    `json:"legendreA"`
-	Sgn0A        bool      `json:"sgn0A"`
-	SqrtA        []string  `json:"sqrtA"`          // zero-filled when !sqrtAExists
-	SqrtAExists  bool      `json:"sqrtAExists"`
-	CanonSqrtA   []string  `json:"canonicalSqrtA"` // zero-filled when !canonicalSqrtAExists
-	CanonExists  bool      `json:"canonicalSqrtAExists"`
-	ALEBytesHex  string    `json:"aLeBytesHex"`
+	A           []string `json:"a"`
+	B           []string `json:"b"`
+	Add         []string `json:"add"`
+	Sub         []string `json:"sub"`
+	Mul         []string `json:"mul"`
+	SquareA     []string `json:"squareA"`
+	DoubleA     []string `json:"doubleA"`
+	TripleA     []string `json:"tripleA"`
+	NegA        []string `json:"negA"`
+	InverseA    []string `json:"inverseA"`
+	DivAB       []string `json:"divAB"`
+	FrobeniusA  []string `json:"frobeniusA"`
+	Frobenius2A []string `json:"frobenius2A"`
+	ScalarMulA  []string `json:"scalarMulA"` // a * b[0] (base-field scalar)
+	LegendreA   string   `json:"legendreA"`
+	Sgn0A       bool     `json:"sgn0A"`
+	SqrtA       []string `json:"sqrtA"` // zero-filled when !sqrtAExists
+	SqrtAExists bool     `json:"sqrtAExists"`
+	CanonSqrtA  []string `json:"canonicalSqrtA"` // zero-filled when !canonicalSqrtAExists
+	CanonExists bool     `json:"canonicalSqrtAExists"`
+	ALEBytesHex string   `json:"aLeBytesHex"`
 }
 
 type poseidonVectors struct {
-	Width           int                `json:"width"`
-	Permutations    []permutationCase  `json:"permutations"`
-	HashToFp5       []hashToFp5Case    `json:"hashToQuinticExtension"`
-	HashNoPad       []hashNoPadCase    `json:"hashNoPad"`
-	HashNToMNoPad   []hashNToMCase     `json:"hashNToMNoPad"`
+	Width         int               `json:"width"`
+	Permutations  []permutationCase `json:"permutations"`
+	HashToFp5     []hashToFp5Case   `json:"hashToQuinticExtension"`
+	HashNoPad     []hashNoPadCase   `json:"hashNoPad"`
+	HashNToMNoPad []hashNToMCase    `json:"hashNToMNoPad"`
 }
 
 type permutationCase struct {
@@ -205,9 +205,9 @@ type permutationCase struct {
 }
 
 type hashToFp5Case struct {
-	Input      []string `json:"input"`
-	Output     []string `json:"output"`
-	OutputHex  string   `json:"outputLeBytesHex"`
+	Input     []string `json:"input"`
+	Output    []string `json:"output"`
+	OutputHex string   `json:"outputLeBytesHex"`
 }
 
 type hashNoPadCase struct {
@@ -231,24 +231,24 @@ type curveVectors struct {
 type curveCase struct {
 	ScalarLEHex     string   `json:"scalarLeHex"`
 	Scalar          []string `json:"scalar"`
-	MulGenEncoded   []string `json:"mulGenEncoded"`   // [scalar]G, encoded to Fp5
+	MulGenEncoded   []string `json:"mulGenEncoded"` // [scalar]G, encoded to Fp5
 	MulGenHex       string   `json:"mulGenLeBytesHex"`
-	DoubleEncoded   []string `json:"doubleEncoded"`   // [2*scalar]G
-	AddGenEncoded   []string `json:"addGenEncoded"`   // [scalar]G + G
+	DoubleEncoded   []string `json:"doubleEncoded"` // [2*scalar]G
+	AddGenEncoded   []string `json:"addGenEncoded"` // [scalar]G + G
 	DecodeRoundTrip bool     `json:"decodeRoundTrip"`
 }
 
 type scalarCase struct {
-	InputLEHex string   `json:"inputLeHex"`
-	Scalar     []string `json:"scalar"`
-	Canonical  bool     `json:"isCanonical"`
-	OutputLEHex string  `json:"outputLeHex"`
+	InputLEHex  string   `json:"inputLeHex"`
+	Scalar      []string `json:"scalar"`
+	Canonical   bool     `json:"isCanonical"`
+	OutputLEHex string   `json:"outputLeHex"`
 }
 
 type schnorrVectors struct {
-	SignatureBytes int             `json:"signatureBytes"`
-	PubKeyBytes    int             `json:"pubKeyBytes"`
-	Cases          []schnorrCase   `json:"cases"`
+	SignatureBytes int              `json:"signatureBytes"`
+	PubKeyBytes    int              `json:"pubKeyBytes"`
+	Cases          []schnorrCase    `json:"cases"`
 	Negative       []schnorrNegCase `json:"negative"`
 }
 
@@ -268,11 +268,11 @@ type schnorrCase struct {
 }
 
 type schnorrNegCase struct {
-	Description     string `json:"description"`
-	PublicKeyLEHex  string `json:"publicKeyLeHex"`
-	HashedMsgLEHex  string `json:"hashedMessageLeHex"`
-	SignatureHex    string `json:"signatureHex"`
-	Valid           bool   `json:"valid"`
+	Description    string `json:"description"`
+	PublicKeyLEHex string `json:"publicKeyLeHex"`
+	HashedMsgLEHex string `json:"hashedMessageLeHex"`
+	SignatureHex   string `json:"signatureHex"`
+	Valid          bool   `json:"valid"`
 }
 
 type txVectors struct {
@@ -979,6 +979,347 @@ func buildTx(r *rng) txVectors {
 			"ExpiredAt":    "1893456000000",
 			"Nonce":        fmt.Sprintf("%d", 7+i),
 		}, txtypes.L2TxAttributes{}, h)
+	}
+
+	// -------------------------------------------------------------------------
+	// Every remaining L2 transaction type the SDK can construct.
+	//
+	// Each entry supplies a struct that satisfies Validate() and a field map for
+	// the TypeScript side to rebuild the same input. Values are chosen to
+	// exercise the awkward edges: amounts wider than 32 bits (which the protocol
+	// splits into lo/hi field elements), signed negatives, sentinel/nil values,
+	// and boundary indices.
+	// -------------------------------------------------------------------------
+
+	const exp = int64(1893456000000)
+	f := func(v any) string { return fmt.Sprintf("%v", v) }
+
+	type txCase struct {
+		name   string
+		txType uint8
+		tx     interface {
+			Validate() error
+			Hash(uint32) ([]byte, error)
+		}
+		fields map[string]string
+		attrs  txtypes.L2TxAttributes
+	}
+
+	pubKey := schnorr.SchnorrPkFromSk(sk).ToLittleEndianBytes()
+
+	// Amounts deliberately above 2^32 so the lo/hi split is exercised.
+	const bigAmount = int64(0x1_2345_6789) // > 2^32
+	const bigFee = int64(0xABCD_EF01)      // just under 2^32
+	const hugeAmount = uint64(0x7F_FFFF_FFFF)
+
+	// Public pools are addressed in the sub-account index range (>= 1<<47).
+	const poolIndex = txtypes.MinSubAccountIndex + 100
+
+	// Staking pools are likewise addressed in the sub-account index range.
+	const stakingPoolIndex = txtypes.MinSubAccountIndex + 7
+
+	cases := []txCase{
+		{
+			name: "cancel_all_orders/immediate", txType: txtypes.TxTypeL2CancelAllOrders,
+			tx: &txtypes.L2CancelAllOrdersTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0,
+				TimeInForce: txtypes.ImmediateCancelAll, Time: 0,
+				ExpiredAt: exp, Nonce: 11,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "TimeInForce": f(txtypes.ImmediateCancelAll), "Time": "0", "ExpiredAt": f(exp), "Nonce": "11"},
+		},
+		{
+			// Per-market cancel-all is only legal with ImmediateCancelAll; the
+			// scheduled variant rejects the market-index attribute.
+			name: "cancel_all_orders/immediate_single_market", txType: txtypes.TxTypeL2CancelAllOrders,
+			tx: &txtypes.L2CancelAllOrdersTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0,
+				TimeInForce: txtypes.ImmediateCancelAll, Time: 0,
+				ExpiredAt: exp, Nonce: 12,
+				L2TxAttributes: txtypes.L2TxAttributes{txtypes.AttributeTypeCancelAllMarketIndex: 3},
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "TimeInForce": f(txtypes.ImmediateCancelAll), "Time": "0", "ExpiredAt": f(exp), "Nonce": "12"},
+			attrs:  txtypes.L2TxAttributes{txtypes.AttributeTypeCancelAllMarketIndex: 3},
+		},
+		{
+			name: "cancel_all_orders/scheduled", txType: txtypes.TxTypeL2CancelAllOrders,
+			tx: &txtypes.L2CancelAllOrdersTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0,
+				TimeInForce: txtypes.ScheduledCancelAll, Time: exp,
+				ExpiredAt: exp, Nonce: 31,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "TimeInForce": f(txtypes.ScheduledCancelAll), "Time": f(exp), "ExpiredAt": f(exp), "Nonce": "31"},
+		},
+		{
+			name: "modify_order/basic", txType: txtypes.TxTypeL2ModifyOrder,
+			tx: &txtypes.L2ModifyOrderTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1, Index: 12345,
+				BaseAmount: 5000, Price: 777777, TriggerPrice: txtypes.NilOrderTriggerPrice,
+				ExpiredAt: exp, Nonce: 13,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "Index": "12345", "BaseAmount": "5000", "Price": "777777", "TriggerPrice": f(txtypes.NilOrderTriggerPrice), "ExpiredAt": f(exp), "Nonce": "13"},
+		},
+		{
+			name: "transfer/large_amount_lo_hi_split", txType: txtypes.TxTypeL2Transfer,
+			tx: &txtypes.L2TransferTxInfo{
+				FromAccountIndex: 1, ApiKeyIndex: 0, ToAccountIndex: 2,
+				AssetIndex:    int16(txtypes.USDCAssetIndex),
+				FromRouteType: txtypes.AssetRouteType_Perps, ToRouteType: txtypes.AssetRouteType_Spot,
+				Amount: bigAmount, USDCFee: bigFee,
+				ExpiredAt: exp, Nonce: 14,
+			},
+			fields: map[string]string{"FromAccountIndex": "1", "ApiKeyIndex": "0", "ToAccountIndex": "2", "AssetIndex": f(txtypes.USDCAssetIndex), "FromRouteType": f(txtypes.AssetRouteType_Perps), "ToRouteType": f(txtypes.AssetRouteType_Spot), "Amount": f(bigAmount), "USDCFee": f(bigFee), "ExpiredAt": f(exp), "Nonce": "14"},
+		},
+		{
+			name: "transfer/small_amount", txType: txtypes.TxTypeL2Transfer,
+			tx: &txtypes.L2TransferTxInfo{
+				FromAccountIndex: 1, ApiKeyIndex: 0, ToAccountIndex: 3,
+				AssetIndex:    int16(txtypes.NativeAssetIndex),
+				FromRouteType: txtypes.AssetRouteType_Spot, ToRouteType: txtypes.AssetRouteType_Spot,
+				Amount: 1, USDCFee: 0,
+				ExpiredAt: exp, Nonce: 15,
+			},
+			fields: map[string]string{"FromAccountIndex": "1", "ApiKeyIndex": "0", "ToAccountIndex": "3", "AssetIndex": f(txtypes.NativeAssetIndex), "FromRouteType": f(txtypes.AssetRouteType_Spot), "ToRouteType": f(txtypes.AssetRouteType_Spot), "Amount": "1", "USDCFee": "0", "ExpiredAt": f(exp), "Nonce": "15"},
+		},
+		{
+			name: "withdraw/large_amount_lo_hi_split", txType: txtypes.TxTypeL2Withdraw,
+			tx: &txtypes.L2WithdrawTxInfo{
+				FromAccountIndex: 1, ApiKeyIndex: 0,
+				AssetIndex: int16(txtypes.USDCAssetIndex), RouteType: txtypes.AssetRouteType_Perps,
+				Amount: hugeAmount, ExpiredAt: exp, Nonce: 16,
+			},
+			fields: map[string]string{"FromAccountIndex": "1", "ApiKeyIndex": "0", "AssetIndex": f(txtypes.USDCAssetIndex), "RouteType": f(txtypes.AssetRouteType_Perps), "Amount": f(hugeAmount), "ExpiredAt": f(exp), "Nonce": "16"},
+		},
+		{
+			name: "update_leverage/cross", txType: txtypes.TxTypeL2UpdateLeverage,
+			tx: &txtypes.L2UpdateLeverageTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1,
+				InitialMarginFraction: 500, MarginMode: txtypes.CrossMargin,
+				ExpiredAt: exp, Nonce: 17,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "InitialMarginFraction": "500", "MarginMode": f(txtypes.CrossMargin), "ExpiredAt": f(exp), "Nonce": "17"},
+		},
+		{
+			name: "update_leverage/isolated", txType: txtypes.TxTypeL2UpdateLeverage,
+			tx: &txtypes.L2UpdateLeverageTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 2,
+				InitialMarginFraction: 200, MarginMode: txtypes.IsolatedMargin,
+				ExpiredAt: exp, Nonce: 18,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "2", "InitialMarginFraction": "200", "MarginMode": f(txtypes.IsolatedMargin), "ExpiredAt": f(exp), "Nonce": "18"},
+		},
+		{
+			name: "update_margin/add", txType: txtypes.TxTypeL2UpdateMargin,
+			tx: &txtypes.L2UpdateMarginTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1,
+				USDCAmount: bigAmount, Direction: txtypes.AddToIsolatedMargin,
+				ExpiredAt: exp, Nonce: 19,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "USDCAmount": f(bigAmount), "Direction": f(txtypes.AddToIsolatedMargin), "ExpiredAt": f(exp), "Nonce": "19"},
+		},
+		{
+			name: "change_pub_key", txType: txtypes.TxTypeL2ChangePubKey,
+			tx: &txtypes.L2ChangePubKeyTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, PubKey: pubKey,
+				ExpiredAt: exp, Nonce: 20,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "PubKeyLeHex": hex.EncodeToString(pubKey), "ExpiredAt": f(exp), "Nonce": "20"},
+		},
+		{
+			name: "create_sub_account", txType: txtypes.TxTypeL2CreateSubAccount,
+			tx: &txtypes.L2CreateSubAccountTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, ExpiredAt: exp, Nonce: 21,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "ExpiredAt": f(exp), "Nonce": "21"},
+		},
+		{
+			name: "mint_shares", txType: txtypes.TxTypeL2MintShares,
+			tx: &txtypes.L2MintSharesTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, PublicPoolIndex: poolIndex, ShareAmount: 5000,
+				ExpiredAt: exp, Nonce: 22,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "PublicPoolIndex": f(poolIndex), "ShareAmount": "5000", "ExpiredAt": f(exp), "Nonce": "22"},
+		},
+		{
+			name: "burn_shares", txType: txtypes.TxTypeL2BurnShares,
+			tx: &txtypes.L2BurnSharesTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, PublicPoolIndex: poolIndex, ShareAmount: 2500,
+				ExpiredAt: exp, Nonce: 23,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "PublicPoolIndex": f(poolIndex), "ShareAmount": "2500", "ExpiredAt": f(exp), "Nonce": "23"},
+		},
+		{
+			name: "stake_assets", txType: txtypes.TxTypeL2StakeAssets,
+			tx: &txtypes.L2StakeAssetsTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, StakingPoolIndex: stakingPoolIndex, ShareAmount: 1_000_000,
+				ExpiredAt: exp, Nonce: 24,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "StakingPoolIndex": f(stakingPoolIndex), "ShareAmount": "1000000", "ExpiredAt": f(exp), "Nonce": "24"},
+		},
+		{
+			name: "unstake_assets", txType: txtypes.TxTypeL2UnstakeAssets,
+			tx: &txtypes.L2UnstakeAssetsTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, StakingPoolIndex: stakingPoolIndex, ShareAmount: 500_000,
+				ExpiredAt: exp, Nonce: 25,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "StakingPoolIndex": f(stakingPoolIndex), "ShareAmount": "500000", "ExpiredAt": f(exp), "Nonce": "25"},
+		},
+		{
+			name: "update_account_config", txType: txtypes.TxTypeL2UpdateAccountConfig,
+			tx: &txtypes.L2UpdateAccountConfigTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, AccountTradingMode: 1,
+				ExpiredAt: exp, Nonce: 26,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "AccountTradingMode": "1", "ExpiredAt": f(exp), "Nonce": "26"},
+		},
+		{
+			name: "update_account_asset_config", txType: txtypes.TxTypeL2UpdateAccountAssetConfig,
+			tx: &txtypes.L2UpdateAccountAssetConfigTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0,
+				AssetIndex: int16(txtypes.NativeAssetIndex), AssetMarginMode: txtypes.AccountAssetMarginMode_MarginEnabled,
+				ExpiredAt: exp, Nonce: 27,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "AssetIndex": f(txtypes.NativeAssetIndex), "AssetMarginMode": f(txtypes.AccountAssetMarginMode_MarginEnabled), "ExpiredAt": f(exp), "Nonce": "27"},
+		},
+		{
+			name: "approve_integrator", txType: txtypes.TxTypeL2ApproveIntegrator,
+			tx: &txtypes.L2ApproveIntegratorTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, IntegratorAccountIndex: 4242,
+				MaxPerpsTakerFee: 1000, MaxPerpsMakerFee: 500,
+				MaxSpotTakerFee: 800, MaxSpotMakerFee: 400,
+				ApprovalExpiry: exp, ExpiredAt: exp, Nonce: 28,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "IntegratorAccountIndex": "4242", "MaxPerpsTakerFee": "1000", "MaxPerpsMakerFee": "500", "MaxSpotTakerFee": "800", "MaxSpotMakerFee": "400", "ApprovalExpiry": f(exp), "ExpiredAt": f(exp), "Nonce": "28"},
+		},
+		{
+			name: "create_public_pool", txType: txtypes.TxTypeL2CreatePublicPool,
+			tx: &txtypes.L2CreatePublicPoolTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, OperatorFee: 100,
+				InitialTotalShares: txtypes.MinInitialTotalShares, MinOperatorShareRate: 1000,
+				ExpiredAt: exp, Nonce: 29,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "OperatorFee": "100", "InitialTotalShares": f(txtypes.MinInitialTotalShares), "MinOperatorShareRate": "1000", "ExpiredAt": f(exp), "Nonce": "29"},
+		},
+		{
+			name: "update_public_pool", txType: txtypes.TxTypeL2UpdatePublicPool,
+			tx: &txtypes.L2UpdatePublicPoolTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, PublicPoolIndex: poolIndex, Status: 1,
+				OperatorFee: 200, MinOperatorShareRate: 2000,
+				ExpiredAt: exp, Nonce: 30,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "PublicPoolIndex": f(poolIndex), "Status": "1", "OperatorFee": "200", "MinOperatorShareRate": "2000", "ExpiredAt": f(exp), "Nonce": "30"},
+		},
+	}
+
+	// Grouped orders. Each grouping type has a distinct legal shape, and the
+	// per-leg hashes are folded pairwise (the first leg is seeded, the rest are
+	// combined two-at-a-time), so all three shapes need pinning.
+	//
+	//   OTO   exactly 2 legs: parent + one child, opposite sides, child size nil
+	//   OCO   exactly 2 legs: one stop-loss + one take-profit, same side, both
+	//         reduce-only, equal size, identical expiry
+	//   OTOCO exactly 3 legs: parent + a stop-loss/take-profit pair
+	groupCases := []struct {
+		name         string
+		groupingType uint8
+		orders       []*txtypes.OrderInfo
+		nonce        int64
+	}{
+		{
+			name: "create_grouped_orders/oto", groupingType: txtypes.GroupingType_OneTriggersTheOther, nonce: 31,
+			orders: []*txtypes.OrderInfo{
+				{ // parent: resting limit buy
+					MarketIndex: 1, ClientOrderIndex: 2001, BaseAmount: 1000, Price: 5000,
+					IsAsk: 0, Type: txtypes.LimitOrder, TimeInForce: txtypes.GoodTillTime,
+					ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: exp,
+				},
+				{ // child: stop-loss on the opposite side, size inherited from parent
+					MarketIndex: 1, ClientOrderIndex: 2002, BaseAmount: txtypes.NilOrderBaseAmount, Price: 4000,
+					IsAsk: 1, Type: txtypes.StopLossOrder, TimeInForce: txtypes.ImmediateOrCancel,
+					ReduceOnly: 1, TriggerPrice: 4100, OrderExpiry: exp,
+				},
+			},
+		},
+		{
+			name: "create_grouped_orders/oco", groupingType: txtypes.GroupingType_OneCancelsTheOther, nonce: 32,
+			orders: []*txtypes.OrderInfo{
+				{
+					MarketIndex: 1, ClientOrderIndex: 2003, BaseAmount: txtypes.NilOrderBaseAmount, Price: 4000,
+					IsAsk: 1, Type: txtypes.StopLossOrder, TimeInForce: txtypes.ImmediateOrCancel,
+					ReduceOnly: 1, TriggerPrice: 4100, OrderExpiry: exp,
+				},
+				{
+					MarketIndex: 1, ClientOrderIndex: 2004, BaseAmount: txtypes.NilOrderBaseAmount, Price: 6000,
+					IsAsk: 1, Type: txtypes.TakeProfitOrder, TimeInForce: txtypes.ImmediateOrCancel,
+					ReduceOnly: 1, TriggerPrice: 5900, OrderExpiry: exp,
+				},
+			},
+		},
+		{
+			name: "create_grouped_orders/otoco", groupingType: txtypes.GroupingType_OneTriggersAOneCancelsTheOther, nonce: 33,
+			orders: []*txtypes.OrderInfo{
+				{ // parent
+					MarketIndex: 1, ClientOrderIndex: 2005, BaseAmount: 2500, Price: 5000,
+					IsAsk: 0, Type: txtypes.LimitOrder, TimeInForce: txtypes.GoodTillTime,
+					ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: exp,
+				},
+				{ // stop-loss child
+					MarketIndex: 1, ClientOrderIndex: 2006, BaseAmount: txtypes.NilOrderBaseAmount, Price: 4000,
+					IsAsk: 1, Type: txtypes.StopLossOrder, TimeInForce: txtypes.ImmediateOrCancel,
+					ReduceOnly: 1, TriggerPrice: 4100, OrderExpiry: exp,
+				},
+				{ // take-profit child
+					MarketIndex: 1, ClientOrderIndex: 2007, BaseAmount: txtypes.NilOrderBaseAmount, Price: 6000,
+					IsAsk: 1, Type: txtypes.TakeProfitOrder, TimeInForce: txtypes.ImmediateOrCancel,
+					ReduceOnly: 1, TriggerPrice: 5900, OrderExpiry: exp,
+				},
+			},
+		},
+	}
+
+	for _, gc := range groupCases {
+		fields := map[string]string{
+			"AccountIndex": "1", "ApiKeyIndex": "0",
+			"GroupingType": f(gc.groupingType),
+			"ExpiredAt":    f(exp), "Nonce": f(gc.nonce),
+			"OrderCount": f(len(gc.orders)),
+		}
+		for i, o := range gc.orders {
+			p := fmt.Sprintf("Order%d.", i)
+			fields[p+"MarketIndex"] = f(o.MarketIndex)
+			fields[p+"ClientOrderIndex"] = f(o.ClientOrderIndex)
+			fields[p+"BaseAmount"] = f(o.BaseAmount)
+			fields[p+"Price"] = f(o.Price)
+			fields[p+"IsAsk"] = f(o.IsAsk)
+			fields[p+"Type"] = f(o.Type)
+			fields[p+"TimeInForce"] = f(o.TimeInForce)
+			fields[p+"ReduceOnly"] = f(o.ReduceOnly)
+			fields[p+"TriggerPrice"] = f(o.TriggerPrice)
+			fields[p+"OrderExpiry"] = f(o.OrderExpiry)
+		}
+		cases = append(cases, txCase{
+			name: gc.name, txType: txtypes.TxTypeL2CreateGroupedOrders,
+			tx: &txtypes.L2CreateGroupedOrdersTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0,
+				GroupingType: gc.groupingType,
+				Orders:       gc.orders, ExpiredAt: exp, Nonce: gc.nonce,
+			},
+			fields: fields,
+		})
+	}
+	for _, tc := range cases {
+		if err := tc.tx.Validate(); err != nil {
+			panic(fmt.Sprintf("%s: validate: %v", tc.name, err))
+		}
+		h, err := tc.tx.Hash(oracleChainID)
+		if err != nil {
+			panic(fmt.Sprintf("%s: hash: %v", tc.name, err))
+		}
+		attrs := tc.attrs
+		if attrs == nil {
+			attrs = txtypes.L2TxAttributes{}
+		}
+		emit(tc.name, tc.txType, tc.fields, attrs, h)
 	}
 
 	return v

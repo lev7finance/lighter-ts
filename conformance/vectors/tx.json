@@ -336,6 +336,504 @@
       "signatureBytesHex": "6b4612f13a3e397c3834c7a39ecea0b5088b6f8eda16e2c4d1b703683895c3e376981dc4ec73a946c4368f37518646f34f4c880906c8407bf1de453d37b4a68ca6e851891b95998d75d098bcc4a23416",
       "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
       "txInfoJson": ""
+    },
+    {
+      "name": "cancel_all_orders/immediate",
+      "txType": 16,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "11",
+        "Time": "0",
+        "TimeInForce": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "9eac5e6db402f8cdc546f3e56db28fccb20cd18e8ea17cf5e0797637acc4c5bff6b3144affc2463a",
+      "signatureBytesHex": "3024caaf5d93bb1040ae66a576162a666cff8889901d8032a8a1f13108ae7814c1e57f6b70c6ee286b0881df0465401a43df9480ec3f91fbaecd270628b75b67d838bfb2fbbbe3f17eb2736361c6fd5a",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "cancel_all_orders/immediate_single_market",
+      "txType": 16,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "12",
+        "Time": "0",
+        "TimeInForce": "0"
+      },
+      "attributes": {
+        "5": 3
+      },
+      "messageHashLeHex": "29a4bbcaf29169ddfef5fa3f102517c481e9b15c378fd58275e5d9cb8d0a9b59edbab450c495c399",
+      "signatureBytesHex": "5af6a00330fdd241ee63ad9ae818c693eecccefaa3409fff38c4f4767d5d522d6dfee5d406dac5313ee5feb95b0ed45748f5d33bbf466655762802544e09b4ae202cc5190aff2d7de0c2ca217dc67b39",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "cancel_all_orders/scheduled",
+      "txType": 16,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "31",
+        "Time": "1893456000000",
+        "TimeInForce": "1"
+      },
+      "attributes": {},
+      "messageHashLeHex": "51abdbfdeb738d18075a8d00a3ee52f5bfc16706cc98c33fae46ba003e73d75737d8ea3181f10887",
+      "signatureBytesHex": "985479ab9d4bc89aeabe246141828093679a1d001eb5865ae7f52f02615fd76cfd65a4b842e523278cd0a08636c299c1f1aa9ceb721009900aeb7a8385e72b2af950b6913b73f969843f60c6a2137c44",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "modify_order/basic",
+      "txType": 17,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "BaseAmount": "5000",
+        "ExpiredAt": "1893456000000",
+        "Index": "12345",
+        "MarketIndex": "1",
+        "Nonce": "13",
+        "Price": "777777",
+        "TriggerPrice": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "6c79d22811ce5f00aed7b21546ac826fb049853015b0f5f2fb03e170aeae6fa84c83bb249d565489",
+      "signatureBytesHex": "56508de68a2ae61cc9c7652c00e2644132ad2cd2b65638ec77617f4f59b8032dcf49e65b3d9e8a2a0cb50e5b7f0e2a942e39106786a39b1e75dc3456f7b41ca64ad7e03985cad26a7c900a061e04d93e",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "transfer/large_amount_lo_hi_split",
+      "txType": 12,
+      "fields": {
+        "Amount": "4886718345",
+        "ApiKeyIndex": "0",
+        "AssetIndex": "3",
+        "ExpiredAt": "1893456000000",
+        "FromAccountIndex": "1",
+        "FromRouteType": "0",
+        "Nonce": "14",
+        "ToAccountIndex": "2",
+        "ToRouteType": "1",
+        "USDCFee": "2882400001"
+      },
+      "attributes": {},
+      "messageHashLeHex": "4b84343a4c47cc20c341d1583b71f0161a71e3b7053d6bfa67ed8b2d3c76b6844ac05dc9e9188fd7",
+      "signatureBytesHex": "2eac5818ef1f3010a244a465e34653fea8229a092fe642fbb82c7a1306f060aa9a243ea3f82a0455cf25c1afe9de32a8e8d6b2a37dffa088427a1d2d73758e44e84124606ca20102cae6f2c8da50e442",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "transfer/small_amount",
+      "txType": 12,
+      "fields": {
+        "Amount": "1",
+        "ApiKeyIndex": "0",
+        "AssetIndex": "1",
+        "ExpiredAt": "1893456000000",
+        "FromAccountIndex": "1",
+        "FromRouteType": "1",
+        "Nonce": "15",
+        "ToAccountIndex": "3",
+        "ToRouteType": "1",
+        "USDCFee": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "779c3cf0b54dfafe12bd7d5e5d1f3aff76c420d64fc557994cab993a147b07d626b605bb0e45f754",
+      "signatureBytesHex": "7d25ef760ee9ad6ef586604e21a8691c7d3097d2902ae34281f84c265ff72863f4f7199e88855a55d2e2e96d015d9266f2f6690840ec5e728858ba220d79debc8d11a3626ea0d17c0c7eb71f7ed87f33",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "withdraw/large_amount_lo_hi_split",
+      "txType": 13,
+      "fields": {
+        "Amount": "549755813887",
+        "ApiKeyIndex": "0",
+        "AssetIndex": "3",
+        "ExpiredAt": "1893456000000",
+        "FromAccountIndex": "1",
+        "Nonce": "16",
+        "RouteType": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "38842c480e0e42161b5cd5107dcc37abdfd6c9b31bb204000cff31f6ee08e2068bd5bc056f8fe226",
+      "signatureBytesHex": "159bbd4968c4348c1d88abf1ca7032225cc5c0ba325ca10bf3ab3f5f7345a30c87d31a3502155506656255a9b110969b1c68c05498124d7d85edf7dfecac4864260dc6efc4a1a3a702cebe6300b77313",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_leverage/cross",
+      "txType": 20,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "InitialMarginFraction": "500",
+        "MarginMode": "0",
+        "MarketIndex": "1",
+        "Nonce": "17"
+      },
+      "attributes": {},
+      "messageHashLeHex": "961756ef956162f16b4867618aa04f64c704dd7c20d2d402833123d0e384c9a27f18ad5376281fe9",
+      "signatureBytesHex": "ab6c990b4a387ff442ca69dc8aa2af8a36cc690c34f77b73d3900dab1b42a08fee3692bf33cea1043b50606f7b8caa1f93bb1e437454019ab17cd3fdcd665df3be5c40ce66915b911fea40905215a548",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_leverage/isolated",
+      "txType": 20,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "InitialMarginFraction": "200",
+        "MarginMode": "1",
+        "MarketIndex": "2",
+        "Nonce": "18"
+      },
+      "attributes": {},
+      "messageHashLeHex": "deea7cb392f0c9270bbdb67943504f703bde5bdcabb9b06c4eb613ac5f419837277c5ff5f45a1a7d",
+      "signatureBytesHex": "edc05d02185b81769b24a3f54ca55f9b33c7a87fdae29f19f488271d76dcdca9461b5301dad7df70481de85fa66ceeb998044f5b5223d80084ab06b46a79de4fa08e3f83de16da0c640bdb5318694738",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_margin/add",
+      "txType": 29,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "Direction": "1",
+        "ExpiredAt": "1893456000000",
+        "MarketIndex": "1",
+        "Nonce": "19",
+        "USDCAmount": "4886718345"
+      },
+      "attributes": {},
+      "messageHashLeHex": "3d659fd81be50ea51620b9dea65e942932f950f12b53dac4c663a760ee2e9dd92b878a42328d7bac",
+      "signatureBytesHex": "2ddbe22ddbcfb15a4f47865c9e9b22358c60eabcaffde88552b5d7ec4c95607e2c150bde9387484fcea8ce22f028e665d69d26a76b67f9172b7eaff784716420b5611414075bcb3abd0a747d549f0425",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "change_pub_key",
+      "txType": 8,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "20",
+        "PubKeyLeHex": "2386e091523144a70cba52660fd90382d1b30ee377e5068b43992a63a2dea9ddaf2c1c0df62bcbca"
+      },
+      "attributes": {},
+      "messageHashLeHex": "67e52d33c05de713f9f5dcb1f961bd941637068e866052d1611b0dd2cbb192d6508c06834499fe39",
+      "signatureBytesHex": "1f592bb7c64ce3f1f1e1efae8155921c039070fdbd45ecb3b8161a5e5e4ea074063268c961db16159a7ae2163ea90cae23b41c806c522f7c1fc48efff19f6e006bbebac1e07d264c4aa4eead57431276",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "create_sub_account",
+      "txType": 9,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "21"
+      },
+      "attributes": {},
+      "messageHashLeHex": "0041e37cfcab2d9af10f5ceb441c06e967f0d52476afe42d2d5a9d07fcffede5f945e1dbb94bef8e",
+      "signatureBytesHex": "1216196bd785eb9a7f4bb2276cdd6a23534c4c02f1146fb6821b673a3b9c9b7e596229725a3c4e2c8f9e56cc8e39366b45845c40482190a2d9a32e57363a06422cecbb2a58b5cd38cc269f84cbcfc910",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "mint_shares",
+      "txType": 18,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "22",
+        "PublicPoolIndex": "140737488355428",
+        "ShareAmount": "5000"
+      },
+      "attributes": {},
+      "messageHashLeHex": "0f24f67dfee24ea268fc4c94c3033c45aefdb491c428b1046f5974381d3740b74b1a7374c6c6f322",
+      "signatureBytesHex": "ce7f95acbe49005a6043de901ee6c892554fa4a39ecd1d5ac52b409b3f6c853d4719abb9fe93287349992df9c35249248dce148eb044515b89903e1c362f6b40ffad89dcc596c5865f098e7ff8b94473",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "burn_shares",
+      "txType": 19,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "23",
+        "PublicPoolIndex": "140737488355428",
+        "ShareAmount": "2500"
+      },
+      "attributes": {},
+      "messageHashLeHex": "b4442f4a892416602ca83097455265a168730e32bee1d85017f395926de860204a20d86b84bf6b61",
+      "signatureBytesHex": "a24e981b3936e396ac496912e6722eff52a4965d50b90ea53c5477b6ba2a9d47492ae4078029692d17098b3b24ca0aae423f1c7f695191b8704ffcb4d7987ff217f49d538644b45fa06bed53792f102e",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "stake_assets",
+      "txType": 35,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "24",
+        "ShareAmount": "1000000",
+        "StakingPoolIndex": "140737488355335"
+      },
+      "attributes": {},
+      "messageHashLeHex": "ddac12168057430a00952801a25caa115efffbf90f95fb92cef729bb3185c8737ce0be244427b13b",
+      "signatureBytesHex": "13ad4b96eb03b64e4a0e7f3099ea19c64a7b244728d8f45a0abb2e678eee2b17d679d5d97e4a350077937a82c84ce6b7c560dd42330f5791d65a9299e4ab27489c3bca51b6c8efdb4f27b7da1d6abc43",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "unstake_assets",
+      "txType": 36,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "25",
+        "ShareAmount": "500000",
+        "StakingPoolIndex": "140737488355335"
+      },
+      "attributes": {},
+      "messageHashLeHex": "ceeb51026a7976b9f95d3eb4237d2b85d78e97fe7b98bc49ac2e912720b400a6a9db7c0af7d4ce67",
+      "signatureBytesHex": "e27b1dfb3ef98c6c7630846e8f9eb0c9964c87042594ca4d3dafe754d0cbd1a743a44d40bac9766a29991f186aed666f077294bcdf00fa5563be00d94c1407654b06d4a217a7c768e4ae03efb95aa826",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_account_config",
+      "txType": 41,
+      "fields": {
+        "AccountIndex": "1",
+        "AccountTradingMode": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "26"
+      },
+      "attributes": {},
+      "messageHashLeHex": "fca60cba9bbe9085990c9d3157097b348b8955213a1d0938a02d0f629d6a320d111f3fb1906952e3",
+      "signatureBytesHex": "70bc1128f47f453a587132c0701bfb2a7b5eafbed26cafe45c0b891ce8d2bc6e5d0b15a1790c472a9df376287b2f78cea310db7303091266b8d29c5c9e1026957ca3693f5e9ac5753b7d616aa849184e",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_account_asset_config",
+      "txType": 42,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "AssetIndex": "1",
+        "AssetMarginMode": "1",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "27"
+      },
+      "attributes": {},
+      "messageHashLeHex": "737b38f42fe4e1c7d97ae2a16b857beeed641a1e35673bcffdf668c1600fbddb0560c09c7917c28c",
+      "signatureBytesHex": "d9b9eb0919da91ff20e7e0517ab4788bcf1e572f6a7cd9ddb928d9d1580f7dec088a466b42bd78209c29419cf56393f78f2deb986c1abeec27c047b0457794b73de7eb7cb6ee4313dd8878071a022f4e",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "approve_integrator",
+      "txType": 45,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ApprovalExpiry": "1893456000000",
+        "ExpiredAt": "1893456000000",
+        "IntegratorAccountIndex": "4242",
+        "MaxPerpsMakerFee": "500",
+        "MaxPerpsTakerFee": "1000",
+        "MaxSpotMakerFee": "400",
+        "MaxSpotTakerFee": "800",
+        "Nonce": "28"
+      },
+      "attributes": {},
+      "messageHashLeHex": "88640021876e6733ee66c792984356b7c5b2c94612a2b146ce35ddef27ea296f27937c92a63dbedd",
+      "signatureBytesHex": "1c5d325a94e17f3ed83daffee8a52ee13efc74d138e895c99cead2b83571fd08870d0eb34ebcb35cef9ad50fc95ecb44c84e9d77a55e02c0b7a8fbc3ed4f64297d8d99d6b2d0b3adbea61a093f96be52",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "create_public_pool",
+      "txType": 10,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "InitialTotalShares": "1000000",
+        "MinOperatorShareRate": "1000",
+        "Nonce": "29",
+        "OperatorFee": "100"
+      },
+      "attributes": {},
+      "messageHashLeHex": "7be0629f0c4b33db0dc09937978d8fd570f328194a1bc42a13db9927e8bedfe37ed612d11a534d49",
+      "signatureBytesHex": "418f9974b4096c62ab4611dc5eefaf6780b334fce948f5aaef48b45c1a785bed391b3e2853667e0af9858b2520fe3c822a3126c32e2c9070d3a92ec85dc4710aad4bd407905f0ada89990f7984e97241",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_public_pool",
+      "txType": 11,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "MinOperatorShareRate": "2000",
+        "Nonce": "30",
+        "OperatorFee": "200",
+        "PublicPoolIndex": "140737488355428",
+        "Status": "1"
+      },
+      "attributes": {},
+      "messageHashLeHex": "28ba78917776f3688fd88f8a2da3afa2de062bbe16efbe7d06dbff6ce2c564f7241fc48b73804be9",
+      "signatureBytesHex": "b3b87c28df883dae8aacda1726bc8921a72fde3de1234dc8e3eee660aa1ca21da3d35c4bd3e83e0c3c28211660f50795e86c6fa620969a74f71ec3b2cb2a99d59c57a722e8c4b2c87af74dc7b047166b",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "create_grouped_orders/oto",
+      "txType": 28,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "GroupingType": "1",
+        "Nonce": "31",
+        "Order0.BaseAmount": "1000",
+        "Order0.ClientOrderIndex": "2001",
+        "Order0.IsAsk": "0",
+        "Order0.MarketIndex": "1",
+        "Order0.OrderExpiry": "1893456000000",
+        "Order0.Price": "5000",
+        "Order0.ReduceOnly": "0",
+        "Order0.TimeInForce": "1",
+        "Order0.TriggerPrice": "0",
+        "Order0.Type": "0",
+        "Order1.BaseAmount": "0",
+        "Order1.ClientOrderIndex": "2002",
+        "Order1.IsAsk": "1",
+        "Order1.MarketIndex": "1",
+        "Order1.OrderExpiry": "1893456000000",
+        "Order1.Price": "4000",
+        "Order1.ReduceOnly": "1",
+        "Order1.TimeInForce": "0",
+        "Order1.TriggerPrice": "4100",
+        "Order1.Type": "2",
+        "OrderCount": "2"
+      },
+      "attributes": {},
+      "messageHashLeHex": "f0ed0d2597e874a97a0572d0af0a10731f3b8ad53fe275867e996e22b8e5262821337e7f3f3f6ddc",
+      "signatureBytesHex": "ac61757bcaa97771845d6bdef432cd2758e21f5aabec00216a2e282aa16cf4cfdfe5a8134189ab1235abc0aa3c3e648a9c0cbb780fff715758266a01cc8854814545f1bb345884cd4944c8c2fb63180b",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "create_grouped_orders/oco",
+      "txType": 28,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "GroupingType": "2",
+        "Nonce": "32",
+        "Order0.BaseAmount": "0",
+        "Order0.ClientOrderIndex": "2003",
+        "Order0.IsAsk": "1",
+        "Order0.MarketIndex": "1",
+        "Order0.OrderExpiry": "1893456000000",
+        "Order0.Price": "4000",
+        "Order0.ReduceOnly": "1",
+        "Order0.TimeInForce": "0",
+        "Order0.TriggerPrice": "4100",
+        "Order0.Type": "2",
+        "Order1.BaseAmount": "0",
+        "Order1.ClientOrderIndex": "2004",
+        "Order1.IsAsk": "1",
+        "Order1.MarketIndex": "1",
+        "Order1.OrderExpiry": "1893456000000",
+        "Order1.Price": "6000",
+        "Order1.ReduceOnly": "1",
+        "Order1.TimeInForce": "0",
+        "Order1.TriggerPrice": "5900",
+        "Order1.Type": "4",
+        "OrderCount": "2"
+      },
+      "attributes": {},
+      "messageHashLeHex": "76a8519e811719a037f8e971916236b9152a2dbffb3f24964e4cb38bf22709cfcbe5358c9b140989",
+      "signatureBytesHex": "aece832f699d503492fd02cc72810d6d8d5671397f907ca7d0f00be5fbbf955a978bb8ae675f8a53b7fc8215ad76499391d9be4ba80ca349ca30aa38aed828b7c88a4e403eefbd70d04a77fc59565262",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "create_grouped_orders/otoco",
+      "txType": 28,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "GroupingType": "3",
+        "Nonce": "33",
+        "Order0.BaseAmount": "2500",
+        "Order0.ClientOrderIndex": "2005",
+        "Order0.IsAsk": "0",
+        "Order0.MarketIndex": "1",
+        "Order0.OrderExpiry": "1893456000000",
+        "Order0.Price": "5000",
+        "Order0.ReduceOnly": "0",
+        "Order0.TimeInForce": "1",
+        "Order0.TriggerPrice": "0",
+        "Order0.Type": "0",
+        "Order1.BaseAmount": "0",
+        "Order1.ClientOrderIndex": "2006",
+        "Order1.IsAsk": "1",
+        "Order1.MarketIndex": "1",
+        "Order1.OrderExpiry": "1893456000000",
+        "Order1.Price": "4000",
+        "Order1.ReduceOnly": "1",
+        "Order1.TimeInForce": "0",
+        "Order1.TriggerPrice": "4100",
+        "Order1.Type": "2",
+        "Order2.BaseAmount": "0",
+        "Order2.ClientOrderIndex": "2007",
+        "Order2.IsAsk": "1",
+        "Order2.MarketIndex": "1",
+        "Order2.OrderExpiry": "1893456000000",
+        "Order2.Price": "6000",
+        "Order2.ReduceOnly": "1",
+        "Order2.TimeInForce": "0",
+        "Order2.TriggerPrice": "5900",
+        "Order2.Type": "4",
+        "OrderCount": "3"
+      },
+      "attributes": {},
+      "messageHashLeHex": "5ed59459f1fde279d00e79d2efc34f47c5625807f7330f7adf6eed0c4134a9e19a31feffa8a73d0f",
+      "signatureBytesHex": "c0ec6a8d2b50b144e483782c0fd89d6a0bec789055c0506b65c1caed08ee4e5e71d4e26a4c78e17408fefd076943b6c296e60797b41f130d4e5f1cb1151ff3a3ab2d2248b0592a031667534926717f20",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
     }
   ]
 }
