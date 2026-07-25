@@ -28,6 +28,7 @@ import (
 	schnorr "github.com/elliottech/poseidon_crypto/signature/schnorr"
 
 	"github.com/elliottech/lighter-go/types/txtypes"
+	"github.com/ethereum/go-ethereum/accounts"
 )
 
 // ---------------------------------------------------------------------------
@@ -61,6 +62,10 @@ func (r *rng) nextFp5() gFp5.Element {
 // ---------------------------------------------------------------------------
 
 func u64s(v uint64) string { return fmt.Sprintf("%d", v) }
+
+// l1Hex mirrors the reference's argument formatting for L1 message templates:
+// a 0x prefix followed by exactly 16 zero-padded lowercase hex digits.
+func l1Hex(v uint64) string { return fmt.Sprintf("0x%016x", v) }
 
 // fStr emits the CANONICAL value of a field element.
 //
@@ -294,9 +299,10 @@ type schnorrNegCase struct {
 }
 
 type txVectors struct {
-	ChainID    uint32       `json:"chainId"`
-	Attributes []attrCase   `json:"attributeHashes"`
-	Txs        []txHashCase `json:"txHashes"`
+	ChainID    uint32          `json:"chainId"`
+	Attributes []attrCase      `json:"attributeHashes"`
+	Txs        []txHashCase    `json:"txHashes"`
+	L1Messages []l1MessageCase `json:"l1Messages"`
 }
 
 type attrCase struct {
@@ -316,6 +322,19 @@ type txHashCase struct {
 	SigBytesHex string            `json:"signatureBytesHex"`
 	NonceKLEHex string            `json:"nonceKLeHex"`
 	TxInfoJSON  string            `json:"txInfoJson"`
+}
+
+// l1MessageCase pins an EIP-191 "personal_sign" message body exactly as the
+// protocol expects it. The formatting is unforgiving: every numeric argument is
+// rendered as a 16-hex-digit, zero-padded, 0x-prefixed string, and the memo is
+// the raw 32-byte field hex-encoded. A single missing pad character produces a
+// different signed message and therefore a rejected registration or transfer.
+type l1MessageCase struct {
+	Name       string            `json:"name"`
+	Fields     map[string]string `json:"fields"`
+	Body       string            `json:"body"`
+	BodyHex    string            `json:"bodyUtf8Hex"`
+	EIP191Hash string            `json:"eip191HashHex"`
 }
 
 // ---------------------------------------------------------------------------
@@ -1370,6 +1389,81 @@ func buildTx(r *rng) txVectors {
 			fields: fields,
 		})
 	}
+	// -------------------------------------------------------------------------
+	// L1 (EIP-191) signature bodies.
+	//
+	// Registering an API key, transferring, and approving an integrator each
+	// require an Ethereum personal_sign over a formatted human-readable message.
+	// The formatting rule is strict: every numeric argument becomes a 0x-prefixed,
+	// 16-hex-digit zero-padded string. Pinning the exact bytes here means the
+	// TypeScript implementation never has to guess the padding or field order.
+	// -------------------------------------------------------------------------
+
+	emitL1 := func(name string, fields map[string]string, body string) {
+		v.L1Messages = append(v.L1Messages, l1MessageCase{
+			Name:       name,
+			Fields:     fields,
+			Body:       body,
+			BodyHex:    hex.EncodeToString([]byte(body)),
+			EIP191Hash: hex.EncodeToString(accounts.TextHash([]byte(body))),
+		})
+	}
+
+	cpk := &txtypes.L2ChangePubKeyTxInfo{
+		AccountIndex: 1, ApiKeyIndex: 0, PubKey: pubKey, ExpiredAt: exp, Nonce: 20,
+	}
+	emitL1("change_pub_key", map[string]string{
+		"AccountIndex": "1", "ApiKeyIndex": "0", "Nonce": "20",
+		"PubKeyLeHex": hex.EncodeToString(pubKey),
+	}, cpk.GetL1SignatureBody())
+
+	// Two transfer bodies: one with an empty memo, one with a populated memo, so
+	// the 32-byte memo hex encoding is pinned in both states.
+	for _, memoCase := range []struct {
+		label string
+		memo  [32]byte
+	}{
+		{"empty_memo", [32]byte{}},
+		{"populated_memo", func() (m [32]byte) { copy(m[:], "lighter-ts conformance vector"); return }()},
+	} {
+		tr := &txtypes.L2TransferTxInfo{
+			FromAccountIndex: 1, ApiKeyIndex: 0, ToAccountIndex: 2,
+			AssetIndex:    int16(txtypes.USDCAssetIndex),
+			FromRouteType: txtypes.AssetRouteType_Perps, ToRouteType: txtypes.AssetRouteType_Spot,
+			Amount: bigAmount, USDCFee: bigFee,
+			Memo:      memoCase.memo,
+			ExpiredAt: exp, Nonce: 14,
+		}
+		emitL1("transfer/"+memoCase.label, map[string]string{
+			"FromAccountIndex": "1", "ApiKeyIndex": "0", "ToAccountIndex": "2",
+			"AssetIndex":    f(txtypes.USDCAssetIndex),
+			"FromRouteType": f(txtypes.AssetRouteType_Perps), "ToRouteType": f(txtypes.AssetRouteType_Spot),
+			"Amount": f(bigAmount), "USDCFee": f(bigFee), "Nonce": "14",
+			"ChainId": f(oracleChainID), "MemoHex": hex.EncodeToString(memoCase.memo[:]),
+		}, tr.GetL1SignatureBody(oracleChainID))
+	}
+
+	ai := &txtypes.L2ApproveIntegratorTxInfo{
+		AccountIndex: 1, ApiKeyIndex: 0, IntegratorAccountIndex: 4242,
+		MaxPerpsTakerFee: 1000, MaxPerpsMakerFee: 500,
+		MaxSpotTakerFee: 800, MaxSpotMakerFee: 400,
+		ApprovalExpiry: exp, ExpiredAt: exp, Nonce: 28,
+	}
+	emitL1("approve_integrator", map[string]string{
+		"AccountIndex": "1", "ApiKeyIndex": "0", "IntegratorAccountIndex": "4242",
+		"MaxPerpsTakerFee": "1000", "MaxPerpsMakerFee": "500",
+		"MaxSpotTakerFee": "800", "MaxSpotMakerFee": "400",
+		"ApprovalExpiry": f(exp), "Nonce": "28", "ChainId": f(oracleChainID),
+	}, ai.GetL1SignatureBody(oracleChainID))
+
+	// The sub-account template takes only the master account index and has no
+	// method on the tx type, so it is formatted directly from the template.
+	for _, master := range []int64{1, txtypes.MaxMasterAccountIndex} {
+		emitL1(fmt.Sprintf("create_sub_account/master_%d", master), map[string]string{
+			"MasterAccountIndex": f(master),
+		}, fmt.Sprintf(txtypes.TemplateSubAccount, l1Hex(uint64(master))))
+	}
+
 	for _, tc := range cases {
 		if err := tc.tx.Validate(); err != nil {
 			panic(fmt.Sprintf("%s: validate: %v", tc.name, err))
