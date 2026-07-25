@@ -64,7 +64,20 @@ bytes.
 
 ## Signature determinism
 
-Production Schnorr signing samples the nonce `k` at random, so signatures are not reproducible by
-construction. The oracle uses the reference's explicit-nonce entry point to pin `k`, making
-signature vectors exact. The TypeScript signer exposes the same seam: a caller-supplied nonce for
-tests, `crypto.getRandomValues` by default.
+The reference samples the Schnorr nonce `k` at random, so its signatures are not reproducible by
+construction. The oracle uses the reference's explicit-`k` entry point to pin the nonce, which makes
+the signature vectors exact.
+
+`lighter-ts` keeps that same seam — a caller-supplied `k` for tests — but its **default is
+hedged-deterministic**, deriving `k` from the private key and the message hash mixed with fresh
+randomness, rather than depending on the RNG alone.
+
+This is a deliberate improvement on the reference, and it is free: `k` never appears on the wire,
+only `(s, e)` do, so any correctly-derived nonce produces a signature the sequencer accepts. The
+verifier cannot tell the difference. What changes is the failure mode — under pure randomness, a
+weak or repeating RNG leaks the private key outright after two signatures, and that failure is
+silent. Deriving from the key and message removes that cliff while the hedge preserves protection
+against fault attacks.
+
+One runtime note this interacts with: Cloudflare Workers forbids `crypto.getRandomValues` at module
+scope. Nonce generation must therefore happen per-call, never during module initialization.
