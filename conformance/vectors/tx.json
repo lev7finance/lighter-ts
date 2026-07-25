@@ -391,6 +391,40 @@
       "txInfoJson": ""
     },
     {
+      "name": "cancel_all_orders/negative_account_index",
+      "txType": 16,
+      "fields": {
+        "AccountIndex": "-1",
+        "ApiKeyIndex": "0",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "34",
+        "Time": "0",
+        "TimeInForce": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "ed6a8e019aa0cbcd7d656a7cd7517589e2fa169f8daee84880b88fab53396f9b2bd167ccb9eea276",
+      "signatureBytesHex": "047b2198d36fa298e0593bd15b2a498b0eaf89fc7cf4aa14aeb1a27aa438f0b15144564fd22d366f42da7c0783972a330f3111548a1615af4e8fcf45e74794ea3d69048ab102399bff4eb75d7d182d6f",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "cancel_all_orders/max_indices",
+      "txType": 16,
+      "fields": {
+        "AccountIndex": "281474976710654",
+        "ApiKeyIndex": "254",
+        "ExpiredAt": "1893456000000",
+        "Nonce": "35",
+        "Time": "0",
+        "TimeInForce": "0"
+      },
+      "attributes": {},
+      "messageHashLeHex": "4153957206219268fd46031786f5c87cd6dad74607995c36b700a3f4a0e7e063a0e314c42689ca47",
+      "signatureBytesHex": "28d0995556d1f38d4cfcebe5b9b25472ffa10a41382cee71fb0efc879b0f389c2be3a7b57e4c26489fc3fe120e9867f5c805b8885878d671e4b2894c54aa12804182133ade918f8ba5e94454c70cb703",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
       "name": "modify_order/basic",
       "txType": 17,
       "fields": {

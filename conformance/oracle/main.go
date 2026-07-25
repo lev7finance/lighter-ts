@@ -1051,6 +1051,29 @@ func buildTx(r *rng) txVectors {
 			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "TimeInForce": f(txtypes.ScheduledCancelAll), "Time": f(exp), "ExpiredAt": f(exp), "Nonce": "31"},
 		},
 		{
+			// AccountIndex = MinAccountIndex = -1 is legal. A negative protocol
+			// integer sign-extends to 64 bits and is then reduced mod p, so -1
+			// becomes 2^32 - 2 = 4294967294, NOT p - 1. Getting this wrong
+			// produces a hash that looks fine and verifies against nothing.
+			name: "cancel_all_orders/negative_account_index", txType: txtypes.TxTypeL2CancelAllOrders,
+			tx: &txtypes.L2CancelAllOrdersTxInfo{
+				AccountIndex: txtypes.MinAccountIndex, ApiKeyIndex: 0,
+				TimeInForce: txtypes.ImmediateCancelAll, Time: 0,
+				ExpiredAt: exp, Nonce: 34,
+			},
+			fields: map[string]string{"AccountIndex": f(txtypes.MinAccountIndex), "ApiKeyIndex": "0", "TimeInForce": f(txtypes.ImmediateCancelAll), "Time": "0", "ExpiredAt": f(exp), "Nonce": "34"},
+		},
+		{
+			// ApiKeyIndex at its maximum (254) plus a boundary account index.
+			name: "cancel_all_orders/max_indices", txType: txtypes.TxTypeL2CancelAllOrders,
+			tx: &txtypes.L2CancelAllOrdersTxInfo{
+				AccountIndex: txtypes.MaxAccountIndex, ApiKeyIndex: txtypes.MaxApiKeyIndex,
+				TimeInForce: txtypes.ImmediateCancelAll, Time: 0,
+				ExpiredAt: exp, Nonce: 35,
+			},
+			fields: map[string]string{"AccountIndex": f(txtypes.MaxAccountIndex), "ApiKeyIndex": f(txtypes.MaxApiKeyIndex), "TimeInForce": f(txtypes.ImmediateCancelAll), "Time": "0", "ExpiredAt": f(exp), "Nonce": "35"},
+		},
+		{
 			name: "modify_order/basic", txType: txtypes.TxTypeL2ModifyOrder,
 			tx: &txtypes.L2ModifyOrderTxInfo{
 				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1, Index: 12345,
