@@ -1,0 +1,1029 @@
+// Command oracle emits cross-language conformance vectors for the lighter-ts SDK.
+//
+// It uses the upstream Go implementation (github.com/elliottech/lighter-go and
+// github.com/elliottech/poseidon_crypto) purely as a reference oracle: it feeds
+// deterministic inputs through the reference and records the outputs as JSON.
+// The TypeScript implementation is written independently and must reproduce
+// these outputs bit-for-bit.
+//
+// Nothing here is imported by the SDK. It is a build-time test-fixture generator.
+//
+// Usage:
+//
+//	go run . -out ../vectors
+package main
+
+import (
+	"encoding/hex"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+
+	curve "github.com/elliottech/poseidon_crypto/curve/ecgfp5"
+	g "github.com/elliottech/poseidon_crypto/field/goldilocks"
+	gFp5 "github.com/elliottech/poseidon_crypto/field/goldilocks_quintic_extension"
+	p2 "github.com/elliottech/poseidon_crypto/hash/poseidon2_goldilocks_plonky2"
+	schnorr "github.com/elliottech/poseidon_crypto/signature/schnorr"
+
+	"github.com/elliottech/lighter-go/types/txtypes"
+)
+
+// ---------------------------------------------------------------------------
+// deterministic input generation (splitmix64) — no randomness, fully reproducible
+// ---------------------------------------------------------------------------
+
+type rng struct{ state uint64 }
+
+func newRNG(seed uint64) *rng { return &rng{state: seed} }
+
+func (r *rng) next() uint64 {
+	r.state += 0x9e3779b97f4a7c15
+	z := r.state
+	z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9
+	z = (z ^ (z >> 27)) * 0x94d049bb133111eb
+	return z ^ (z >> 31)
+}
+
+// nextCanonical returns a uniformly-ish distributed value in [0, ORDER).
+func (r *rng) nextCanonical() uint64 { return r.next() % g.ORDER }
+
+func (r *rng) nextF() g.GoldilocksField { return g.GoldilocksField(r.nextCanonical()) }
+
+func (r *rng) nextFp5() gFp5.Element {
+	return gFp5.Element{r.nextF(), r.nextF(), r.nextF(), r.nextF(), r.nextF()}
+}
+
+// ---------------------------------------------------------------------------
+// encoding helpers — every value crosses the boundary as a decimal string or hex,
+// never as a JSON number, so JS cannot silently lose precision.
+// ---------------------------------------------------------------------------
+
+func u64s(v uint64) string { return fmt.Sprintf("%d", v) }
+
+// fStr emits the CANONICAL value of a field element.
+//
+// This is deliberate and load-bearing. The Go reference stores GoldilocksField
+// as a raw uint64 in *non-canonical* form: arithmetic results are only reduced
+// into [0, 2^64) and may sit up to one ORDER above the canonical residue.
+// ToCanonicalUint64 performs the final conditional subtraction, and every
+// serialization path (ToLittleEndianBytesF) applies it.
+//
+// That representation is a hardware-64-bit micro-optimization with no analogue
+// in a BigInt implementation. lighter-ts reduces fully on every operation, so
+// vectors are recorded canonically and both implementations agree. The raw
+// non-canonical behaviour is documented separately in goldilocks.json under
+// "nonCanonicalNotes" so the divergence is explicit rather than accidental.
+func fStr(f g.GoldilocksField) string { return u64s(f.ToCanonicalUint64()) }
+
+// fStrRaw emits the reference's internal, possibly non-canonical, uint64.
+func fStrRaw(f g.GoldilocksField) string { return u64s(uint64(f)) }
+
+func fp5Strs(e gFp5.Element) []string {
+	out := make([]string, 5)
+	for i, c := range e {
+		out[i] = fStr(c)
+	}
+	return out
+}
+
+func fp5Hex(e gFp5.Element) string { return hex.EncodeToString(e.ToLittleEndianBytes()) }
+
+func fsStrs(in []g.GoldilocksField) []string {
+	out := make([]string, len(in))
+	for i, f := range in {
+		out[i] = fStr(f)
+	}
+	return out
+}
+
+func scalarStrs(s curve.ECgFp5Scalar) []string {
+	out := make([]string, 5)
+	for i, limb := range s {
+		out[i] = u64s(limb)
+	}
+	return out
+}
+
+func scalarHex(s curve.ECgFp5Scalar) string {
+	return hex.EncodeToString(s.ToLittleEndianBytes())
+}
+
+// ---------------------------------------------------------------------------
+// vector groups
+// ---------------------------------------------------------------------------
+
+type goldilocksVectors struct {
+	Order             string               `json:"order"`
+	Epsilon           string               `json:"epsilon"`
+	TwoAdicity        int                  `json:"twoAdicity"`
+	PowerOfTwoGen     string               `json:"powerOfTwoGenerator"`
+	Cases             []goldilocksCase     `json:"cases"`
+	Encoding          []goldilocksEncoding `json:"encoding"`
+	NonCanonicalNotes nonCanonicalNotes    `json:"nonCanonicalNotes"`
+}
+
+// nonCanonicalNotes documents the one place the reference's internal
+// representation diverges from a straightforward BigInt implementation.
+// Every "expected" value elsewhere in these vectors is canonical; this section
+// exists so that divergence is a recorded decision, not a latent bug.
+type nonCanonicalNotes struct {
+	Explanation string                `json:"explanation"`
+	Examples    []nonCanonicalExample `json:"examples"`
+}
+
+type nonCanonicalExample struct {
+	Op        string `json:"op"`
+	A         string `json:"a"`
+	B         string `json:"b"`
+	Raw       string `json:"raw"`       // reference's internal uint64
+	Canonical string `json:"canonical"` // what lighter-ts must produce
+	LEHex     string `json:"leBytesHex"`
+}
+
+type goldilocksCase struct {
+	A        string  `json:"a"`
+	B        string  `json:"b"`
+	Add      string  `json:"add"`
+	Sub      string  `json:"sub"`
+	Mul      string  `json:"mul"`
+	SquareA  string  `json:"squareA"`
+	DoubleA  string  `json:"doubleA"`
+	NegA     string  `json:"negA"`
+	Exp      string  `json:"exp"`      // a^b
+	ExpPow2  string  `json:"expPow2"`  // a^(2^7)
+	IsQRA    bool    `json:"isQuadraticResidueA"`
+	SqrtA    *string `json:"sqrtA"` // nil when a is not a QR
+}
+
+type goldilocksEncoding struct {
+	Value      string `json:"value"`
+	LEBytesHex string `json:"leBytesHex"`
+}
+
+type fp5Vectors struct {
+	Bytes int       `json:"bytes"`
+	Cases []fp5Case `json:"cases"`
+}
+
+type fp5Case struct {
+	A            []string  `json:"a"`
+	B            []string  `json:"b"`
+	Add          []string  `json:"add"`
+	Sub          []string  `json:"sub"`
+	Mul          []string  `json:"mul"`
+	SquareA      []string  `json:"squareA"`
+	DoubleA      []string  `json:"doubleA"`
+	TripleA      []string  `json:"tripleA"`
+	NegA         []string  `json:"negA"`
+	InverseA     []string  `json:"inverseA"`
+	DivAB        []string  `json:"divAB"`
+	FrobeniusA   []string  `json:"frobeniusA"`
+	Frobenius2A  []string  `json:"frobenius2A"`
+	ScalarMulA   []string  `json:"scalarMulA"` // a * b[0] (base-field scalar)
+	LegendreA    string    `json:"legendreA"`
+	Sgn0A        bool      `json:"sgn0A"`
+	SqrtA        []string  `json:"sqrtA"`          // zero-filled when !sqrtAExists
+	SqrtAExists  bool      `json:"sqrtAExists"`
+	CanonSqrtA   []string  `json:"canonicalSqrtA"` // zero-filled when !canonicalSqrtAExists
+	CanonExists  bool      `json:"canonicalSqrtAExists"`
+	ALEBytesHex  string    `json:"aLeBytesHex"`
+}
+
+type poseidonVectors struct {
+	Width           int                `json:"width"`
+	Permutations    []permutationCase  `json:"permutations"`
+	HashToFp5       []hashToFp5Case    `json:"hashToQuinticExtension"`
+	HashNoPad       []hashNoPadCase    `json:"hashNoPad"`
+	HashNToMNoPad   []hashNToMCase     `json:"hashNToMNoPad"`
+}
+
+type permutationCase struct {
+	Input  []string `json:"input"`
+	Output []string `json:"output"`
+}
+
+type hashToFp5Case struct {
+	Input      []string `json:"input"`
+	Output     []string `json:"output"`
+	OutputHex  string   `json:"outputLeBytesHex"`
+}
+
+type hashNoPadCase struct {
+	Input  []string `json:"input"`
+	Output []string `json:"output"` // HashOut = 4 goldilocks elements
+}
+
+type hashNToMCase struct {
+	Input      []string `json:"input"`
+	NumOutputs int      `json:"numOutputs"`
+	Output     []string `json:"output"`
+}
+
+type curveVectors struct {
+	GeneratorEncoded []string     `json:"generatorEncoded"`
+	NeutralEncoded   []string     `json:"neutralEncoded"`
+	Cases            []curveCase  `json:"cases"`
+	ScalarCases      []scalarCase `json:"scalarCases"`
+}
+
+type curveCase struct {
+	ScalarLEHex     string   `json:"scalarLeHex"`
+	Scalar          []string `json:"scalar"`
+	MulGenEncoded   []string `json:"mulGenEncoded"`   // [scalar]G, encoded to Fp5
+	MulGenHex       string   `json:"mulGenLeBytesHex"`
+	DoubleEncoded   []string `json:"doubleEncoded"`   // [2*scalar]G
+	AddGenEncoded   []string `json:"addGenEncoded"`   // [scalar]G + G
+	DecodeRoundTrip bool     `json:"decodeRoundTrip"`
+}
+
+type scalarCase struct {
+	InputLEHex string   `json:"inputLeHex"`
+	Scalar     []string `json:"scalar"`
+	Canonical  bool     `json:"isCanonical"`
+	OutputLEHex string  `json:"outputLeHex"`
+}
+
+type schnorrVectors struct {
+	SignatureBytes int             `json:"signatureBytes"`
+	PubKeyBytes    int             `json:"pubKeyBytes"`
+	Cases          []schnorrCase   `json:"cases"`
+	Negative       []schnorrNegCase `json:"negative"`
+}
+
+type schnorrCase struct {
+	PrivateKeyLEHex string   `json:"privateKeyLeHex"`
+	PublicKey       []string `json:"publicKey"`
+	PublicKeyLEHex  string   `json:"publicKeyLeHex"`
+	MessageElems    []string `json:"messageElements"`
+	HashedMsg       []string `json:"hashedMessage"`
+	HashedMsgLEHex  string   `json:"hashedMessageLeHex"`
+	NonceKLEHex     string   `json:"nonceKLeHex"`
+	SigS            []string `json:"sigS"`
+	SigE            []string `json:"sigE"`
+	SigBytesHex     string   `json:"signatureBytesHex"`
+	Valid           bool     `json:"valid"`
+	Canonical       bool     `json:"canonical"`
+}
+
+type schnorrNegCase struct {
+	Description     string `json:"description"`
+	PublicKeyLEHex  string `json:"publicKeyLeHex"`
+	HashedMsgLEHex  string `json:"hashedMessageLeHex"`
+	SignatureHex    string `json:"signatureHex"`
+	Valid           bool   `json:"valid"`
+}
+
+type txVectors struct {
+	ChainID    uint32       `json:"chainId"`
+	Attributes []attrCase   `json:"attributeHashes"`
+	Txs        []txHashCase `json:"txHashes"`
+}
+
+type attrCase struct {
+	Attributes    map[string]int `json:"attributes"`
+	IsEmpty       bool           `json:"isEmpty"`
+	AttrHash      []string       `json:"attributesHash"`
+	InputTxHash   []string       `json:"inputTxHash"`
+	AggregatedHex string         `json:"aggregatedLeBytesHex"`
+}
+
+type txHashCase struct {
+	Name        string            `json:"name"`
+	TxType      uint8             `json:"txType"`
+	Fields      map[string]string `json:"fields"`
+	Attributes  map[string]int    `json:"attributes"`
+	MsgHashHex  string            `json:"messageHashLeHex"`
+	SigBytesHex string            `json:"signatureBytesHex"`
+	NonceKLEHex string            `json:"nonceKLeHex"`
+	TxInfoJSON  string            `json:"txInfoJson"`
+}
+
+// ---------------------------------------------------------------------------
+
+func buildGoldilocks(r *rng) goldilocksVectors {
+	v := goldilocksVectors{
+		Order:         u64s(g.ORDER),
+		Epsilon:       u64s(g.EPSILON),
+		TwoAdicity:    g.TWO_ADICITY,
+		PowerOfTwoGen: fStr(g.POWER_OF_TWO_GENERATOR),
+	}
+
+	// Edge cases first, then deterministic pseudo-random pairs.
+	edges := []uint64{
+		0, 1, 2,
+		g.ORDER - 1, g.ORDER - 2,
+		g.EPSILON, g.EPSILON + 1, g.EPSILON - 1,
+		1 << 31, 1 << 32, (1 << 32) + 1,
+		1 << 63,
+		0xffffffff00000000,
+		0xfffffffe00000001, // -1 doubled region
+	}
+
+	pairs := make([][2]uint64, 0, 64)
+	for i := 0; i < len(edges); i++ {
+		for j := 0; j < len(edges); j += 3 {
+			pairs = append(pairs, [2]uint64{edges[i], edges[j]})
+		}
+	}
+	for i := 0; i < 48; i++ {
+		pairs = append(pairs, [2]uint64{r.nextCanonical(), r.nextCanonical()})
+	}
+
+	for _, p := range pairs {
+		a := g.GoldilocksField(p[0] % g.ORDER)
+		b := g.GoldilocksField(p[1] % g.ORDER)
+
+		c := goldilocksCase{
+			A:       fStr(a),
+			B:       fStr(b),
+			Add:     fStr(g.AddF(a, b)),
+			Sub:     fStr(g.SubF(a, b)),
+			Mul:     fStr(g.MulF(a, b)),
+			SquareA: fStr(g.SquareF(a)),
+			DoubleA: fStr(g.DoubleF(a)),
+			NegA:    fStr(g.NegF(a)),
+			Exp:     fStr(g.ExpF(a, uint64(b))),
+			ExpPow2: fStr(g.ExpPowerOf2(a, 7)),
+			IsQRA:   g.IsQuadraticResidueF(a),
+		}
+		if s := g.SqrtF(a); s != nil {
+			str := fStr(*s)
+			c.SqrtA = &str
+		}
+		v.Cases = append(v.Cases, c)
+	}
+
+	for _, e := range edges {
+		val := g.GoldilocksField(e % g.ORDER)
+		v.Encoding = append(v.Encoding, goldilocksEncoding{
+			Value:      fStr(val),
+			LEBytesHex: hex.EncodeToString(g.ToLittleEndianBytesF(val)),
+		})
+	}
+
+	v.NonCanonicalNotes = nonCanonicalNotes{
+		Explanation: "The Go reference stores a field element as a raw uint64 that is only partially " +
+			"reduced: after AddF/SubF/MulF the stored value may exceed ORDER by up to EPSILON-ish, and " +
+			"ToCanonicalUint64 applies the final conditional subtraction. FromCanonicalLittleEndianBytesF " +
+			"performs NO range validation, so a limb >= ORDER decodes to a non-canonical element rather " +
+			"than an error. lighter-ts reduces fully on every operation; all 'expected' values in these " +
+			"vector files are canonical. The examples below are the cases where the reference's internal " +
+			"uint64 differs from the canonical residue — they must NOT be reproduced by lighter-ts.",
+	}
+
+	// Surface concrete raw-vs-canonical divergences so the difference is provable.
+	probe := []struct {
+		op   string
+		a, b g.GoldilocksField
+		out  g.GoldilocksField
+	}{}
+	for _, pair := range [][2]uint64{
+		{g.ORDER - 1, 1},
+		{g.ORDER - 1, 2},
+		{g.ORDER - 1, g.ORDER - 1},
+		{1, 2},
+		{g.EPSILON, g.EPSILON},
+	} {
+		a := g.GoldilocksField(pair[0])
+		b := g.GoldilocksField(pair[1])
+		probe = append(probe,
+			struct {
+				op   string
+				a, b g.GoldilocksField
+				out  g.GoldilocksField
+			}{"add", a, b, g.AddF(a, b)},
+			struct {
+				op   string
+				a, b g.GoldilocksField
+				out  g.GoldilocksField
+			}{"sub", a, b, g.SubF(a, b)},
+			struct {
+				op   string
+				a, b g.GoldilocksField
+				out  g.GoldilocksField
+			}{"mul", a, b, g.MulF(a, b)},
+		)
+	}
+	for _, p := range probe {
+		if uint64(p.out) == p.out.ToCanonicalUint64() {
+			continue // only record actual divergences
+		}
+		v.NonCanonicalNotes.Examples = append(v.NonCanonicalNotes.Examples, nonCanonicalExample{
+			Op:        p.op,
+			A:         fStr(p.a),
+			B:         fStr(p.b),
+			Raw:       fStrRaw(p.out),
+			Canonical: fStr(p.out),
+			LEHex:     hex.EncodeToString(g.ToLittleEndianBytesF(p.out)),
+		})
+	}
+
+	return v
+}
+
+func buildFp5(r *rng) fp5Vectors {
+	v := fp5Vectors{Bytes: gFp5.Bytes}
+
+	zero := gFp5.Element{}
+	one := gFp5.FromUint64(1)
+
+	fixed := [][2]gFp5.Element{
+		{zero, one},
+		{one, one},
+		{one, zero},
+		{gFp5.FromUint64(2), gFp5.FromUint64(3)},
+		{gFp5.Element{1, 2, 3, 4, 5}, gFp5.Element{6, 7, 8, 9, 10}},
+		{
+			gFp5.Element{g.GoldilocksField(g.ORDER - 1), 0, 0, 0, 1},
+			gFp5.Element{0, g.GoldilocksField(g.ORDER - 1), 1, 0, 0},
+		},
+	}
+
+	pairs := append([][2]gFp5.Element{}, fixed...)
+	for i := 0; i < 40; i++ {
+		pairs = append(pairs, [2]gFp5.Element{r.nextFp5(), r.nextFp5()})
+	}
+
+	for _, p := range pairs {
+		a, b := p[0], p[1]
+
+		c := fp5Case{
+			A:           fp5Strs(a),
+			B:           fp5Strs(b),
+			Add:         fp5Strs(gFp5.Add(a, b)),
+			Sub:         fp5Strs(gFp5.Sub(a, b)),
+			Mul:         fp5Strs(gFp5.Mul(a, b)),
+			SquareA:     fp5Strs(gFp5.Square(a)),
+			DoubleA:     fp5Strs(gFp5.Double(a)),
+			TripleA:     fp5Strs(gFp5.Triple(a)),
+			NegA:        fp5Strs(gFp5.Neg(a)),
+			InverseA:    fp5Strs(gFp5.InverseOrZero(a)),
+			FrobeniusA:  fp5Strs(gFp5.Frobenius(a)),
+			Frobenius2A: fp5Strs(gFp5.RepeatedFrobenius(a, 2)),
+			ScalarMulA:  fp5Strs(gFp5.ScalarMul(a, b[0])),
+			LegendreA:   fStr(gFp5.Legendre(a)),
+			Sgn0A:       gFp5.Sgn0(a),
+			ALEBytesHex: fp5Hex(a),
+		}
+		if gFp5.IsZero(b) {
+			c.DivAB = fp5Strs(zero)
+		} else {
+			c.DivAB = fp5Strs(gFp5.Div(a, b))
+		}
+		if s, ok := gFp5.Sqrt(a); ok {
+			c.SqrtA, c.SqrtAExists = fp5Strs(s), true
+		} else {
+			c.SqrtA, c.SqrtAExists = fp5Strs(zero), false
+		}
+		if s, ok := gFp5.CanonicalSqrt(a); ok {
+			c.CanonSqrtA, c.CanonExists = fp5Strs(s), true
+		} else {
+			c.CanonSqrtA, c.CanonExists = fp5Strs(zero), false
+		}
+
+		v.Cases = append(v.Cases, c)
+	}
+
+	return v
+}
+
+func buildPoseidon(r *rng) poseidonVectors {
+	v := poseidonVectors{Width: p2.WIDTH}
+
+	// Permutation: all-zero state, counting state, then pseudo-random states.
+	states := make([][p2.WIDTH]g.GoldilocksField, 0, 24)
+
+	var zeroState [p2.WIDTH]g.GoldilocksField
+	states = append(states, zeroState)
+
+	var counting [p2.WIDTH]g.GoldilocksField
+	for i := range counting {
+		counting[i] = g.GoldilocksField(i)
+	}
+	states = append(states, counting)
+
+	var maxState [p2.WIDTH]g.GoldilocksField
+	for i := range maxState {
+		maxState[i] = g.GoldilocksField(g.ORDER - 1)
+	}
+	states = append(states, maxState)
+
+	for i := 0; i < 20; i++ {
+		var s [p2.WIDTH]g.GoldilocksField
+		for j := range s {
+			s[j] = r.nextF()
+		}
+		states = append(states, s)
+	}
+
+	for _, s := range states {
+		in := s
+		out := s
+		p2.Permute(&out)
+		v.Permutations = append(v.Permutations, permutationCase{
+			Input:  fsStrs(in[:]),
+			Output: fsStrs(out[:]),
+		})
+	}
+
+	// HashToQuinticExtension across every input length the tx layer can produce
+	// (tx hashes use up to ~20 elements; attribute hashes use up to 8).
+	for n := 0; n <= 24; n++ {
+		in := make([]g.GoldilocksField, n)
+		for i := range in {
+			in[i] = r.nextF()
+		}
+		out := p2.HashToQuinticExtension(in)
+		v.HashToFp5 = append(v.HashToFp5, hashToFp5Case{
+			Input:     fsStrs(in),
+			Output:    fp5Strs(out),
+			OutputHex: fp5Hex(out),
+		})
+	}
+
+	// Small-value inputs matter too: tx hashes are mostly tiny integers.
+	for n := 1; n <= 20; n++ {
+		in := make([]g.GoldilocksField, n)
+		for i := range in {
+			in[i] = g.GoldilocksField(i + 1)
+		}
+		out := p2.HashToQuinticExtension(in)
+		v.HashToFp5 = append(v.HashToFp5, hashToFp5Case{
+			Input:     fsStrs(in),
+			Output:    fp5Strs(out),
+			OutputHex: fp5Hex(out),
+		})
+	}
+
+	for n := 0; n <= 16; n++ {
+		in := make([]g.GoldilocksField, n)
+		for i := range in {
+			in[i] = r.nextF()
+		}
+		out := p2.HashNoPad(in)
+		v.HashNoPad = append(v.HashNoPad, hashNoPadCase{
+			Input:  fsStrs(in),
+			Output: fsStrs(out[:]),
+		})
+	}
+
+	for _, n := range []int{1, 4, 8, 12} {
+		for _, m := range []int{1, 4, 5, 8} {
+			in := make([]g.GoldilocksField, n)
+			for i := range in {
+				in[i] = r.nextF()
+			}
+			out := p2.HashNToMNoPad(in, m)
+			v.HashNToMNoPad = append(v.HashNToMNoPad, hashNToMCase{
+				Input:      fsStrs(in),
+				NumOutputs: m,
+				Output:     fsStrs(out),
+			})
+		}
+	}
+
+	return v
+}
+
+func buildCurve(r *rng) curveVectors {
+	gen := curve.GENERATOR_WEIERSTRASS
+	neutral := curve.NEUTRAL_WEIERSTRASS
+
+	v := curveVectors{
+		GeneratorEncoded: fp5Strs(gen.Encode()),
+		NeutralEncoded:   fp5Strs(neutral.Encode()),
+	}
+
+	scalars := make([]curve.ECgFp5Scalar, 0, 24)
+	scalars = append(scalars,
+		curve.ECgFp5Scalar{1, 0, 0, 0, 0},
+		curve.ECgFp5Scalar{2, 0, 0, 0, 0},
+		curve.ECgFp5Scalar{3, 0, 0, 0, 0},
+		curve.ECgFp5Scalar{0xffffffffffffffff, 0, 0, 0, 0},
+	)
+	for i := 0; i < 16; i++ {
+		var s curve.ECgFp5Scalar
+		for j := range s {
+			s[j] = r.next()
+		}
+		// keep it in range by round-tripping through the canonical decoder
+		scalars = append(scalars, curve.ScalarElementFromLittleEndianBytes(s.ToLittleEndianBytes()))
+	}
+
+	two := curve.ECgFp5Scalar{2, 0, 0, 0, 0}
+	one := curve.ECgFp5Scalar{1, 0, 0, 0, 0}
+	zero := curve.ECgFp5Scalar{}
+
+	for _, s := range scalars {
+		// [s]G  == MulAdd2(G, NEUTRAL, s, 0)
+		pt := curve.MulAdd2(gen, neutral, s, zero)
+		dbl := curve.MulAdd2(gen, neutral, s.Mul(two), zero)
+		addG := curve.MulAdd2(gen, gen, s, one)
+
+		enc := pt.Encode()
+		_, ok := curve.DecodeFp5AsWeierstrass(enc)
+
+		v.Cases = append(v.Cases, curveCase{
+			ScalarLEHex:     scalarHex(s),
+			Scalar:          scalarStrs(s),
+			MulGenEncoded:   fp5Strs(enc),
+			MulGenHex:       fp5Hex(enc),
+			DoubleEncoded:   fp5Strs(dbl.Encode()),
+			AddGenEncoded:   fp5Strs(addG.Encode()),
+			DecodeRoundTrip: ok,
+		})
+	}
+
+	// Scalar decoding: canonical, non-canonical, and all-ones input.
+	rawInputs := [][]byte{
+		make([]byte, 40),
+		append([]byte{1}, make([]byte, 39)...),
+	}
+	allOnes := make([]byte, 40)
+	for i := range allOnes {
+		allOnes[i] = 0xff
+	}
+	rawInputs = append(rawInputs, allOnes)
+	for i := 0; i < 8; i++ {
+		b := make([]byte, 40)
+		for j := 0; j < 5; j++ {
+			w := r.next()
+			for k := 0; k < 8; k++ {
+				b[j*8+k] = byte(w >> (8 * k))
+			}
+		}
+		rawInputs = append(rawInputs, b)
+	}
+
+	for _, in := range rawInputs {
+		s := curve.ScalarElementFromLittleEndianBytes(in)
+		v.ScalarCases = append(v.ScalarCases, scalarCase{
+			InputLEHex:  hex.EncodeToString(in),
+			Scalar:      scalarStrs(s),
+			Canonical:   s.IsCanonical(),
+			OutputLEHex: scalarHex(s),
+		})
+	}
+
+	return v
+}
+
+func buildSchnorr(r *rng) schnorrVectors {
+	v := schnorrVectors{
+		SignatureBytes: txtypes.SignatureLength,
+		PubKeyBytes:    txtypes.PubKeyLength,
+	}
+
+	for i := 0; i < 16; i++ {
+		skBytes := make([]byte, 40)
+		for j := 0; j < 5; j++ {
+			w := r.next()
+			for k := 0; k < 8; k++ {
+				skBytes[j*8+k] = byte(w >> (8 * k))
+			}
+		}
+		sk := curve.ScalarElementFromLittleEndianBytes(skBytes)
+		pk := schnorr.SchnorrPkFromSk(sk)
+
+		// Message: a small field-element vector, hashed the way the tx layer hashes.
+		msgLen := 4 + (i % 12)
+		msg := make([]g.GoldilocksField, msgLen)
+		for j := range msg {
+			msg[j] = r.nextF()
+		}
+		hashed := p2.HashToQuinticExtension(msg)
+
+		// Deterministic nonce so the vector is reproducible. Production signing
+		// samples k randomly; SchnorrSignHashedMessage2 lets us pin it.
+		kBytes := make([]byte, 40)
+		for j := 0; j < 5; j++ {
+			w := r.next()
+			for k := 0; k < 8; k++ {
+				kBytes[j*8+k] = byte(w >> (8 * k))
+			}
+		}
+		k := curve.ScalarElementFromLittleEndianBytes(kBytes)
+
+		sig := schnorr.SchnorrSignHashedMessage2(hashed, sk, k)
+
+		v.Cases = append(v.Cases, schnorrCase{
+			PrivateKeyLEHex: scalarHex(sk),
+			PublicKey:       fp5Strs(pk),
+			PublicKeyLEHex:  fp5Hex(pk),
+			MessageElems:    fsStrs(msg),
+			HashedMsg:       fp5Strs(hashed),
+			HashedMsgLEHex:  fp5Hex(hashed),
+			NonceKLEHex:     scalarHex(k),
+			SigS:            scalarStrs(sig.S),
+			SigE:            scalarStrs(sig.E),
+			SigBytesHex:     hex.EncodeToString(sig.ToBytes()),
+			Valid:           schnorr.IsSchnorrSignatureValid(pk, hashed, sig),
+			Canonical:       sig.IsCanonical(),
+		})
+	}
+
+	// Negative cases — verification must reject these.
+	base := v.Cases[0]
+	tamperedSig, _ := hex.DecodeString(base.SigBytesHex)
+	tamperedSig[0] ^= 0x01
+	pkBytes, _ := hex.DecodeString(base.PublicKeyLEHex)
+	msgBytes, _ := hex.DecodeString(base.HashedMsgLEHex)
+
+	tamperedMsg := append([]byte(nil), msgBytes...)
+	tamperedMsg[0] ^= 0x01
+
+	origSig, _ := hex.DecodeString(base.SigBytesHex)
+
+	negs := []struct {
+		desc string
+		pk   []byte
+		msg  []byte
+		sig  []byte
+	}{
+		{"signature byte flipped", pkBytes, msgBytes, tamperedSig},
+		{"message byte flipped", pkBytes, tamperedMsg, origSig},
+		{"wrong public key", func() []byte { b := append([]byte(nil), pkBytes...); b[0] ^= 0x01; return b }(), msgBytes, origSig},
+	}
+
+	for _, n := range negs {
+		valid := schnorr.Validate(n.pk, n.msg, n.sig) == nil
+		v.Negative = append(v.Negative, schnorrNegCase{
+			Description:    n.desc,
+			PublicKeyLEHex: hex.EncodeToString(n.pk),
+			HashedMsgLEHex: hex.EncodeToString(n.msg),
+			SignatureHex:   hex.EncodeToString(n.sig),
+			Valid:          valid,
+		})
+	}
+
+	return v
+}
+
+const oracleChainID uint32 = 304
+
+func buildTx(r *rng) txVectors {
+	v := txVectors{ChainID: oracleChainID}
+
+	// --- attribute aggregation ------------------------------------------------
+	attrSets := []txtypes.L2TxAttributes{
+		{},
+		{txtypes.AttributeTypeSkipTxNonce: 1},
+		{txtypes.AttributeTypeIntegratorAccountIndex: 12345},
+		{
+			txtypes.AttributeTypeIntegratorAccountIndex: 777,
+			txtypes.AttributeTypeIntegratorTakerFee:     1000,
+			txtypes.AttributeTypeIntegratorMakerFee:     500,
+		},
+		{
+			txtypes.AttributeTypeSelfTradeBehaviorMode: txtypes.SelfTradeBehaviorCancelBoth,
+			txtypes.AttributeTypeSelfTradeEqualityMode: txtypes.SelfTradeEqualityMasterAccountIndex,
+		},
+		{txtypes.AttributeTypeCancelAllMarketIndex: 3},
+	}
+
+	for _, attrs := range attrSets {
+		inputHash := p2.HashToQuinticExtension([]g.GoldilocksField{
+			g.GoldilocksField(oracleChainID), 1, 2, 3, 4,
+		})
+		aggregated, err := attrs.AggregateTxHash(inputHash)
+		if err != nil {
+			panic(err)
+		}
+		attrHash, err := attrs.Hash()
+		if err != nil {
+			panic(err)
+		}
+		m := make(map[string]int, len(attrs))
+		for k, val := range attrs {
+			m[fmt.Sprintf("%d", k)] = val
+		}
+		v.Attributes = append(v.Attributes, attrCase{
+			Attributes:    m,
+			IsEmpty:       attrs.IsEmpty(),
+			AttrHash:      fp5Strs(attrHash),
+			InputTxHash:   fp5Strs(inputHash),
+			AggregatedHex: hex.EncodeToString(aggregated),
+		})
+	}
+
+	// --- signed transaction hashes -------------------------------------------
+	skBytes := make([]byte, 40)
+	for j := 0; j < 5; j++ {
+		w := r.next()
+		for k := 0; k < 8; k++ {
+			skBytes[j*8+k] = byte(w >> (8 * k))
+		}
+	}
+	sk := curve.ScalarElementFromLittleEndianBytes(skBytes)
+
+	kBytes := make([]byte, 40)
+	for j := 0; j < 5; j++ {
+		w := r.next()
+		for k := 0; k < 8; k++ {
+			kBytes[j*8+k] = byte(w >> (8 * k))
+		}
+	}
+	nonceK := curve.ScalarElementFromLittleEndianBytes(kBytes)
+
+	sign := func(msgHash []byte) string {
+		e, err := gFp5.FromCanonicalLittleEndianBytes(msgHash)
+		if err != nil {
+			panic(err)
+		}
+		return hex.EncodeToString(schnorr.SchnorrSignHashedMessage2(e, sk, nonceK).ToBytes())
+	}
+
+	emit := func(name string, txType uint8, fields map[string]string, attrs txtypes.L2TxAttributes, msgHash []byte) {
+		m := make(map[string]int, len(attrs))
+		for k, val := range attrs {
+			m[fmt.Sprintf("%d", k)] = val
+		}
+		v.Txs = append(v.Txs, txHashCase{
+			Name:        name,
+			TxType:      txType,
+			Fields:      fields,
+			Attributes:  m,
+			MsgHashHex:  hex.EncodeToString(msgHash),
+			SigBytesHex: sign(msgHash),
+			NonceKLEHex: scalarHex(nonceK),
+		})
+	}
+
+	// L2CreateOrder — limit, market, stop-loss, and with attributes.
+	orderVariants := []struct {
+		name  string
+		order txtypes.OrderInfo
+		attrs txtypes.L2TxAttributes
+	}{
+		{
+			name: "create_order/limit_gtt_buy",
+			order: txtypes.OrderInfo{
+				MarketIndex: 1, ClientOrderIndex: 100, BaseAmount: 1_000_000, Price: 250_000,
+				IsAsk: 0, Type: txtypes.LimitOrder, TimeInForce: txtypes.GoodTillTime,
+				ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: 1893456000000,
+			},
+			attrs: txtypes.L2TxAttributes{},
+		},
+		{
+			name: "create_order/market_ioc_sell",
+			order: txtypes.OrderInfo{
+				MarketIndex: 0, ClientOrderIndex: 1, BaseAmount: 500, Price: 4_294_967_295,
+				IsAsk: 1, Type: txtypes.MarketOrder, TimeInForce: txtypes.ImmediateOrCancel,
+				ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: txtypes.NilOrderExpiry,
+			},
+			attrs: txtypes.L2TxAttributes{},
+		},
+		{
+			name: "create_order/stop_loss_limit_reduce_only",
+			order: txtypes.OrderInfo{
+				MarketIndex: 2, ClientOrderIndex: 987654321, BaseAmount: 42, Price: 1,
+				IsAsk: 1, Type: txtypes.StopLossLimitOrder, TimeInForce: txtypes.GoodTillTime,
+				ReduceOnly: 1, TriggerPrice: 123456, OrderExpiry: 1893456000000,
+			},
+			attrs: txtypes.L2TxAttributes{},
+		},
+		{
+			name: "create_order/spot_post_only",
+			order: txtypes.OrderInfo{
+				MarketIndex: txtypes.MinSpotMarketIndex, ClientOrderIndex: txtypes.NilClientOrderIndex,
+				BaseAmount: 7_777_777, Price: 999_999, IsAsk: 0, Type: txtypes.LimitOrder,
+				TimeInForce: txtypes.PostOnly, ReduceOnly: 0,
+				TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: 1893456000000,
+			},
+			attrs: txtypes.L2TxAttributes{},
+		},
+		{
+			name: "create_order/with_integrator_attributes",
+			order: txtypes.OrderInfo{
+				MarketIndex: 1, ClientOrderIndex: 55, BaseAmount: 1000, Price: 2000,
+				IsAsk: 0, Type: txtypes.LimitOrder, TimeInForce: txtypes.GoodTillTime,
+				ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: 1893456000000,
+			},
+			attrs: txtypes.L2TxAttributes{
+				txtypes.AttributeTypeIntegratorAccountIndex: 4242,
+				txtypes.AttributeTypeIntegratorTakerFee:     250,
+				txtypes.AttributeTypeIntegratorMakerFee:     100,
+			},
+		},
+		{
+			name: "create_order/with_skip_nonce",
+			order: txtypes.OrderInfo{
+				MarketIndex: 1, ClientOrderIndex: 56, BaseAmount: 1000, Price: 2000,
+				IsAsk: 1, Type: txtypes.LimitOrder, TimeInForce: txtypes.GoodTillTime,
+				ReduceOnly: 0, TriggerPrice: txtypes.NilOrderTriggerPrice, OrderExpiry: 1893456000000,
+			},
+			attrs: txtypes.L2TxAttributes{txtypes.AttributeTypeSkipTxNonce: 1},
+		},
+	}
+
+	for i, ov := range orderVariants {
+		o := ov.order
+		tx := &txtypes.L2CreateOrderTxInfo{
+			AccountIndex:   1,
+			ApiKeyIndex:    0,
+			OrderInfo:      &o,
+			ExpiredAt:      1893456000000,
+			Nonce:          int64(42 + i),
+			L2TxAttributes: ov.attrs,
+		}
+		if err := tx.Validate(); err != nil {
+			panic(fmt.Sprintf("%s: validate: %v", ov.name, err))
+		}
+		h, err := tx.Hash(oracleChainID)
+		if err != nil {
+			panic(err)
+		}
+		fields := map[string]string{
+			"AccountIndex":     fmt.Sprintf("%d", tx.AccountIndex),
+			"ApiKeyIndex":      fmt.Sprintf("%d", tx.ApiKeyIndex),
+			"MarketIndex":      fmt.Sprintf("%d", o.MarketIndex),
+			"ClientOrderIndex": fmt.Sprintf("%d", o.ClientOrderIndex),
+			"BaseAmount":       fmt.Sprintf("%d", o.BaseAmount),
+			"Price":            fmt.Sprintf("%d", o.Price),
+			"IsAsk":            fmt.Sprintf("%d", o.IsAsk),
+			"Type":             fmt.Sprintf("%d", o.Type),
+			"TimeInForce":      fmt.Sprintf("%d", o.TimeInForce),
+			"ReduceOnly":       fmt.Sprintf("%d", o.ReduceOnly),
+			"TriggerPrice":     fmt.Sprintf("%d", o.TriggerPrice),
+			"OrderExpiry":      fmt.Sprintf("%d", o.OrderExpiry),
+			"ExpiredAt":        fmt.Sprintf("%d", tx.ExpiredAt),
+			"Nonce":            fmt.Sprintf("%d", tx.Nonce),
+		}
+		emit(ov.name, txtypes.TxTypeL2CreateOrder, fields, ov.attrs, h)
+	}
+
+	// L2CancelOrder
+	for i, idx := range []int64{1, txtypes.MaxClientOrderIndex, txtypes.MinOrderIndex} {
+		tx := &txtypes.L2CancelOrderTxInfo{
+			AccountIndex: 1,
+			ApiKeyIndex:  0,
+			MarketIndex:  int16(i),
+			Index:        idx,
+			ExpiredAt:    1893456000000,
+			Nonce:        int64(7 + i),
+		}
+		if err := tx.Validate(); err != nil {
+			panic(fmt.Sprintf("cancel_order[%d]: validate: %v", i, err))
+		}
+		h, err := tx.Hash(oracleChainID)
+		if err != nil {
+			panic(err)
+		}
+		emit(fmt.Sprintf("cancel_order/%d", i), txtypes.TxTypeL2CancelOrder, map[string]string{
+			"AccountIndex": "1",
+			"ApiKeyIndex":  "0",
+			"MarketIndex":  fmt.Sprintf("%d", i),
+			"Index":        fmt.Sprintf("%d", idx),
+			"ExpiredAt":    "1893456000000",
+			"Nonce":        fmt.Sprintf("%d", 7+i),
+		}, txtypes.L2TxAttributes{}, h)
+	}
+
+	return v
+}
+
+// ---------------------------------------------------------------------------
+
+func writeJSON(dir, name string, v any) error {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	b = append(b, '\n')
+	path := filepath.Join(dir, name)
+	if err := os.WriteFile(path, b, 0o644); err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "wrote %s (%d bytes)\n", path, len(b))
+	return nil
+}
+
+func main() {
+	out := flag.String("out", "../vectors", "directory to write vector JSON into")
+	seed := flag.Uint64("seed", 0x1337_c0de_5eed_0001, "deterministic seed")
+	flag.Parse()
+
+	if err := os.MkdirAll(*out, 0o755); err != nil {
+		panic(err)
+	}
+
+	groups := []struct {
+		file string
+		make func() any
+	}{
+		{"goldilocks.json", func() any { return buildGoldilocks(newRNG(*seed + 1)) }},
+		{"gfp5.json", func() any { return buildFp5(newRNG(*seed + 2)) }},
+		{"poseidon2.json", func() any { return buildPoseidon(newRNG(*seed + 3)) }},
+		{"curve.json", func() any { return buildCurve(newRNG(*seed + 4)) }},
+		{"schnorr.json", func() any { return buildSchnorr(newRNG(*seed + 5)) }},
+		{"tx.json", func() any { return buildTx(newRNG(*seed + 6)) }},
+	}
+
+	for _, grp := range groups {
+		if err := writeJSON(*out, grp.file, grp.make()); err != nil {
+			panic(err)
+		}
+	}
+}
