@@ -191,12 +191,30 @@ type fp5Case struct {
 	ALEBytesHex string   `json:"aLeBytesHex"`
 }
 
+// poseidon2Constants is the full parameter set of the permutation, dumped
+// mechanically. Transcribing 8x12 external constants, 22 internal constants and
+// a 12-element diagonal by hand is a guaranteed source of a silent one-digit
+// error, so the TypeScript constants module is generated from this file.
+type poseidon2Constants struct {
+	Width             int        `json:"width"`
+	Rate              int        `json:"rate"`
+	Out               int        `json:"out"`
+	SBoxDegree        int        `json:"sboxDegree"`
+	RoundsF           int        `json:"roundsF"`
+	RoundsFHalf       int        `json:"roundsFHalf"`
+	RoundsP           int        `json:"roundsP"`
+	ExternalConstants [][]string `json:"externalConstants"`
+	InternalConstants []string   `json:"internalConstants"`
+	MatrixDiag12      []string   `json:"matrixDiag12"`
+}
+
 type poseidonVectors struct {
-	Width         int               `json:"width"`
-	Permutations  []permutationCase `json:"permutations"`
-	HashToFp5     []hashToFp5Case   `json:"hashToQuinticExtension"`
-	HashNoPad     []hashNoPadCase   `json:"hashNoPad"`
-	HashNToMNoPad []hashNToMCase    `json:"hashNToMNoPad"`
+	Constants     poseidon2Constants `json:"constants"`
+	Width         int                `json:"width"`
+	Permutations  []permutationCase  `json:"permutations"`
+	HashToFp5     []hashToFp5Case    `json:"hashToQuinticExtension"`
+	HashNoPad     []hashNoPadCase    `json:"hashNoPad"`
+	HashNToMNoPad []hashNToMCase     `json:"hashNToMNoPad"`
 }
 
 type permutationCase struct {
@@ -491,6 +509,28 @@ func buildFp5(r *rng) fp5Vectors {
 
 func buildPoseidon(r *rng) poseidonVectors {
 	v := poseidonVectors{Width: p2.WIDTH}
+
+	ext := make([][]string, p2.ROUNDS_F)
+	for r := 0; r < p2.ROUNDS_F; r++ {
+		row := make([]string, p2.WIDTH)
+		for i := 0; i < p2.WIDTH; i++ {
+			row[i] = fStr(p2.EXTERNAL_CONSTANTS[r][i])
+		}
+		ext[r] = row
+	}
+	internal := make([]string, p2.ROUNDS_P)
+	for r := 0; r < p2.ROUNDS_P; r++ {
+		internal[r] = fStr(p2.INTERNAL_CONSTANTS[r])
+	}
+	diag := make([]string, p2.WIDTH)
+	for i := 0; i < p2.WIDTH; i++ {
+		diag[i] = fStr(p2.MATRIX_DIAG_12_U64[i])
+	}
+	v.Constants = poseidon2Constants{
+		Width: p2.WIDTH, Rate: p2.RATE, Out: p2.OUT, SBoxDegree: p2.D,
+		RoundsF: p2.ROUNDS_F, RoundsFHalf: p2.ROUNDS_F_HALF, RoundsP: p2.ROUNDS_P,
+		ExternalConstants: ext, InternalConstants: internal, MatrixDiag12: diag,
+	}
 
 	// Permutation: all-zero state, counting state, then pseudo-random states.
 	states := make([][p2.WIDTH]g.GoldilocksField, 0, 24)
