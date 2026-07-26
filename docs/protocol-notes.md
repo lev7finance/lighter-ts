@@ -368,12 +368,48 @@ Neither reference SDK documents any of these — Go defines only `CodeOK = 200` 
 
 ### 8.2 A non-JSON body is normal
 
-Cloudflare sits in front of the API. Unknown paths and some blocked requests return an HTML
-interstitial with HTTP 403 that never reaches the API. Calling `.json()` unconditionally throws a
-`SyntaxError` that tells the caller nothing. Detect the content type and raise a distinct transport
-error.
+**CloudFront** sits in front of the API (not Cloudflare — corrected after reading the response
+headers: `Server: CloudFront`, `X-Amz-Cf-Id`, `Via: … cloudfront.net`).
 
-Requests must send an explicit browser-like `User-Agent`; some paths 403 without one.
+Some paths are answered by the CDN before reaching the API. `/api/v1/currentHeight` returns HTTP 403
+with an HTML body (`X-Cache: FunctionGeneratedResponse from cloudfront`). Calling `.json()`
+unconditionally throws a `SyntaxError` that tells the caller nothing. Detect the content type and
+raise a distinct transport error.
+
+### 8.3 Geo-restriction — code 20558 — blocks writes and the WebSocket, but not reads
+
+The most confusing failure a developer using this SDK can hit, and worth handling explicitly:
+
+```
+{"code": 20558,
+ "message": "You are accessing Lighter from a restricted jurisdiction. For more information,
+             see the https://lighter.xyz/terms"}
+```
+
+It arrives as **HTTP 400**, which makes it look like a validation error. It is not. Measured from a
+restricted location:
+
+| Endpoint | Result |
+| --- | --- |
+| `/api/v1/orderBooks` | **200** — public reads are allowed |
+| `/api/v1/nextNonce` | **200** |
+| `/api/v1/candles`, `/recentTrades`, `/orderBookOrders` | **200** |
+| `/api/v1/sendTx` | **400, code 20558** — transaction submission blocked |
+| `/stream` (WebSocket) | **400, code 20558** — the upgrade never happens |
+
+So a developer in a restricted jurisdiction sees every read succeed and every write fail with what
+looks like a parameter error, and the WebSocket fails with a bare `Expected 101 status code` that
+mentions nothing about jurisdiction. Hours of debugging the wrong thing.
+
+**Requirements this places on the SDK:**
+
+- `20558` maps to its own error class with the jurisdiction message surfaced verbatim. It must never
+  be flattened into a generic validation error.
+- The WS layer must attempt a plain HTTPS `GET` on the stream URL when the upgrade fails, and
+  surface the resulting body — otherwise the real reason is invisible, since a failed upgrade
+  carries no payload.
+- Anything requiring live writes or live WS cannot run in CI from an arbitrary location. Say so in
+  the test setup rather than letting it look like flakiness.
 
 ### 8.3 There is no reachable OpenAPI document
 
