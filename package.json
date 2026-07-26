@@ -1,0 +1,24 @@
+{
+  "name": "lighter-ts",
+  "version": "0.0.0",
+  "description": "Pure-TypeScript SDK for the Lighter exchange. Zero native dependencies, zero runtime dependencies. Runs on Bun, Node, Deno, Cloudflare Workers and browsers.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "bun@1.3.0",
+  "engines": { "node": ">=20.11.0" },
+  "repository": { "type": "git", "url": "git+https://github.com/lev7finance/lighter-ts.git" },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.bundler.json --noEmit",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "bun test",
+    "check:deps": "bun run scripts/check-no-deps.ts",
+    "vectors": "cd conformance/oracle && go run . -out ../vectors",
+    "ledger": "python3 scripts/unit-ledger.py"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "devDependencies": { "typescript": "^5.7.0" },
+  "publishConfig": { "access": "public" }
+}
