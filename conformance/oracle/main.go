@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"math/big"
 	"os"
 	"path/filepath"
 
@@ -262,10 +263,16 @@ type curveCase struct {
 }
 
 type scalarCase struct {
-	InputLEHex  string   `json:"inputLeHex"`
-	Scalar      []string `json:"scalar"`
-	Canonical   bool     `json:"isCanonical"`
-	OutputLEHex string   `json:"outputLeHex"`
+	InputLEHex string   `json:"inputLeHex"`
+	Scalar     []string `json:"scalar"`
+	// InputInRange is the interesting bit: whether the raw 40 bytes were already
+	// below the group order, i.e. whether decoding had to reduce. (Asking whether
+	// the DECODED scalar is canonical is tautological — the decoder always
+	// reduces, so it is true on every row and carries no information.)
+	InputInRange bool `json:"inputWasInRange"`
+	// Reduced records that decoding changed the value.
+	Reduced     bool   `json:"wasReduced"`
+	OutputLEHex string `json:"outputLeHex"`
 }
 
 type schnorrVectors struct {
@@ -737,11 +744,21 @@ func buildCurve(r *rng) curveVectors {
 
 	for _, in := range rawInputs {
 		s := curve.ScalarElementFromLittleEndianBytes(in)
+		// Interpret the raw bytes as a little-endian 320-bit integer and compare
+		// against the group order, so the vector records whether the DECODER had
+		// work to do rather than restating that its output is canonical.
+		raw := new(big.Int)
+		for i := len(in) - 1; i >= 0; i-- {
+			raw.Lsh(raw, 8)
+			raw.Or(raw, big.NewInt(int64(in[i])))
+		}
+		inRange := raw.Cmp(curve.ORDER) < 0
 		v.ScalarCases = append(v.ScalarCases, scalarCase{
-			InputLEHex:  hex.EncodeToString(in),
-			Scalar:      scalarStrs(s),
-			Canonical:   s.IsCanonical(),
-			OutputLEHex: scalarHex(s),
+			InputLEHex:   hex.EncodeToString(in),
+			Scalar:       scalarStrs(s),
+			InputInRange: inRange,
+			Reduced:      !inRange,
+			OutputLEHex:  scalarHex(s),
 		})
 	}
 

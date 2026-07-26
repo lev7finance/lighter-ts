@@ -685,7 +685,8 @@
         "0",
         "0"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000"
     },
     {
@@ -697,7 +698,8 @@
         "0",
         "0"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "01000000000000000000000000000000000000000000000000000000000000000000000000000000"
     },
     {
@@ -709,7 +711,8 @@
         "128849018835",
         "21474836465"
       ],
-      "isCanonical": true,
+      "inputWasInRange": false,
+      "wasReduced": true,
       "outputLeHex": "3d00e8d6d24ce02fc6beb6518c47ef2e8cf38f6032000000d3ffffff1d000000f1ffffff04000000"
     },
     {
@@ -721,7 +724,8 @@
         "6156814697129210501",
         "9120616289479989250"
       ],
-      "isCanonical": true,
+      "inputWasInRange": false,
+      "wasReduced": true,
       "outputLeHex": "c8138ccfa910d134a6dc69f3205d427f83fafc5585c0798b85724aca586671550298183331f0927e"
     },
     {
@@ -733,7 +737,8 @@
         "9546026420272008156",
         "1908920423127678934"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "451a0c740e16017531816148f529a4d7da797c5cfeeb4c11dc8bcec4734c7a84d67f03cd02d97d1a"
     },
     {
@@ -745,7 +750,8 @@
         "12552199349328956518",
         "3267020096670251099"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "dc66b9f397b7cbdda88650b33f89838a53fb94b4098025e7664ca4c6cd5e32ae5bb817f077c9562d"
     },
     {
@@ -757,7 +763,8 @@
         "10461958668998158995",
         "1043964199116218610"
       ],
-      "isCanonical": true,
+      "inputWasInRange": false,
+      "wasReduced": true,
       "outputLeHex": "33dc8613f605274a6c063eca4e570190a53cf4d6f67eccaa932a74c8fa573091f2208c6ee8e77c0e"
     },
     {
@@ -769,7 +776,8 @@
         "6768627419003118663",
         "2825253065634812925"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "ee3a9a8ffb1706174785bdef927b9503f559eea99afc4bd94764a69ec6feee5dfd13bfc1b1503527"
     },
     {
@@ -781,7 +789,8 @@
         "4369919182361620184",
         "4569582757081425544"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "ec3ea71ee5cf149cb579c3d42b2aa582990cbd8fa9a77d3ed86ed4f15712a53c88a6968f4e6b6a3f"
     },
     {
@@ -793,7 +802,8 @@
         "8543935666727229209",
         "6908465044044757089"
       ],
-      "isCanonical": true,
+      "inputWasInRange": false,
+      "wasReduced": true,
       "outputLeHex": "3ea20d98588b0c7d259770d315a1a47e0152be6d44dedf361917119f3828927661b87ddd5accdf5f"
     },
     {
@@ -805,7 +815,8 @@
         "14989649082487643575",
         "2141707954323875989"
       ],
-      "isCanonical": true,
+      "inputWasInRange": true,
+      "wasReduced": false,
       "outputLeHex": "60ee13d731c4803e5d23b3df3f78d007c7b3791dfcc400b4b79d6f056cee05d095681a8609e0b81d"
     }
   ]
