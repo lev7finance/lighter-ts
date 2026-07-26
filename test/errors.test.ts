@@ -119,7 +119,7 @@ describe("each class sets kind and name", () => {
   for (const [err, kind, name] of cases) {
     test(`${name} → kind "${kind}"`, () => {
       expect(err._tag).toBe("LighterError");
-      expect(err.kind).toBe(kind);
+      expect<string>(err.kind).toBe(kind);
       expect(err.name).toBe(name);
       expect(isLighterError(err)).toBe(true);
     });

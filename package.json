@@ -6,8 +6,13 @@
   "type": "module",
   "sideEffects": false,
   "packageManager": "bun@1.3.0",
-  "engines": { "node": ">=20.11.0" },
-  "repository": { "type": "git", "url": "git+https://github.com/lev7finance/lighter-ts.git" },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lev7finance/lighter-ts.git"
+  },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.bundler.json --noEmit",
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
@@ -19,6 +24,12 @@
   "dependencies": {},
   "peerDependencies": {},
   "optionalDependencies": {},
-  "devDependencies": { "typescript": "^5.7.0" },
-  "publishConfig": { "access": "public" }
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "bun-types": "^1.3.14",
+    "typescript": "^5.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

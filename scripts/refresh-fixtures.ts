@@ -18,7 +18,10 @@
 
 const argv = new Map<string, string>();
 for (let i = 2; i < process.argv.length; i += 2) {
-  argv.set(process.argv[i].replace(/^--/, ''), process.argv[i + 1]);
+  const flag = process.argv[i];
+  const value = process.argv[i + 1];
+  if (flag === undefined || value === undefined) break;
+  argv.set(flag.replace(/^--/, ''), value);
 }
 
 const BASE = argv.get('base') ?? 'https://mainnet.zklighter.elliot.ai';
@@ -113,7 +116,7 @@ for (const c of CASES) {
       status: res.status,
       contentType: ctype,
       bodyIsJson: parsed,
-      apiCode: parsed && body && typeof body === 'object' ? (body as Record<string, unknown>).code ?? null : null,
+      apiCode: parsed && body && typeof body === 'object' ? (body as Record<string, unknown>)['code'] ?? null : null,
       truncated,
       body: value,
     };

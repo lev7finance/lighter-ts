@@ -200,20 +200,20 @@ describe("algebraic identities the values must satisfy", () => {
   });
 
   test("market index families are disjoint and NIL sits between them", () => {
-    expect(C.MAX_PERPS_MARKET_INDEX).toBe(2 ** 8 - 2);
-    expect(C.MIN_SPOT_MARKET_INDEX).toBe(2 ** 11);
-    expect(C.MAX_SPOT_MARKET_INDEX).toBe(2 ** 12 - 2);
+    expect<number>(C.MAX_PERPS_MARKET_INDEX).toBe(2 ** 8 - 2);
+    expect<number>(C.MIN_SPOT_MARKET_INDEX).toBe(2 ** 11);
+    expect<number>(C.MAX_SPOT_MARKET_INDEX).toBe(2 ** 12 - 2);
     expect(C.NIL_MARKET_INDEX).toBeGreaterThan(C.MAX_PERPS_MARKET_INDEX);
     expect(C.NIL_MARKET_INDEX).toBeLessThan(C.MIN_SPOT_MARKET_INDEX);
   });
 
   test("NIL_API_KEY_INDEX is one past the general maximum and still inside uint8", () => {
-    expect(C.NIL_API_KEY_INDEX).toBe(C.MAX_API_KEY_INDEX + 1);
+    expect<number>(C.NIL_API_KEY_INDEX).toBe(C.MAX_API_KEY_INDEX + 1);
     expect(C.NIL_API_KEY_INDEX).toBeLessThanOrEqual(255);
   });
 
   test("NIL_STRATEGY_INDEX is one past the maximum and still inside uint8", () => {
-    expect(C.NIL_STRATEGY_INDEX).toBe(C.MAX_STRATEGY_INDEX + 1);
+    expect<number>(C.NIL_STRATEGY_INDEX).toBe(C.MAX_STRATEGY_INDEX + 1);
     expect(C.NIL_STRATEGY_INDEX).toBeLessThanOrEqual(255);
   });
 
@@ -244,8 +244,8 @@ describe("algebraic identities the values must satisfy", () => {
   });
 
   test("prices and trigger prices are full uint32", () => {
-    expect(C.MAX_ORDER_PRICE).toBe(2 ** 32 - 1);
-    expect(C.MAX_ORDER_TRIGGER_PRICE).toBe(2 ** 32 - 1);
+    expect<number>(C.MAX_ORDER_PRICE).toBe(2 ** 32 - 1);
+    expect<number>(C.MAX_ORDER_TRIGGER_PRICE).toBe(2 ** 32 - 1);
   });
 
   test("timestamps and order nonces are 2^48 - 1", () => {
@@ -284,7 +284,7 @@ describe("algebraic identities the values must satisfy", () => {
     expect(C.PUBKEY_LENGTH).toBe(40);
     expect(C.HASH_LENGTH).toBe(40);
     expect(C.PRIVATE_KEY_LENGTH).toBe(40);
-    expect(C.SIGNATURE_LENGTH).toBe(C.PUBKEY_LENGTH + C.HASH_LENGTH);
+    expect<number>(C.SIGNATURE_LENGTH).toBe(C.PUBKEY_LENGTH + C.HASH_LENGTH);
   });
 });
 

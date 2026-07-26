@@ -18,7 +18,10 @@
 
 const args = new Map<string, string>();
 for (let i = 2; i < process.argv.length; i += 2) {
-  args.set(process.argv[i].replace(/^--/, ''), process.argv[i + 1]);
+  const flag = process.argv[i];
+  const value = process.argv[i + 1];
+  if (flag === undefined || value === undefined) break;
+  args.set(flag.replace(/^--/, ''), value);
 }
 
 const URL_ = args.get('url') ?? 'wss://mainnet.zklighter.elliot.ai/stream';
@@ -49,8 +52,8 @@ const pingTimes: number[] = [];
 
 function record(direction: 'recv' | 'send', raw: unknown): void {
   const obj = raw as Record<string, unknown> | null;
-  const type = typeof obj?.type === 'string' ? obj.type : '<no-type>';
-  const channel = typeof obj?.channel === 'string' ? obj.channel : undefined;
+  const type = typeof obj?.['type'] === 'string' ? (obj['type'] as string) : '<no-type>';
+  const channel = typeof obj?.['channel'] === 'string' ? (obj['channel'] as string) : undefined;
 
   // Cap per (type, channel) so a busy book does not drown out rare frames,
   // while still capturing enough updates to study the delta format.
@@ -59,7 +62,9 @@ function record(direction: 'recv' | 'send', raw: unknown): void {
   if (n >= MAX_PER_TYPE) return;
   perType.set(key, n + 1);
 
-  frames.push({ atMs: Date.now() - start, direction, type, channel, raw });
+  const frame: Frame = { atMs: Date.now() - start, direction, type, raw };
+  if (channel !== undefined) frame.channel = channel;
+  frames.push(frame);
 }
 
 console.error(`connecting to ${URL_}`);
@@ -83,7 +88,7 @@ ws.addEventListener('message', (ev: MessageEvent) => {
   record('recv', parsed);
   const msg = parsed as Record<string, unknown>;
 
-  if (msg.type === 'connected') {
+  if (msg['type'] === 'connected') {
     for (const channel of CHANNELS) {
       const frame = { type: 'subscribe', channel };
       record('send', frame);
@@ -93,7 +98,7 @@ ws.addEventListener('message', (ev: MessageEvent) => {
     return;
   }
 
-  if (msg.type === 'ping') {
+  if (msg['type'] === 'ping') {
     pingTimes.push(Date.now() - start);
     const pong = { type: 'pong' };
     record('send', pong);
@@ -118,7 +123,7 @@ setTimeout(async () => {
   const byType: Record<string, number> = {};
   for (const f of frames) byType[`${f.direction}/${f.type}`] = (byType[`${f.direction}/${f.type}`] ?? 0) + 1;
 
-  const pingGaps = pingTimes.slice(1).map((t, i) => t - pingTimes[i]);
+  const pingGaps = pingTimes.slice(1).map((t, i) => t - (pingTimes[i] ?? 0));
 
   const out = {
     capturedFromUrl: URL_,
