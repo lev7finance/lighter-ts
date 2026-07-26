@@ -16,6 +16,10 @@
  * what the transport layer has to classify correctly.
  */
 
+// Marks this file as a module. Without a top-level import or export, `bundler`
+// resolution treats it as a script and its top-level consts collide with DOM globals.
+export {};
+
 const argv = new Map<string, string>();
 for (let i = 2; i < process.argv.length; i += 2) {
   const flag = process.argv[i];

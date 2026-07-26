@@ -56,7 +56,10 @@ async function* walk(dir: string): AsyncGenerator<string> {
 let scanned = 0;
 for await (const file of walk('src')) {
   scanned++;
-  const text = await readFile(file, 'utf8');
+  const raw = await readFile(file, 'utf8');
+  // Strip block comments before scanning. Prose legitimately contains words like
+  // "processed" and "buffered"; only real code should be able to trip this.
+  const text = raw.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
   const lines = text.split('\n');
 
   lines.forEach((line, i) => {
@@ -67,8 +70,11 @@ for await (const file of walk('src')) {
       failures.push(`${at}  imports a Node built-in: ${line.trim()}`);
     }
     for (const g of BANNED_GLOBALS) {
-      // Word-boundary match so `processOrder` and `bufferSize` do not trip it.
-      const re = new RegExp(`(^|[^\\w.$])${g.replace(/[(]/g, '\\(')}`);
+      // Boundaries on BOTH sides, so `processOrder`, `processed` and `bufferSize`
+      // do not trip it. `require(` carries its own trailing boundary.
+      const body = g.replace(/[(]/g, '\\(');
+      const trailing = g.endsWith('(') ? '' : '\\b';
+      const re = new RegExp(`(^|[^\\w.$])${body}${trailing}`);
       if (re.test(code)) {
         failures.push(`${at}  uses the Node global \`${g.replace('(', '')}\`: ${line.trim()}`);
       }
