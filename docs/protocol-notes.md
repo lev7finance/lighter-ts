@@ -20,8 +20,16 @@ true residue. `ToCanonicalUint64` applies the final conditional subtraction, and
 serialization path calls it. The decoder, `FromCanonicalLittleEndianBytesF`, performs **no** range
 validation at all — a limb `>= ORDER` decodes to a non-canonical element rather than an error.
 
-Proof it is observable: the reference encodes the curve generator as
-`[18446744069414584325, 0, 0, 0, 0]`. That first limb is `ORDER + 4`. Canonically it is `4`.
+Proof it is observable, and that it reaches the key path rather than some internal corner —
+measured directly:
+
+```
+GENERATOR_WEIERSTRASS.Encode()   raw=[ORDER+4, ORDER, ORDER, ORDER, ORDER]   canonical=[4, 0, 0, 0, 0]
+SchnorrPkFromSk(1)               raw=[ORDER+4, ORDER, ORDER, ORDER, ORDER]   canonical=[4, 0, 0, 0, 0]
+```
+
+Public-key derivation itself returns limbs above the modulus. Both views serialize to the same
+bytes, because serialization canonicalizes.
 
 **Decision:** `lighter-ts` reduces fully on every operation. All expected values in
 `conformance/vectors/` are canonical. This is safe because every value that escapes the field layer
@@ -130,9 +138,19 @@ Every other field is absorbed as a single element — **including fields that ex
 `BaseAmount` reaches `2^48 - 1` and `OrderExpiry` is a millisecond timestamp, and neither is split.
 Deriving the split from a value's magnitude produces wrong hashes for large orders.
 
-`L2UpdateMargin.USDCAmount` is the only split field where a negative value survives validation
-(the validator checks `!= 0` and an upper bound, but has no lower bound), so its arithmetic shift is
-reachable and must be implemented as such.
+`L2UpdateMargin.USDCAmount` is the only split field where a negative value survives validation —
+the validator checks `!= 0` and an upper bound but has **no lower bound**, confirmed by the
+reference accepting `-1` and `-2^32`. Its arithmetic shift is therefore reachable, and the order of
+operations matters:
+
+```ts
+const lo = fromI64(x & 0xffff_ffffn);
+const hi = fromI64(x >> 32n);   // arithmetic shift, while x is STILL SIGNED
+```
+
+Normalizing to unsigned first and then shifting gives a different high half — for `x = -1` it
+yields `4294967295` where the reference produces `4294967294`. Pinned by the three
+`update_margin/negative_*` vectors.
 
 ### 3.3 Transaction hash shape
 
@@ -179,6 +197,28 @@ Parent legs must be limit or market orders; child legs must be stop-loss or take
 
 ## 5. Signing
 
+### 5.0 JavaScript `%` returns negative values — this will break signing
+
+The signature equation is `s = (k − e·sk) mod n`. In Go this is a scalar-field subtraction that
+adds `n` back on underflow. In JavaScript, `%` follows the sign of the dividend:
+
+```js
+(-1n) % n === -1n     // not n - 1
+```
+
+`k − e·sk` is negative for roughly half of all signatures, so a literal `(k - e * sk) % N` produces
+a negative scalar. Serializing that through shifts or `BigInt.asUintN(320, …)` yields a different,
+invalid scalar — and every field, hash and curve operation can be perfectly correct while signing
+still fails.
+
+```ts
+const modN = (x: bigint): bigint => { const r = x % N; return r < 0n ? r + N : r; };
+s = modN(k - modN(e * sk));
+```
+
+Use `modN` in **every** scalar constructor, subtraction, nonce parser, and private-key reduction.
+This is the single most likely way to get a correct-looking implementation that cannot sign.
+
 ### 5.1 The nonce is ours to choose
 
 The reference samples the Schnorr nonce `k` at random. `lighter-ts` defaults to
@@ -195,10 +235,54 @@ An explicit-`k` seam stays available; the conformance vectors depend on it.
 **Cloudflare Workers forbids `crypto.getRandomValues` at module scope.** Nonce generation must be
 per-call, never at module initialization.
 
+Deriving the nonce needs a PRF. **Use Poseidon2** — already implemented, already vector-pinned, and
+synchronous. Do not hand-roll SHA-256 and HMAC for this: `crypto.subtle.digest` is async and
+signing is synchronous, so a WebCrypto route forces an async signing API, and a hand-written
+SHA-256 adds a second unvalidated primitive whose failure is invisible.
+
+That invisibility is the real hazard: **a broken nonce derivation passes every signature
+conformance test.** Verification only reconstructs `R` and the challenge; it cannot observe where
+`k` came from. A nonce generator that is constant, biased, endian-swapped, or accidentally
+independent of the message produces signatures that verify perfectly and leak the private key on
+the second one. So the nonce derivation needs its own tests: fixed `(sk, msg, entropy) → k`
+vectors including all-zero entropy, same-key/different-message and different-key/same-message
+cases, an assertion that `k ∈ [1, n)`, and an explicit nonce-reuse regression demonstrating key
+recovery so the risk stays visible.
+
 ### 5.2 Signature and key encodings
 
 Signature is 80 bytes: `s` as 40 little-endian bytes, then `e` as 40 little-endian bytes. Public
 keys are 40 bytes. Message hashes are 40 bytes (one `GF(p^5)` element).
+
+### 5.2.1 Parsers reduce; they do not reject
+
+The reference's `SigFromBytes` parses both halves with the **reducing** scalar decoder, and
+`Fp5.FromCanonicalLittleEndianBytes` checks length only — it loads five raw limbs without comparing
+against `p`.
+
+So the reference **accepts** non-canonical public keys, message hashes, and signatures. Verified:
+signatures with `s + n`, `e + n`, or both re-encoded into the raw bytes all still validate
+(`conformance/vectors/schnorr.json`, `malleable`).
+
+This makes strictness a real interop decision, not a style preference — a strict parser rejects
+signatures the sequencer accepts. Split it:
+
+- **Internal arithmetic** — always canonical.
+- **Parsers on the `sign`/`verify` path** — check length exactly, then reduce.
+- **Strict parsers** — available, but explicit opt-in.
+- **Encoders** — always canonical.
+
+Canonical *arithmetic* is observationally identical to the reference. Canonical *parsing* is not.
+
+### 5.2.2 The neutral public key is a universal forgery — reject it
+
+`Decode(0)` deliberately succeeds and returns the neutral point, and the reference's verification
+does not reject it. For that public key anyone can forge: pick `s`, compute `R = [s]G`, set
+`e = H(encode(R) ‖ m)`.
+
+Reject the neutral public key in `verify`, with **no** opt-out flag. An `allowNeutralPublicKey`
+option turns a known universal forgery into a supported configuration. If bug-for-bug reference
+behaviour is ever needed for diagnostics, it belongs in a test-only function named to say so.
 
 ### 5.3 L1 signatures are injected, not implemented
 

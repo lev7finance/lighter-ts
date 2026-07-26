@@ -559,6 +559,60 @@
       "txInfoJson": ""
     },
     {
+      "name": "update_margin/negative_minus_one",
+      "txType": 29,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "Direction": "0",
+        "ExpiredAt": "1893456000000",
+        "MarketIndex": "1",
+        "Nonce": "36",
+        "USDCAmount": "-1"
+      },
+      "attributes": {},
+      "messageHashLeHex": "b6ac37ed6ce764dd3eaa432a82e9b706e508369773dae4dcf76218e49e5a82621d467ce4e99af732",
+      "signatureBytesHex": "d16af09dd7f1104b8f56ab67ed8ec8987c0171e71d67dd128ef501bd6ec1df1d547b947552d8e202771c2564a444414674db338f7fbd37b3a29e86747cf83a90e61cc3631cc486a209bf72b28142d54f",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_margin/negative_2_pow_32",
+      "txType": 29,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "Direction": "0",
+        "ExpiredAt": "1893456000000",
+        "MarketIndex": "1",
+        "Nonce": "37",
+        "USDCAmount": "-4294967296"
+      },
+      "attributes": {},
+      "messageHashLeHex": "c7098810d2e61442d3fe8e595ebf2262d131487adbd14ae421f21d151118735d7bb113d4256b5fce",
+      "signatureBytesHex": "bcf77db93b0f53a55b1b5d8b26d16fd24f4555fe221dd39d2be0f3817362b24703038506df8071180f3326b6c21da9ff21a7e180d95d91b1fc683023d4193a055ea31c6f37bf225fb00d3235899c1108",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
+      "name": "update_margin/negative_realistic",
+      "txType": 29,
+      "fields": {
+        "AccountIndex": "1",
+        "ApiKeyIndex": "0",
+        "Direction": "0",
+        "ExpiredAt": "1893456000000",
+        "MarketIndex": "1",
+        "Nonce": "38",
+        "USDCAmount": "-12345678901"
+      },
+      "attributes": {},
+      "messageHashLeHex": "25d418f774390356887efb5856a2fafcaf7a5dbabdc1706d0f591f8a52427ed490df1cf2717d28ec",
+      "signatureBytesHex": "15b0bf69bbb931531a64655d320e088c4ea6486a3057d8c8ede69c05934a67d8ec58fc3518c8c52cd0c7fc5b9e90dbbcf22202e0af79453812fac29f44e2d3f6302dcd05c0d41b16855a9f461428433c",
+      "nonceKLeHex": "f20c050f8e6bcd51488a3a19e84602c9b7760892a2243250ebe7b2b5b8ae273fb29774e651ac8c4e",
+      "txInfoJson": ""
+    },
+    {
       "name": "change_pub_key",
       "txType": 8,
       "fields": {

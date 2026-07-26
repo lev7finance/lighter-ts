@@ -280,6 +280,24 @@ type schnorrVectors struct {
 	PubKeyBytes    int              `json:"pubKeyBytes"`
 	Cases          []schnorrCase    `json:"cases"`
 	Negative       []schnorrNegCase `json:"negative"`
+	// Malleable records signatures whose (s, e) scalars have been shifted out of
+	// canonical range by adding the group order. The reference's SigFromBytes
+	// REDUCES rather than rejects, so these still verify. A strict TypeScript
+	// parser would reject signatures the reference accepts.
+	Malleable []schnorrMalleableCase `json:"malleable"`
+}
+
+type schnorrMalleableCase struct {
+	Description    string `json:"description"`
+	PublicKeyLEHex string `json:"publicKeyLeHex"`
+	HashedMsgLEHex string `json:"hashedMessageLeHex"`
+	OriginalSigHex string `json:"originalSignatureHex"`
+	ShiftedSigHex  string `json:"shiftedSignatureHex"`
+	// RawInRange is false by construction here: adding the group order pushes the
+	// encoded scalar out of canonical range. Recording the PARSED value's
+	// canonicality would be tautological, since the decoder reduces first.
+	RawInRange bool `json:"shiftedRawScalarsInRange"`
+	Valid      bool `json:"shiftedValidates"`
 }
 
 type schnorrCase struct {
@@ -853,6 +871,65 @@ func buildSchnorr(r *rng) schnorrVectors {
 		})
 	}
 
+	// Malleability: shift s and/or e up by the group order and re-encode the raw
+	// 40-byte halves by hand (the scalar constructors reduce, so the shift has to
+	// be written straight into the bytes). The reference parses with a REDUCING
+	// decoder, so these remain valid signatures.
+	toLE40 := func(x *big.Int) []byte {
+		b := make([]byte, 40)
+		tmp := new(big.Int).Set(x)
+		for i := 0; i < 40; i++ {
+			b[i] = byte(new(big.Int).And(tmp, big.NewInt(0xff)).Uint64())
+			tmp.Rsh(tmp, 8)
+		}
+		return b
+	}
+
+	base0 := v.Cases[0]
+	origBytes, _ := hex.DecodeString(base0.SigBytesHex)
+	sBig := new(big.Int)
+	eBig := new(big.Int)
+	for i := 39; i >= 0; i-- {
+		sBig.Lsh(sBig, 8)
+		sBig.Or(sBig, big.NewInt(int64(origBytes[i])))
+		eBig.Lsh(eBig, 8)
+		eBig.Or(eBig, big.NewInt(int64(origBytes[40+i])))
+	}
+	pkB, _ := hex.DecodeString(base0.PublicKeyLEHex)
+	msgB, _ := hex.DecodeString(base0.HashedMsgLEHex)
+
+	for _, m := range []struct {
+		desc   string
+		addToS bool
+		addToE bool
+	}{
+		{"s + n (e untouched)", true, false},
+		{"e + n (s untouched)", false, true},
+		{"both s + n and e + n", true, true},
+	} {
+		sv := new(big.Int).Set(sBig)
+		ev := new(big.Int).Set(eBig)
+		if m.addToS {
+			sv.Add(sv, curve.ORDER)
+		}
+		if m.addToE {
+			ev.Add(ev, curve.ORDER)
+		}
+		shifted := append(toLE40(sv), toLE40(ev)...)
+		// Check the raw encoded halves against the group order directly, before
+		// any decoding, so the field says something the decoder cannot fake.
+		rawIn := sv.Cmp(curve.ORDER) < 0 && ev.Cmp(curve.ORDER) < 0
+		v.Malleable = append(v.Malleable, schnorrMalleableCase{
+			Description:    m.desc,
+			PublicKeyLEHex: base0.PublicKeyLEHex,
+			HashedMsgLEHex: base0.HashedMsgLEHex,
+			OriginalSigHex: base0.SigBytesHex,
+			ShiftedSigHex:  hex.EncodeToString(shifted),
+			RawInRange:     rawIn,
+			Valid:          schnorr.Validate(pkB, msgB, shifted) == nil,
+		})
+	}
+
 	return v
 }
 
@@ -1234,6 +1311,39 @@ func buildTx(r *rng) txVectors {
 				ExpiredAt: exp, Nonce: 19,
 			},
 			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "USDCAmount": f(bigAmount), "Direction": f(txtypes.AddToIsolatedMargin), "ExpiredAt": f(exp), "Nonce": "19"},
+		},
+		{
+			// USDCAmount is the ONLY lo/hi-split field where a negative value
+			// survives Validate() (update_margin.go checks != 0 and an upper
+			// bound, but has no lower bound). Go's >> on a signed int64 is an
+			// ARITHMETIC shift, so the high half of -1 is -1 -> 4294967294.
+			// Normalizing to unsigned before shifting gives 4294967295 and a
+			// hash the sequencer rejects.
+			name: "update_margin/negative_minus_one", txType: txtypes.TxTypeL2UpdateMargin,
+			tx: &txtypes.L2UpdateMarginTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1,
+				USDCAmount: -1, Direction: txtypes.RemoveFromIsolatedMargin,
+				ExpiredAt: exp, Nonce: 36,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "USDCAmount": "-1", "Direction": f(txtypes.RemoveFromIsolatedMargin), "ExpiredAt": f(exp), "Nonce": "36"},
+		},
+		{
+			name: "update_margin/negative_2_pow_32", txType: txtypes.TxTypeL2UpdateMargin,
+			tx: &txtypes.L2UpdateMarginTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1,
+				USDCAmount: -4294967296, Direction: txtypes.RemoveFromIsolatedMargin,
+				ExpiredAt: exp, Nonce: 37,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "USDCAmount": "-4294967296", "Direction": f(txtypes.RemoveFromIsolatedMargin), "ExpiredAt": f(exp), "Nonce": "37"},
+		},
+		{
+			name: "update_margin/negative_realistic", txType: txtypes.TxTypeL2UpdateMargin,
+			tx: &txtypes.L2UpdateMarginTxInfo{
+				AccountIndex: 1, ApiKeyIndex: 0, MarketIndex: 1,
+				USDCAmount: -12_345_678_901, Direction: txtypes.RemoveFromIsolatedMargin,
+				ExpiredAt: exp, Nonce: 38,
+			},
+			fields: map[string]string{"AccountIndex": "1", "ApiKeyIndex": "0", "MarketIndex": "1", "USDCAmount": "-12345678901", "Direction": f(txtypes.RemoveFromIsolatedMargin), "ExpiredAt": f(exp), "Nonce": "38"},
 		},
 		{
 			name: "change_pub_key", txType: txtypes.TxTypeL2ChangePubKey,

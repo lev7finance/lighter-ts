@@ -785,5 +785,34 @@
       "signatureHex": "6f673366117cca1863e1d99aa125b386542524b444176eaa90cbe14ebc2577ce97331011fbd6aa577abbf92efdea319ef6d3519318ab52b69cb5fa861ab398e09a735423a8880fb9fb07562975b1dd24",
       "valid": false
     }
+  ],
+  "malleable": [
+    {
+      "description": "s + n (e untouched)",
+      "publicKeyLeHex": "a6d17fc3f7672facc00211379ed5a0214a69cf11d4521d91e29ef2b49e7deda7ff4ef6035e3c7445",
+      "hashedMessageLeHex": "12c9c2104faac3b9a3523b1bb3fab091745919b8d8e1fae777bdad1c50f6beade6b3f90bacdaaf27",
+      "originalSignatureHex": "6f673366117cca1863e1d99aa125b386542524b444176eaa90cbe14ebc2577ce97331011fbd6aa577abbf92efdea319ef6d3519318ab52b69cb5fa861ab398e09a735423a8880fb9fb07562975b1dd24",
+      "shiftedSignatureHex": "5067bffaa755da000082fe71db813b6f8e2bdc832b176e2aa7cbe14ead25774e9f331091f8d6aad77abbf92efdea319ef6d3519318ab52b69cb5fa861ab398e09a735423a8880fb9fb07562975b1dd24",
+      "shiftedRawScalarsInRange": false,
+      "shiftedValidates": true
+    },
+    {
+      "description": "e + n (s untouched)",
+      "publicKeyLeHex": "a6d17fc3f7672facc00211379ed5a0214a69cf11d4521d91e29ef2b49e7deda7ff4ef6035e3c7445",
+      "hashedMessageLeHex": "12c9c2104faac3b9a3523b1bb3fab091745919b8d8e1fae777bdad1c50f6beade6b3f90bacdaaf27",
+      "originalSignatureHex": "6f673366117cca1863e1d99aa125b386542524b444176eaa90cbe14ebc2577ce97331011fbd6aa577abbf92efdea319ef6d3519318ab52b69cb5fa861ab398e09a735423a8880fb9fb07562975b1dd24",
+      "shiftedSignatureHex": "6f673366117cca1863e1d99aa125b386542524b444176eaa90cbe14ebc2577ce97331011fbd6aa575bbb85c393c441869374766a5207db9ed6bbb25601b39860b173542399880f39030856a972b1dda4",
+      "shiftedRawScalarsInRange": false,
+      "shiftedValidates": true
+    },
+    {
+      "description": "both s + n and e + n",
+      "publicKeyLeHex": "a6d17fc3f7672facc00211379ed5a0214a69cf11d4521d91e29ef2b49e7deda7ff4ef6035e3c7445",
+      "hashedMessageLeHex": "12c9c2104faac3b9a3523b1bb3fab091745919b8d8e1fae777bdad1c50f6beade6b3f90bacdaaf27",
+      "originalSignatureHex": "6f673366117cca1863e1d99aa125b386542524b444176eaa90cbe14ebc2577ce97331011fbd6aa577abbf92efdea319ef6d3519318ab52b69cb5fa861ab398e09a735423a8880fb9fb07562975b1dd24",
+      "shiftedSignatureHex": "5067bffaa755da000082fe71db813b6f8e2bdc832b176e2aa7cbe14ead25774e9f331091f8d6aad75bbb85c393c441869374766a5207db9ed6bbb25601b39860b173542399880f39030856a972b1dda4",
+      "shiftedRawScalarsInRange": false,
+      "shiftedValidates": true
+    }
   ]
 }
