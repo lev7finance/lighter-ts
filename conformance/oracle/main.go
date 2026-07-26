@@ -303,6 +303,7 @@ type txVectors struct {
 	Attributes []attrCase      `json:"attributeHashes"`
 	Txs        []txHashCase    `json:"txHashes"`
 	L1Messages []l1MessageCase `json:"l1Messages"`
+	AuthTokens []authTokenCase `json:"authTokens"`
 }
 
 type attrCase struct {
@@ -322,6 +323,24 @@ type txHashCase struct {
 	SigBytesHex string            `json:"signatureBytesHex"`
 	NonceKLEHex string            `json:"nonceKLeHex"`
 	TxInfoJSON  string            `json:"txInfoJson"`
+}
+
+// authTokenCase pins the read-only auth token used for authenticated REST reads.
+//
+// The token is  "<deadlineUnixSeconds>:<accountIndex>:<apiKeyIndex>:<hexSignature>"  where the
+// signature covers a Poseidon2 hash of the message text packed into field elements, 8 bytes per
+// element, little-endian, with the final partial chunk zero-padded to 8.
+type authTokenCase struct {
+	Deadline     string   `json:"deadline"`
+	AccountIndex string   `json:"accountIndex"`
+	ApiKeyIndex  string   `json:"apiKeyIndex"`
+	Message      string   `json:"message"`
+	MessageHex   string   `json:"messageUtf8Hex"`
+	PackedElems  []string `json:"packedFieldElements"`
+	MsgHashHex   string   `json:"messageHashLeHex"`
+	NonceKLEHex  string   `json:"nonceKLeHex"`
+	SigBytesHex  string   `json:"signatureBytesHex"`
+	Token        string   `json:"token"`
 }
 
 // l1MessageCase pins an EIP-191 "personal_sign" message body exactly as the
@@ -1462,6 +1481,64 @@ func buildTx(r *rng) txVectors {
 		emitL1(fmt.Sprintf("create_sub_account/master_%d", master), map[string]string{
 			"MasterAccountIndex": f(master),
 		}, fmt.Sprintf(txtypes.TemplateSubAccount, l1Hex(uint64(master))))
+	}
+
+	// -------------------------------------------------------------------------
+	// Read-only auth tokens.
+	//
+	// Authenticated REST reads carry a token built from the plain text
+	// "<deadline>:<accountIndex>:<apiKeyIndex>", packed into Goldilocks field
+	// elements 8 bytes at a time (little-endian, final chunk zero-padded),
+	// hashed with Poseidon2, signed, and suffixed with the hex signature.
+	//
+	// Verified: the reference builds this through the *gnark* Poseidon2 variant
+	// (types/tx_request.go imports hash/poseidon2_goldilocks) while transaction
+	// hashing uses the *plonky2* variant (hash/poseidon2_goldilocks_plonky2).
+	// The two produce byte-identical output — they differ only in internal field
+	// representation — so lighter-ts implements one Poseidon2, not two.
+	// -------------------------------------------------------------------------
+
+	for _, at := range []struct {
+		deadline     int64
+		accountIndex int64
+		apiKeyIndex  uint8
+	}{
+		{1750000000, 1, 0},
+		{1893456000, 42, 3},
+		{1750000000, txtypes.MaxMasterAccountIndex, txtypes.MaxApiKeyIndex},
+	} {
+		message := fmt.Sprintf("%v:%v:%v", at.deadline, at.accountIndex, at.apiKeyIndex)
+		packed, err := g.ArrayFromCanonicalLittleEndianBytes([]byte(message))
+		if err != nil {
+			panic(fmt.Sprintf("auth token packing failed for %q: %v", message, err))
+		}
+		elems := make([]string, len(packed))
+		plonky := make([]g.GoldilocksField, len(packed))
+		for i, e := range packed {
+			elems[i] = u64s(e.Uint64())
+			plonky[i] = g.GoldilocksField(e.Uint64())
+		}
+		msgHash := p2.HashToQuinticExtension(plonky).ToLittleEndianBytes()
+
+		e, err := gFp5.FromCanonicalLittleEndianBytes(msgHash)
+		if err != nil {
+			panic(err)
+		}
+		sigBytes := schnorr.SchnorrSignHashedMessage2(e, sk, nonceK).ToBytes()
+		sigHex := hex.EncodeToString(sigBytes)
+
+		v.AuthTokens = append(v.AuthTokens, authTokenCase{
+			Deadline:     f(at.deadline),
+			AccountIndex: f(at.accountIndex),
+			ApiKeyIndex:  f(at.apiKeyIndex),
+			Message:      message,
+			MessageHex:   hex.EncodeToString([]byte(message)),
+			PackedElems:  elems,
+			MsgHashHex:   hex.EncodeToString(msgHash),
+			NonceKLEHex:  scalarHex(nonceK),
+			SigBytesHex:  sigHex,
+			Token:        fmt.Sprintf("%v:%v", message, sigHex),
+		})
 	}
 
 	for _, tc := range cases {

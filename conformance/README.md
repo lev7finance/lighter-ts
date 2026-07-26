@@ -43,7 +43,20 @@ version changed — inspect the diff before accepting it.
 | `tx.json`         | End-to-end transaction message hashes, attribute aggregation, signatures      |
 
 `tx.json` is the one that matters most: it exercises every layer at once, exactly as production
-signing does.
+signing does. Alongside the transaction hashes it also carries the L1 (EIP-191) message bodies and
+the read-only auth tokens.
+
+## There is only one Poseidon2, despite appearances
+
+`poseidon_crypto` ships two Poseidon2 implementations, and the reference SDK uses **both**:
+transaction hashing goes through `hash/poseidon2_goldilocks_plonky2`, while auth-token construction
+goes through `hash/poseidon2_goldilocks` (`lighter-go/types/tx_request.go`). They take different
+element types — plonky2 uses a plain `uint64`, gnark uses Montgomery form.
+
+Checked by running both over the same input: **they produce byte-identical output.** The difference
+is internal representation, not the function computed. `lighter-ts` therefore implements one
+Poseidon2 and uses it everywhere. This is worth stating explicitly because reading the reference
+naturally suggests two are required.
 
 ## Canonical vs non-canonical field values
 
