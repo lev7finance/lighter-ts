@@ -331,11 +331,34 @@ The chain ID is an input to **every** transaction hash and is **not** discoverab
 
 ## 8. REST
 
-### 8.1 Two independent failure channels
+### 8.1 Two independent failure channels, and the envelope is not universal
 
-Errors arrive as HTTP 4xx with `{"code": <int>, "message": <string>}`. Success responses **also**
-carry `"code": 200` in the body. Both the HTTP status and the body code must be checked — treating
-HTTP 200 as success is not sufficient.
+Errors arrive as HTTP 4xx with `{"code": <int>, "message": <string>}`. Most success responses
+**also** carry `"code": 200` in the body. Both the HTTP status and the body code must be checked —
+treating HTTP 200 as success is not sufficient.
+
+But **some endpoints return no `code` field at all**. Measured:
+
+```
+GET /withdrawalDelay?account_index=1   ->   {"seconds":1542}
+```
+
+So the rule cannot be "success requires `code === 200`" either — that would reject a perfectly good
+response. The correct rule is: a response is an error if `code` is **present and not 200**, or if
+the HTTP status is not 2xx. A missing `code` is success.
+
+### 8.1.1 Authentication is passed one of two ways
+
+Discovered from the error text on an unauthenticated call:
+
+```
+GET /transferFeeInfo?account_index=1
+{"code":20001,"message":"invalid param : auth query param and Authorization header are empty"}
+```
+
+The auth token goes in either the **`auth` query parameter** or the **`Authorization` header**.
+Neither reference SDK documents this. Prefer the header; the query parameter puts a bearer credential
+into URLs, access logs, and referrers.
 
 Observed: `20001` for invalid/missing parameters, `29404` for not-found (inside an HTTP 400).
 Neither reference SDK documents any of these — Go defines only `CodeOK = 200` and Python's
