@@ -1,8 +1,32 @@
 # lighter-ts — Architecture
 
+> ### ⚠️ Parts of this document are superseded. Read `decisions.md` first.
+>
+> This design was reviewed by three independent agents, and several decisions here were overturned
+> on evidence. **`docs/decisions.md` outranks this file, and `docs/protocol-notes.md` outranks
+> both.** The sections below are preserved as written — including the parts that turned out to be
+> wrong — because the reasoning is still worth reading and silently rewriting history makes the
+> corrections harder to trust.
+>
+> Known-superseded, do **not** implement as written:
+>
+> | Here | Superseded by | What changed |
+> | --- | --- | --- |
+> | ADR-2 — compare-and-subtract reduction chain | **D4** | Measured backwards. Plain `(a*b) % P` is 2.5–4× *faster* on every engine (`bench/README.md`). Use `%` everywhere. |
+> | ADR-10 — hedged nonce via hand-rolled HMAC-SHA-256 | **D2** | The mode stands, the PRF does not. Use Poseidon2; `src/crypto/sha256.ts` is not built. |
+> | §6.4 `verify(..., { allowNeutralPublicKey })` | **D1** | Removed entirely. The neutral key is a universal forgery; there is no opt-out flag. |
+> | ADR-13 strict-by-default byte decoders | **D3** | Inverted. `sign`/`verify` use *reducing* parsers; strict is opt-in. Naming flipped so the interoperable path is the natural one. |
+> | ADR-9 — "three flows need L1" + built-in signer | **D6** | Four flows (`create_sub_account` was missed). No secp256k1 ships; the signer is injected. |
+> | §6.6 `mapCandle` returning `number` | **D7** | No `number` for monetary fields, anywhere. |
+> | §2 non-goal: fixed-base comb | **D4** | Now the pre-authorized fallback if the Worker CPU gate fails. |
+> | §9 wave plan | **D9 / unit ledger** | Wave 0 added; several dependency edges pointed the wrong way. `docs/unit-ledger.json` is the executable plan. |
+> | §5 `src/paper/`, `src/l1-signer/`, `models/generated.ts`, `ws/pool.ts` | **D10** | Cut from v1. |
+>
+> The live plan is `docs/unit-ledger.json` (55 units, one owner per file, validated by
+> `scripts/unit-ledger.py`) and the GitHub issues cut from it.
+
 **Repository:** `lev7finance/lighter-ts`
-**Status:** authoritative design document. Every implementation issue is measured against this file plus its
-named spec section in `spec/01`…`spec/08`.
+**Status:** design rationale. Superseded in the places listed above; see `docs/decisions.md`.
 **Clean-room:** this document, and everything derived from it, describes *what the protocol is*. No Go or
 Python source is reproduced. Protocol-mandated constants, byte orders, field orders, endpoint paths and JSON
 key names are interoperability requirements and are stated exactly.
