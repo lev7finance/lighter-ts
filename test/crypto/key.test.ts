@@ -340,15 +340,20 @@ describe("round trip under the default nonce", () => {
     }
   });
 
-  test("flipping any single bit of the signature breaks it — all 640", () => {
-    const key: ApiKey = ApiKey.fromPrivateKey(firstCase.privateKeyLeHex);
-    const m: Uint8Array = hexToBytes(firstCase.hashedMessageLeHex);
-    const sig: Uint8Array = key.sign(m);
-    expect(verify(key.publicKeyBytes, m, sig)).toBe(true);
-    for (let bit = 0; bit < SIGNATURE_BYTES * 8; bit += 1) {
-      expect(verify(key.publicKeyBytes, m, flipBit(sig, bit))).toBe(false);
-    }
-  });
+  test(
+    "flipping any single bit of the signature breaks it — all 640",
+    () => {
+      const key: ApiKey = ApiKey.fromPrivateKey(firstCase.privateKeyLeHex);
+      const m: Uint8Array = hexToBytes(firstCase.hashedMessageLeHex);
+      const sig: Uint8Array = key.sign(m);
+      expect(verify(key.publicKeyBytes, m, sig)).toBe(true);
+      for (let bit = 0; bit < SIGNATURE_BYTES * 8; bit += 1) {
+        expect(verify(key.publicKeyBytes, m, flipBit(sig, bit))).toBe(false);
+      }
+    },
+    // Coverage instrumentation makes this exhaustive sweep ~7s on GitHub's shared runners.
+    15_000,
+  );
 
   test("flipping any single bit of the message breaks it — all 320", () => {
     const key: ApiKey = ApiKey.fromPrivateKey(firstCase.privateKeyLeHex);
