@@ -1,0 +1,55 @@
+{
+  "family": "account_spot_avg_entry_prices",
+  "authMode": "refusal-probe",
+  "probes": [
+    {
+      "channel": "account_spot_avg_entry_prices/1",
+      "session": {
+        "label": "channel:account_spot_avg_entry_prices/1",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 485,
+            "wallMs": 1785276628756,
+            "raw": "{\"session_id\":\"98e754a9-2a95-4bbe-a991-963768e690d8\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 485,
+            "wallMs": 1785276628756,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"account_spot_avg_entry_prices/1\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 600,
+            "wallMs": 1785276628871,
+            "raw": "{\"error\":{\"code\":20001,\"message\":\"invalid param : auth field is required: account_spot_avg_entry_prices:1\"}}"
+          }
+        ],
+        "close": {
+          "tMs": 20001,
+          "wallMs": 1785276648273,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20103,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": -1,
+        "firstInboundType": null,
+        "firstInboundChannel": null,
+        "nextThreeUpdateFrameIndices": [],
+        "totalInboundDataFrames": 0,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
+}

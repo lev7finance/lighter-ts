@@ -1,0 +1,254 @@
+{
+  "observations": [
+    {
+      "session": "handshake:encoding=json",
+      "close": {
+        "tMs": 5006,
+        "wallMs": 1785277214271,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "handshake:no-query",
+      "close": {
+        "tMs": 5002,
+        "wallMs": 1785277214271,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:order_book/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276567860,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:ticker/1",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276567860,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:market_stats/1",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276567860,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:market_stats/all",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276587963,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:spot_market_stats/2048",
+      "close": {
+        "tMs": 60001,
+        "wallMs": 1785277113881,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:trade/1",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276587962,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:candle/1/1m",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276587962,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:mark_price_candle/1/1m",
+      "close": {
+        "tMs": 20000,
+        "wallMs": 1785276587963,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:height",
+      "close": {
+        "tMs": 20003,
+        "wallMs": 1785276608067,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_all/8",
+      "close": {
+        "tMs": 60001,
+        "wallMs": 1785277113881,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:user_stats/8",
+      "close": {
+        "tMs": 60001,
+        "wallMs": 1785277113881,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_all_trades/8",
+      "close": {
+        "tMs": 60001,
+        "wallMs": 1785277113881,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_all_positions/8",
+      "close": {
+        "tMs": 60001,
+        "wallMs": 1785277173984,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_market/1/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276628170,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_tx/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276628170,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_all_orders/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276628170,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_orders/1/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276648273,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_all_assets/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276648273,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:account_spot_avg_entry_prices/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276648273,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:pool_data/281474976710654",
+      "close": {
+        "tMs": 60000,
+        "wallMs": 1785277173985,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:pool_info/281474976710654",
+      "close": {
+        "tMs": 60000,
+        "wallMs": 1785277173985,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:notification/1",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276668375,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    },
+    {
+      "session": "channel:rfq",
+      "close": {
+        "tMs": 20001,
+        "wallMs": 1785276668375,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "family": "user_stats",
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "user_stats/8",
+      "session": {
+        "label": "channel:user_stats/8",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 491,
+            "wallMs": 1785277054370,
+            "raw": "{\"session_id\":\"ae62ba93-d848-45eb-885b-7b47b0420e1f\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 491,
+            "wallMs": 1785277054370,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"user_stats/8\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 609,
+            "wallMs": 1785277054488,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.369144\",\"portfolio_value\":\"99974.368830\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336847\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.369144\",\"portfolio_value\":\"99974.368830\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336847\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.369144\",\"portfolio_value\":\"99974.368830\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336847\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277054433,\"type\":\"subscribed/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 2708,
+            "wallMs": 1785277056587,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368778\",\"leverage\":\"0.00\",\"available_balance\":\"99974.368778\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368778\",\"leverage\":\"0.00\",\"available_balance\":\"99974.368778\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368778\",\"leverage\":\"0.00\",\"available_balance\":\"99974.368778\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277056530,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 4619,
+            "wallMs": 1785277058498,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368667\",\"leverage\":\"0.00\",\"available_balance\":\"99974.359055\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368667\",\"leverage\":\"0.00\",\"available_balance\":\"99974.359055\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368667\",\"leverage\":\"0.00\",\"available_balance\":\"99974.359055\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277058441,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 9565,
+            "wallMs": 1785277063444,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368655\",\"leverage\":\"0.00\",\"available_balance\":\"99974.354111\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368655\",\"leverage\":\"0.00\",\"available_balance\":\"99974.354111\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368655\",\"leverage\":\"0.00\",\"available_balance\":\"99974.354111\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277063382,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 13208,
+            "wallMs": 1785277067088,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368307\",\"leverage\":\"0.00\",\"available_balance\":\"99974.321780\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368307\",\"leverage\":\"0.00\",\"available_balance\":\"99974.321780\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368778\",\"portfolio_value\":\"99974.368307\",\"leverage\":\"0.00\",\"available_balance\":\"99974.321780\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277067030,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 19851,
+            "wallMs": 1785277073731,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368429\",\"portfolio_value\":\"99974.368131\",\"leverage\":\"0.00\",\"available_balance\":\"99974.331208\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368429\",\"portfolio_value\":\"99974.368131\",\"leverage\":\"0.00\",\"available_balance\":\"99974.331208\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368429\",\"portfolio_value\":\"99974.368131\",\"leverage\":\"0.00\",\"available_balance\":\"99974.331208\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277073673,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 20755,
+            "wallMs": 1785277074635,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.368327\",\"portfolio_value\":\"99974.368084\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336096\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.368327\",\"portfolio_value\":\"99974.368084\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336096\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.368327\",\"portfolio_value\":\"99974.368084\",\"leverage\":\"0.00\",\"available_balance\":\"99974.336096\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277074578,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 28738,
+            "wallMs": 1785277082617,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367727\",\"leverage\":\"0.00\",\"available_balance\":\"99974.367727\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367727\",\"leverage\":\"0.00\",\"available_balance\":\"99974.367727\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367727\",\"leverage\":\"0.00\",\"available_balance\":\"99974.367727\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277082474,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 35073,
+            "wallMs": 1785277088953,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367660\",\"leverage\":\"0.00\",\"available_balance\":\"99974.362725\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367660\",\"leverage\":\"0.00\",\"available_balance\":\"99974.362725\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367660\",\"leverage\":\"0.00\",\"available_balance\":\"99974.362725\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277088897,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 35104,
+            "wallMs": 1785277088983,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367534\",\"leverage\":\"0.00\",\"available_balance\":\"99974.352984\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367534\",\"leverage\":\"0.00\",\"available_balance\":\"99974.352984\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367534\",\"leverage\":\"0.00\",\"available_balance\":\"99974.352984\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277088927,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 40071,
+            "wallMs": 1785277093951,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367306\",\"leverage\":\"0.00\",\"available_balance\":\"99974.320776\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367306\",\"leverage\":\"0.00\",\"available_balance\":\"99974.320776\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367727\",\"portfolio_value\":\"99974.367306\",\"leverage\":\"0.00\",\"available_balance\":\"99974.320776\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277093888,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 47366,
+            "wallMs": 1785277101246,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367328\",\"portfolio_value\":\"99974.367043\",\"leverage\":\"0.00\",\"available_balance\":\"99974.330127\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367328\",\"portfolio_value\":\"99974.367043\",\"leverage\":\"0.00\",\"available_balance\":\"99974.330127\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367328\",\"portfolio_value\":\"99974.367043\",\"leverage\":\"0.00\",\"available_balance\":\"99974.330127\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277101188,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 50414,
+            "wallMs": 1785277104294,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.367259\",\"portfolio_value\":\"99974.367021\",\"leverage\":\"0.00\",\"available_balance\":\"99974.335039\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.367259\",\"portfolio_value\":\"99974.367021\",\"leverage\":\"0.00\",\"available_balance\":\"99974.335039\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.367259\",\"portfolio_value\":\"99974.367021\",\"leverage\":\"0.00\",\"available_balance\":\"99974.335039\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277104237,\"type\":\"update/user_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 54262,
+            "wallMs": 1785277108142,
+            "raw": "{\"channel\":\"user_stats:8\",\"stats\":{\"collateral\":\"99974.366659\",\"portfolio_value\":\"99974.366659\",\"leverage\":\"0.00\",\"available_balance\":\"99974.366659\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\",\"account_trading_mode\":0,\"cross_stats\":{\"collateral\":\"99974.366659\",\"portfolio_value\":\"99974.366659\",\"leverage\":\"0.00\",\"available_balance\":\"99974.366659\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"},\"total_stats\":{\"collateral\":\"99974.366659\",\"portfolio_value\":\"99974.366659\",\"leverage\":\"0.00\",\"available_balance\":\"99974.366659\",\"margin_usage\":\"0.00\",\"buying_power\":\"0\"}},\"timestamp\":1785277108085,\"type\":\"update/user_stats\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60001,
+          "wallMs": 1785277113881,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60104,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/user_stats",
+        "firstInboundChannel": "user_stats:8",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "updateOutcome": "observed",
+        "totalInboundDataFrames": 14,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
+}

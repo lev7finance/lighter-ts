@@ -1,0 +1,55 @@
+{
+  "family": "rfq",
+  "authMode": "refusal-probe",
+  "probes": [
+    {
+      "channel": "rfq",
+      "session": {
+        "label": "channel:rfq",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 364,
+            "wallMs": 1785276648738,
+            "raw": "{\"session_id\":\"721e3b73-a12b-4fe0-b1fb-73fef5b0a05e\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 364,
+            "wallMs": 1785276648738,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"rfq\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 483,
+            "wallMs": 1785276648857,
+            "raw": "{\"error\":{\"code\":20001,\"message\":\"invalid param : auth field is required: rfq\"}}"
+          }
+        ],
+        "close": {
+          "tMs": 20001,
+          "wallMs": 1785276668375,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": -1,
+        "firstInboundType": null,
+        "firstInboundChannel": null,
+        "nextThreeUpdateFrameIndices": [],
+        "totalInboundDataFrames": 0,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
+}

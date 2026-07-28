@@ -1,0 +1,56 @@
+{
+  "family": "pool_data",
+  "authMode": "refusal-probe",
+  "probes": [
+    {
+      "channel": "pool_data/281474976710654",
+      "session": {
+        "label": "channel:pool_data/281474976710654",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 609,
+            "wallMs": 1785277114594,
+            "raw": "{\"session_id\":\"152c0b77-b8a7-4c2b-9106-a4a80bfd494a\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 610,
+            "wallMs": 1785277114594,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"pool_data/281474976710654\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 728,
+            "wallMs": 1785277114713,
+            "raw": "{\"account\":281474976710654,\"channel\":\"pool_data:281474976710654\",\"funding_histories\":{},\"orders\":{},\"positions\":{},\"shares\":[],\"trades\":{},\"type\":\"subscribed/pool_data\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60000,
+          "wallMs": 1785277173985,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/pool_data",
+        "firstInboundChannel": "pool_data:281474976710654",
+        "nextThreeUpdateFrameIndices": [],
+        "updateOutcome": "none-observed-in-fixed-window",
+        "totalInboundDataFrames": 1,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
+}
