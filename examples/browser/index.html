@@ -4,7 +4,8 @@
 
   What it does:        generates an API keypair in the page, builds an L2CreateOrder, hashes it and
                        signs it — all client-side, with a plain <script type="module">.
-  Credentials:         none. The keypair is generated in the page and never leaves it.
+  Credentials:         account and API-key indices are supplied in the form. The keypair is
+                       generated in the page and never leaves it.
   Network:             none is contacted. The chain id is chosen in the form and passed explicitly.
   Whether it moves real funds: no. Nothing is submitted, and this page has no submit path at all.
 
@@ -76,6 +77,8 @@
         </select>
       </label>
       <label>market index <input id="market" value="0" size="4" inputmode="numeric" /></label>
+      <label>account index <input id="account" value="" size="8" inputmode="numeric" placeholder="required" /></label>
+      <label>API key index <input id="api-key" value="" size="4" inputmode="numeric" placeholder="required" /></label>
       <label>size <input id="size" value="0.5" size="8" /></label>
       <label>price <input id="price" value="2500.00" size="10" /></label>
       <label>side
@@ -140,6 +143,13 @@
           const chainId = Number.parseInt(document.getElementById("chain").value, 10);
           const marketIndex = Number.parseInt(document.getElementById("market").value, 10);
           const isAsk = Number.parseInt(document.getElementById("side").value, 10);
+          const accountText = document.getElementById("account").value.trim();
+          const apiKeyText = document.getElementById("api-key").value.trim();
+          if (!/^[0-9]+$/.test(accountText)) throw new Error("account index is required");
+          if (!/^[0-9]+$/.test(apiKeyText)) throw new Error("API key index is required");
+          const accountIndex = BigInt(accountText);
+          const apiKeyIndex = Number.parseInt(apiKeyText, 10);
+          if (apiKeyIndex > 254) throw new Error("API key index must be in [0, 254]");
 
           // ETH-PERP's decimals on testnet. In an application these come from `/orderBooks`, via
           // `client.markets.get(symbol)`; they are hard-coded here so the page makes no request.
@@ -172,7 +182,7 @@
               triggerPrice: u32(0),
               orderExpiry: i64(expiredAt),
             },
-            { accountIndex: i64(1n), apiKeyIndex: u8(1), nonce: i64(0n), expiredAt: i64(expiredAt) },
+            { accountIndex: i64(accountIndex), apiKeyIndex: u8(apiKeyIndex), nonce: i64(0n), expiredAt: i64(expiredAt) },
           );
 
           const hash = txHashHex(unsigned, chainId);

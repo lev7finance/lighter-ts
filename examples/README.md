@@ -16,15 +16,15 @@ through a float.
 | --- | --- | --- | --- |
 | [`read-order-books.ts`](read-order-books.ts) | `GET /orderBooks`; the three decimal exponents everything else depends on | none | no |
 | [`read-authenticated.ts`](read-authenticated.ts) | minting an auth token offline; it travels in the `Authorization` header, not the `auth` query parameter | account index, API key index, API private key | no |
-| [`sign-offline.ts`](sign-offline.ts) | build → hash → sign → serialise with **no network and no clock** | API private key (optional — an ephemeral one is generated) | no |
+| [`sign-offline.ts`](sign-offline.ts) | build → hash → sign → serialise with **no network and no clock** | account index, API key index; API private key optional | no |
 | [`submit-market-order.ts`](submit-market-order.ts) | the human tier: decimal strings in, protocol integers out, `dryRun` first, `applied` printed | account index, API key index, API private key | **yes** |
 | [`create-modify-cancel.ts`](create-modify-cancel.ts) | the resting-order lifecycle over HTTP, and `receipt.wait()` | account index, API key index, API private key | **yes** |
 | [`send-batch.ts`](send-batch.ts) | one `sendTxBatch`, one key, consecutive nonces — with the nonce counter printed either side | account index, API key index, API private key, order ids to cancel | **yes** |
 | [`stream-order-book.ts`](stream-order-book.ts) | a WebSocket book kept sorted, with gaps and resets surfaced rather than swallowed | none | no |
 | [`l1-change-pub-key.ts`](l1-change-pub-key.ts) | the injected `EthPersonalSigner` seam: the SDK builds the EIP-191 message, a wallet signs it | account index, key slot, an L1 signature from your wallet | not directly — it changes who *can* |
 | [`workers/signer-worker.ts`](workers/signer-worker.ts) | signing and submitting inside a Cloudflare Worker (paid tier) | Worker secrets | **yes** |
-| [`deno/quickstart.ts`](deno/quickstart.ts) | Deno, `npm:lighter-ts`, no install and no build step | none | no |
-| [`browser/index.html`](browser/index.html) | signing in the browser with a plain `<script type="module">`, no bundler | none | no |
+| [`deno/quickstart.ts`](deno/quickstart.ts) | Deno, `npm:lighter-ts`, no install and no build step | account index, API key index; API private key optional | no |
+| [`browser/index.html`](browser/index.html) | signing in the browser with a plain `<script type="module">`, no bundler | account and API key indices entered in the form | no |
 | [`env.ts`](env.ts) | shared: network selection, credential reading, the mainnet guard | none | no |
 
 Every `.ts` file opens with a header stating those four things for itself. `env.ts` is imported by
@@ -37,11 +37,13 @@ The documented runner is Bun, from the repository root:
 
 ```sh
 bun run build                      # the examples typecheck against dist/
-bun examples/sign-offline.ts       # needs nothing at all
+LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… bun examples/sign-offline.ts
 bun examples/read-order-books.ts   # public reads, testnet by default
 ```
 
-`deno/quickstart.ts` runs under Deno (`deno run --allow-net --allow-env examples/deno/quickstart.ts`),
+`deno/quickstart.ts` runs under Deno
+(`LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… deno run --allow-net --allow-env
+examples/deno/quickstart.ts`),
 `browser/index.html` wants any static file server, and `workers/signer-worker.ts` is illustrative —
 copy it into a Worker project of your own.
 

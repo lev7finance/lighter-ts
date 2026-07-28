@@ -3,14 +3,15 @@
  *
  * - **What it does:** reads the market table and signs a transaction offline, on Deno, importing
  *   the package straight from npm.
- * - **Credentials:** none required. `LIGHTER_API_PRIVATE_KEY` is used if present; otherwise an
- *   ephemeral key is generated so the example still runs.
+ * - **Credentials:** `LIGHTER_ACCOUNT_INDEX` and `LIGHTER_API_KEY_INDEX`;
+ *   `LIGHTER_API_PRIVATE_KEY` is optional, otherwise an ephemeral key is generated.
  * - **Network:** `LIGHTER_NETWORK`, default testnet (chain id 300). One public `GET`.
  * - **Whether it moves real funds:** no. Nothing is submitted.
  *
  * ```sh
  * # from a checkout of this repository — the bare specifier resolves via package.json
- * deno run --allow-net --allow-env examples/deno/quickstart.ts
+ * LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… \
+ *   deno run --allow-net --allow-env examples/deno/quickstart.ts
  * ```
  *
  * In your own Deno project there is no checkout and no `node_modules`, so the specifiers carry the
@@ -89,6 +90,26 @@ function optionalEnv(name: string): string | undefined {
   return value === undefined || value.length === 0 ? undefined : value;
 }
 
+/** Read an externally supplied protocol index without accepting partial or exponential strings. */
+function requiredIndex(name: string): bigint {
+  const value: string | undefined = optionalEnv(name);
+  if (value === undefined) throw new Error(`missing environment variable ${name}`);
+  if (!/^[0-9]+$/.test(value)) {
+    throw new Error(`${name} must be a non-negative whole number`);
+  }
+  return BigInt(value);
+}
+
+/** The API-key slot is an 8-bit count, so a validated decimal parse is exact. */
+function requiredCount(name: string): number {
+  const value: string | undefined = optionalEnv(name);
+  if (value === undefined) throw new Error(`missing environment variable ${name}`);
+  if (!/^[0-9]+$/.test(value)) {
+    throw new Error(`${name} must be a non-negative whole number`);
+  }
+  return Number.parseInt(value, 10);
+}
+
 /** Lowercase hex, for printing a signature. */
 function toHex(bytes: Uint8Array): string {
   let out: string = "";
@@ -101,6 +122,9 @@ const EXPIRED_AT: bigint = 1_893_456_000_000n;
 
 async function main(): Promise<void> {
   const network: Network = selectNetwork();
+  const accountIndex: bigint = requiredIndex("LIGHTER_ACCOUNT_INDEX");
+  const apiKeyIndex: number = requiredCount("LIGHTER_API_KEY_INDEX");
+  if (apiKeyIndex > 254) throw new Error("LIGHTER_API_KEY_INDEX must be in [0, 254]");
   console.log(`deno quickstart — ${network.name}, chain id ${String(network.chainId)}`);
 
   // ---- read (public) ----------------------------------------------------------------------------
@@ -134,8 +158,8 @@ async function main(): Promise<void> {
         orderExpiry: i64(EXPIRED_AT),
       },
       {
-        accountIndex: i64(1n),
-        apiKeyIndex: u8(1),
+        accountIndex: i64(accountIndex),
+        apiKeyIndex: u8(apiKeyIndex),
         nonce: i64(0n),
         expiredAt: i64(EXPIRED_AT),
       },

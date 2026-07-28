@@ -4,15 +4,17 @@
  * - **What it does:** constructs an `L2CreateOrder`, prints the 40-byte transaction hash, signs it,
  *   prints the 80-byte signature, and prints the exact `tx_info` document that `POST
  *   /api/v1/sendTx` would carry.
- * - **Credentials:** `LIGHTER_API_PRIVATE_KEY` if you have one. If it is absent, an **ephemeral**
- *   key is generated in memory so the example still runs; nothing signed with it is submittable.
+ * - **Credentials:** `LIGHTER_ACCOUNT_INDEX` and `LIGHTER_API_KEY_INDEX`;
+ *   `LIGHTER_API_PRIVATE_KEY` is optional. If the key is absent, an **ephemeral** key is generated
+ *   in memory; nothing signed with it is submittable.
  * - **Network:** none is contacted. The chain id is passed explicitly — `LIGHTER_NETWORK` only
  *   chooses which number (testnet 300, mainnet 304).
  * - **Whether it moves real funds:** no. Nothing is submitted, and nothing here can submit.
  *
  * ```sh
- * bun examples/sign-offline.ts                 # ephemeral key
- * LIGHTER_API_PRIVATE_KEY=0x… bun examples/sign-offline.ts
+ * LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… bun examples/sign-offline.ts
+ * LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… LIGHTER_API_PRIVATE_KEY=0x… \
+ *   bun examples/sign-offline.ts
  * ```
  *
  * ## Why this one matters
@@ -52,7 +54,14 @@ import {
   u8,
   u32,
 } from "lighter-ts/tx";
-import { optionalEnv, reportFailure, selectNetwork, toHex } from "./env.js";
+import {
+  optionalEnv,
+  reportFailure,
+  requireAccountIndex,
+  requireApiKeyIndex,
+  selectNetwork,
+  toHex,
+} from "./env.js";
 
 /**
  * A fixed expiry, so this example is reproducible.
@@ -70,6 +79,8 @@ const PRICE_DECIMALS: 2 = 2;
 
 function main(): void {
   const { chainId, name } = selectNetwork();
+  const accountIndex: bigint = requireAccountIndex().big;
+  const apiKeyIndex: number = requireApiKeyIndex();
 
   const provided: string | undefined = optionalEnv("LIGHTER_API_PRIVATE_KEY");
   // `ApiKey.generate()` draws from `globalThis.crypto` **inside the call**, never at module scope:
@@ -105,8 +116,8 @@ function main(): void {
       orderExpiry: i64(EXPIRED_AT),
     },
     {
-      accountIndex: i64(1n),
-      apiKeyIndex: u8(1),
+      accountIndex: i64(accountIndex),
+      apiKeyIndex: u8(apiKeyIndex),
       nonce: i64(0n),
       // Supplied, so no clock is read anywhere on this path.
       expiredAt: i64(EXPIRED_AT),
