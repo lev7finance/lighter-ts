@@ -1,0 +1,6 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lighter-ts-portability",
+  "main": "./worker.ts",
+  "compatibility_date": "2026-07-26"
+}

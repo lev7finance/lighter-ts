@@ -1,0 +1,326 @@
+# CI for lighter-ts.
+#
+# This file is where the package's four claims stop being prose:
+#
+#   1. zero runtime dependencies and zero Node built-ins in src/  -> `check`
+#   2. bit-exact against the Go reference vectors                 -> `runtimes`, `workerd`
+#   3. runs unmodified on Bun, Node 20+, Deno and workerd         -> `runtimes`, `workerd`
+#   4. the published exports map resolves and does not bloat      -> `check` (bun run size)
+#
+# CI is hermetic. It never runs Go and never regenerates conformance/vectors/
+# (docs/ARCHITECTURE.md ADR-12): the vectors are checked in, and regenerating them inside the job
+# that verifies them would make the job verify nothing. Regeneration is a reviewed manual step.
+#
+# The `check` job builds dist/ once and uploads it; every downstream job downloads that exact
+# artifact rather than rebuilding, so all five runtimes are tested against the same bytes a
+# consumer would install.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BUN_VERSION: "1.3.0"
+
+jobs:
+  # ---------------------------------------------------------------------------------------------
+  # Typecheck, test, build, and every gate that does not need a second runtime.
+  # ---------------------------------------------------------------------------------------------
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install (frozen lockfile)
+        run: bun install --frozen-lockfile
+
+      - name: Validate unit-ledger plan
+        run: |
+          bun run scripts/unit-ledger.ts
+          if ! cmp --silent docs/unit-ledger.json ledger.json; then
+            echo "docs/unit-ledger.json is out of sync with generated ledger.json"
+            exit 1
+          fi
+
+      # Both resolution modes. `nodenext` is how Node and Deno resolve the published package;
+      # `bundler` is how Vite, esbuild and Next.js resolve it. A missing `.js` extension passes one
+      # and fails the other, and the failure only shows up in a consumer's build.
+      - name: Typecheck (nodenext + bundler)
+        run: bun run lint
+
+      # src/version.ts carries the version as a literal because there is no filesystem in a Worker.
+      # A literal can drift, so this is the check that file's header promises.
+      - name: Version literal matches package.json
+        run: |
+          bun -e '
+            const pkg = JSON.parse(await Bun.file("package.json").text());
+            const { NAME, VERSION } = await import("./src/version.ts");
+            if (pkg.name !== NAME || pkg.version !== VERSION) {
+              console.error(`version drift: package.json is ${pkg.name}@${pkg.version}, src/version.ts is ${NAME}@${VERSION}`);
+              process.exit(1);
+            }
+            console.log(`version: ${NAME}@${VERSION}`);
+          '
+
+      - name: Test with coverage
+        run: |
+          bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage
+          bun -e '
+            const FLOOR = 80;
+            const lcov = await Bun.file("coverage/lcov.info").text();
+            let found = 0;
+            let hit = 0;
+            for (const line of lcov.split("\n")) {
+              if (line.startsWith("LF:")) found += Number(line.slice(3));
+              else if (line.startsWith("LH:")) hit += Number(line.slice(3));
+            }
+            if (found === 0) {
+              console.error("coverage: lcov.info carries no line records — the gate would pass vacuously");
+              process.exit(1);
+            }
+            const pct = (100 * hit) / found;
+            console.log(`coverage: ${hit}/${found} lines (${pct.toFixed(2)} %), floor ${FLOOR} %`);
+            if (pct < FLOOR) {
+              console.error("coverage: below the floor. Raise the tests, not the floor.");
+              process.exit(1);
+            }
+          '
+
+      - name: Build
+        run: bun run build
+
+      # Risk R22: zero-dependency erosion is a one-line mistake. This gate is required, never
+      # weakened, never `continue-on-error`. It also catches a `node:` import or a Node global in
+      # src/ — the failure that typechecks, passes under Bun and Node, and breaks in a Worker.
+      - name: No dependencies, no Node built-ins in src/
+        run: bun run check:deps
+
+      # A second, dumber pass over the same ground, plus the two things check-no-deps does not look
+      # for. Doc comments legitimately contain the words `node:` and `Buffer` (three files say "no
+      # `node:` import"), so comment lines are filtered — a violation in real code never starts a
+      # line with `*` or `//`, and anything ambiguous is reported rather than skipped.
+      - name: Purity grep over src/
+        run: |
+          set -o pipefail
+          hits=$(grep -rnE 'node:|Buffer|process\.|require\(|WebAssembly|dlopen' --include='*.ts' src \
+                   | grep -vE ':[0-9]+: *(\*|//|/\*)' || true)
+          if [ -n "$hits" ]; then
+            echo "src/ must run unmodified on Bun, Node, Deno, Cloudflare Workers and browsers."
+            echo "$hits"
+            exit 1
+          fi
+          echo "purity grep: clean"
+
+      - name: No native artifacts anywhere in the published files
+        run: |
+          found=$(find dist src -type f \
+                    \( -name '*.wasm' -o -name '*.node' -o -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) \
+                    -print)
+          if [ -n "$found" ]; then
+            echo "this package ships no native code, no WASM, and no binaries:"
+            echo "$found"
+            exit 1
+          fi
+          echo "no native artifacts"
+
+      # Resolves every exports target against the build and fails if one is missing — the cheapest
+      # catch for an exports map pointing at a file no unit emitted. Then the gzip budgets.
+      - name: Exports map resolves, subpaths within budget
+        run: bun run size
+
+      - name: npm pack ships only dist, src and the docs
+        run: |
+          npm pack --dry-run --json > pack.json
+          bun -e '
+            const [tarball] = JSON.parse(await Bun.file("pack.json").text());
+            const files = tarball.files.map((f) => f.path);
+            const allowed = /^(dist\/|src\/|README\.md$|LICENSE$|CHANGELOG\.md$|package\.json$)/;
+            const stray = files.filter((f) => !allowed.test(f));
+            if (stray.length > 0) {
+              console.error(`npm pack would ship ${stray.length} file(s) outside files[]:`);
+              for (const f of stray.slice(0, 40)) console.error(`  ${f}`);
+              process.exit(1);
+            }
+            console.log(`npm pack: ${files.length} files, ${(tarball.size / 1024).toFixed(0)} KB packed`);
+          '
+          rm -f pack.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------------------------
+  # The same built artifact, replayed against the checked-in vectors on every supported runtime.
+  # ---------------------------------------------------------------------------------------------
+  runtimes:
+    name: ${{ matrix.name }}
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: bun-1.3.0, runtime: bun, version: "1.3.0" }
+          - { name: bun-latest, runtime: bun, version: latest }
+          - { name: node-20, runtime: node, version: "20" }
+          - { name: node-22, runtime: node, version: "22" }
+          - { name: node-24, runtime: node, version: "24" }
+          - { name: deno-latest, runtime: deno, version: v2.x }
+    steps:
+      - uses: actions/checkout@v4
+
+      # Bun is installed on every leg, not because the harness needs it, but because `tsc` (the only
+      # devDependency the Node 20 leg needs) is installed with it.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.runtime == 'bun' && matrix.version || env.BUN_VERSION }}
+
+      - uses: actions/setup-node@v4
+        if: matrix.runtime == 'node'
+        with:
+          node-version: ${{ matrix.version }}
+
+      - uses: denoland/setup-deno@v2
+        if: matrix.runtime == 'deno'
+        with:
+          deno-version: ${{ matrix.version }}
+
+      - run: bun install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      # The harness (test/portability/) belongs to the `portability-harness` unit. It imports dist/,
+      # loads conformance/vectors/, and exits non-zero on any divergence — so "assert zero failures"
+      # is the exit code. If these files are missing the job fails loudly rather than passing
+      # vacuously.
+      - name: Harness present
+        run: |
+          for f in test/portability/run-vectors.ts test/portability/behaviour.ts; do
+            if [ ! -f "$f" ]; then
+              echo "missing $f (owned by the portability-harness unit)"
+              exit 1
+            fi
+          done
+
+      - name: Replay vectors (Bun)
+        if: matrix.runtime == 'bun'
+        run: |
+          bun test/portability/run-vectors.ts
+          bun test/portability/behaviour.ts
+
+      # Node 22 landed --experimental-strip-types; Node 20 did not, so it gets a plain tsc transpile
+      # first. .tmp/port sits two directories deep, exactly like test/portability, so the relative
+      # imports of dist/ still resolve; the vectors directory is passed explicitly because
+      # import.meta.url no longer points anywhere near it.
+      - name: Replay vectors (Node >= 22)
+        if: matrix.runtime == 'node' && matrix.version != '20'
+        run: |
+          node --experimental-strip-types test/portability/run-vectors.ts
+          node --experimental-strip-types test/portability/behaviour.ts
+
+      - name: Replay vectors (Node 20, transpiled)
+        if: matrix.runtime == 'node' && matrix.version == '20'
+        run: |
+          bunx tsc test/portability/run-vectors.ts test/portability/behaviour.ts \
+            --outDir .tmp/port --target es2022 --module esnext --moduleResolution bundler
+          node .tmp/port/run-vectors.js "$PWD/conformance/vectors"
+          node .tmp/port/behaviour.js
+
+      - name: Replay vectors (Deno)
+        if: matrix.runtime == 'deno'
+        run: |
+          deno run --allow-read test/portability/run-vectors.ts
+          deno run --allow-read test/portability/behaviour.ts
+
+  # ---------------------------------------------------------------------------------------------
+  # Cloudflare Workers. `nodejs_compat` is OFF, which is the only run in this project that *proves*
+  # rather than asserts that no Node built-in is reachable: an accidental `node:buffer` fails here
+  # and nowhere else. The second run turns the flag on as a smoke test — a consumer whose Worker
+  # already enables it must not be broken by that.
+  # ---------------------------------------------------------------------------------------------
+  workerd:
+    name: workerd
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - run: bun install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      # scripts/run-workerd-vectors.ts and test/portability/wrangler.jsonc belong to the
+      # w0-worker-sign-benchmark unit. Contract: it drives `wrangler dev` and exits non-zero unless
+      # failures === 0, with nodejs_compat off by default and on when NODEJS_COMPAT=1.
+      - name: Runner present
+        run: |
+          if [ ! -f scripts/run-workerd-vectors.ts ]; then
+            echo "missing scripts/run-workerd-vectors.ts (owned by the w0-worker-sign-benchmark unit)"
+            exit 1
+          fi
+
+      - name: Vectors on workerd (nodejs_compat off)
+        run: bun run test:workerd
+
+      - name: Vectors on workerd (nodejs_compat on, smoke)
+        env:
+          NODEJS_COMPAT: "1"
+        run: bun run test:workerd
+
+  # ---------------------------------------------------------------------------------------------
+  # Examples typecheck against the built dist/ — the same resolution a consumer gets. They are
+  # NEVER executed: they hit the live venue and move real funds.
+  # ---------------------------------------------------------------------------------------------
+  examples:
+    name: examples
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - run: bun install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Typecheck examples against dist/
+        run: bunx tsc -p tsconfig.examples.json --noEmit

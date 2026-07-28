@@ -1,0 +1,37 @@
+{
+  "note": [
+    "Gzipped bytes of each subpath's transitive relative-import graph in dist/, as emitted.",
+    "budgets = measured + ~15% headroom, rounded up to 256 B. Regenerate with",
+    "`bun run size -- --calibrate` and review the diff: a jump means a subpath pulled in a module",
+    "graph it did not have before.",
+    "These numbers include JSDoc, which tsc preserves and which is roughly two thirds of the bytes.",
+    "Measured 2026-07-26, the same graphs built with `tsc --removeComments` gzip to 108.1 KB at the",
+    "root, 16.5 KB for ./crypto, 28.7 KB for ./tx, 31.1 KB for ./ws, 12.6 KB for ./rest and",
+    "101.0 KB for ./client — closer to what a consumer bundles after minification.",
+    "docs/spec/08-extras-and-dx.md B4 proposed ceilings of 24 KB for ./crypto, 16 KB for ./tx,",
+    "20 KB for ./rest, 8 KB for ./ws and 60 KB for the root barrel. Those were guesses made before",
+    "any code existed; ./tx, ./ws and the root exceed them even comment-free. These budgets are",
+    "measured, so they gate regressions rather than aspirations."
+  ],
+  "measuredAt": "2026-07-26",
+  "budgets": {
+    ".": 403712,
+    "./crypto": 67584,
+    "./tx": 122112,
+    "./rest": 44544,
+    "./ws": 118272,
+    "./client": 354048,
+    "./config": 16128,
+    "./errors": 9472
+  },
+  "measured": {
+    ".": 351024,
+    "./crypto": 58585,
+    "./tx": 106039,
+    "./rest": 38634,
+    "./ws": 102721,
+    "./client": 307693,
+    "./config": 13908,
+    "./errors": 8128
+  }
+}

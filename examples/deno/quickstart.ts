@@ -1,0 +1,155 @@
+/**
+ * Deno, with no install step and no build step.
+ *
+ * - **What it does:** reads the market table and signs a transaction offline, on Deno, importing
+ *   the package straight from npm.
+ * - **Credentials:** none required. `LIGHTER_API_PRIVATE_KEY` is used if present; otherwise an
+ *   ephemeral key is generated so the example still runs.
+ * - **Network:** `LIGHTER_NETWORK`, default testnet (chain id 300). One public `GET`.
+ * - **Whether it moves real funds:** no. Nothing is submitted.
+ *
+ * ```sh
+ * # from a checkout of this repository — the bare specifier resolves via package.json
+ * deno run --allow-net --allow-env examples/deno/quickstart.ts
+ * ```
+ *
+ * In your own Deno project there is no checkout and no `node_modules`, so the specifiers carry the
+ * `npm:` prefix and nothing else changes:
+ *
+ * ```ts
+ * import { LighterClient } from "npm:lighter-ts/client";
+ * import { ApiKey } from "npm:lighter-ts/crypto";
+ * ```
+ *
+ * The imports below are the bare form because that is what resolves inside this repository and what
+ * the CI typecheck expects. The module graph is identical either way, and since this package has
+ * **zero runtime dependencies**, `npm:lighter-ts` pulls exactly one thing.
+ *
+ * ## Why Deno needs no adaptation
+ *
+ * The SDK imports no Node built-in and touches no Node global: no `node:crypto`, no `Buffer`, no
+ * filesystem. It uses `fetch`, `WebSocket`, `globalThis.crypto` and `BigInt`, all of which Deno
+ * provides natively. No polyfill, no `--compat`, no shim, no bundling.
+ *
+ * The one Deno-specific note is `process.env`, used below to read an optional key: Deno 2 provides
+ * a global `process`, so it works, but a Deno-only program would idiomatically write
+ * `Deno.env.get("…")`. It is not written that way here because this file is also typechecked with
+ * Node's type definitions.
+ *
+ * Deno is also the **fastest** of the three server runtimes on the signing path: 19.0 ns per
+ * base-field multiplication against Node 24.10's 28.0 and Bun 1.3.0's 34.6, roughly 1.6 ms per
+ * signature (`bench/README.md`, 2 000 000 iterations after warmup, desktop Apple Silicon).
+ */
+
+import { LighterClient, type MarketInfo } from "lighter-ts/client";
+import { ApiKey } from "lighter-ts/crypto";
+import {
+  buildCreateOrder,
+  CHAIN_ID,
+  type CreateOrderTx,
+  i16,
+  i64,
+  signTx,
+  txHashHex,
+  u8,
+  u32,
+} from "lighter-ts/tx";
+
+/**
+ * The helpers below are inlined rather than imported from `../env.ts`, unlike every other example
+ * in this directory.
+ *
+ * Deno resolves module specifiers literally: `import "../env.js"` looks for a file named `env.js`
+ * and does not fall back to `env.ts` the way Bun and `tsc` do. A quickstart you cannot copy out of
+ * the repository and run is not a quickstart, so these thirty lines stay local.
+ */
+interface Network {
+  readonly name: "testnet" | "mainnet";
+  readonly chainId: number;
+}
+
+/** Testnet unless told otherwise; mainnet needs a second, separate opt-in. */
+function selectNetwork(): Network {
+  const requested: string = process.env["LIGHTER_NETWORK"] ?? "testnet";
+  if (requested !== "testnet" && requested !== "mainnet") {
+    throw new Error('LIGHTER_NETWORK must be "testnet" or "mainnet"');
+  }
+  if (requested === "mainnet" && process.env["LIGHTER_ALLOW_MAINNET"] !== "yes") {
+    throw new Error("mainnet requires LIGHTER_ALLOW_MAINNET=yes");
+  }
+  // Explicit, always. The chain id is hash element 0 and is discoverable from no endpoint.
+  return {
+    name: requested,
+    chainId: requested === "mainnet" ? CHAIN_ID.mainnet : CHAIN_ID.testnet,
+  };
+}
+
+function optionalEnv(name: string): string | undefined {
+  const value: string | undefined = process.env[name];
+  return value === undefined || value.length === 0 ? undefined : value;
+}
+
+/** Lowercase hex, for printing a signature. */
+function toHex(bytes: Uint8Array): string {
+  let out: string = "";
+  for (const byte of bytes) out += byte.toString(16).padStart(2, "0");
+  return out;
+}
+
+/** Fixed, so the hash below is reproducible. Unix ms, 2030-01-01T00:00:00Z. */
+const EXPIRED_AT: bigint = 1_893_456_000_000n;
+
+async function main(): Promise<void> {
+  const network: Network = selectNetwork();
+  console.log(`deno quickstart — ${network.name}, chain id ${String(network.chainId)}`);
+
+  // ---- read (public) ----------------------------------------------------------------------------
+  const client: LighterClient = new LighterClient({ endpoint: network.name });
+  try {
+    await client.markets.load();
+    const market: MarketInfo = client.markets.get(optionalEnv("LIGHTER_MARKET") ?? "ETH");
+    console.log(
+      `${market.symbol}: market ${String(market.marketId)}, ` +
+        `size_decimals=${String(market.sizeDecimals)} price_decimals=${String(market.priceDecimals)}`,
+    );
+
+    // ---- sign (offline) -------------------------------------------------------------------------
+    const provided: string | undefined = optionalEnv("LIGHTER_API_PRIVATE_KEY");
+    const key: ApiKey = provided === undefined ? ApiKey.generate() : ApiKey.fromPrivateKey(provided);
+    if (provided === undefined) console.log("(no LIGHTER_API_PRIVATE_KEY — using an ephemeral key)");
+
+    const unsigned: CreateOrderTx = buildCreateOrder(
+      {
+        marketIndex: i16(market.marketId),
+        clientOrderIndex: i64(1n),
+        // Protocol integers. The human tier (`marketHandle`) is what converts decimal strings, and
+        // it reports what it converted them to — see `../submit-market-order.ts`.
+        baseAmount: i64(5_000n),
+        price: u32(250_000),
+        isAsk: u8(0),
+        orderType: u8(0),
+        timeInForce: u8(1),
+        reduceOnly: u8(0),
+        triggerPrice: u32(0),
+        orderExpiry: i64(EXPIRED_AT),
+      },
+      {
+        accountIndex: i64(1n),
+        apiKeyIndex: u8(1),
+        nonce: i64(0n),
+        expiredAt: i64(EXPIRED_AT),
+      },
+    );
+
+    console.log(`tx hash   ${txHashHex(unsigned, network.chainId)}`);
+    console.log(`signature ${toHex(signTx(unsigned, key, network.chainId).sig)}`);
+    console.log("\nNo install, no bundler, no native module, no WASM.");
+  } finally {
+    await client.close();
+  }
+}
+
+await main().catch((error: unknown): void => {
+  process.exitCode = 1;
+  console.error(error instanceof Error ? `${error.name}: ${error.message}` : String(error));
+});

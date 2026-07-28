@@ -1,0 +1,206 @@
+<!doctype html>
+<!--
+  Signing in the browser, with no bundler.
+
+  What it does:        generates an API keypair in the page, builds an L2CreateOrder, hashes it and
+                       signs it — all client-side, with a plain <script type="module">.
+  Credentials:         none. The keypair is generated in the page and never leaves it.
+  Network:             none is contacted. The chain id is chosen in the form and passed explicitly.
+  Whether it moves real funds: no. Nothing is submitted, and this page has no submit path at all.
+
+  Serve it from the repository root, so the relative paths below resolve into dist/:
+
+      bun run build
+      bunx serve .        # or: python3 -m http.server
+      open http://localhost:3000/examples/browser/index.html
+
+  ------------------------------------------------------------------------------------------------
+  No bundler, no dependency, no build step for the page itself
+
+  The import map below points the package's public subpaths at the emitted ESM in dist/. That is all
+  the setup there is: every relative import inside the package already carries an explicit `.js`
+  extension, which is what a browser's module loader requires, so nothing has to rewrite anything.
+
+  In an application you would instead `npm install lighter-ts` and let Vite, esbuild or Next.js
+  resolve `lighter-ts/crypto` through the package's exports map. This page exists to show that the
+  bundler is a convenience and not a requirement.
+
+  ------------------------------------------------------------------------------------------------
+  Three browser-specific facts
+
+  1. `User-Agent` is a forbidden header name in the browser. The fetch spec silently drops it, and
+     adding custom headers can promote a simple request into a CORS preflight that then fails. The
+     SDK detects a browser environment and does not attempt to set it (docs/decisions.md D5). This
+     page makes no request at all, so it never comes up here.
+  2. Signing is synchronous and stays that way. Nothing on the path uses `crypto.subtle.digest`,
+     which is async-only on the web platform and would force `sign()` to return a Promise
+     (docs/decisions.md D2). The signature below is produced in one tick.
+  3. A private key in a web page is a private key in a web page. This one is generated in memory,
+     is never persisted and is never sent anywhere — and that is the only version of this that is
+     defensible. Do not paste a funded account's key into a browser.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>lighter-ts — signing in the browser</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+        margin: 0 auto; padding: 2rem 1.25rem; max-width: 62rem;
+      }
+      h1 { font-size: 1.1rem; margin: 0 0 .25rem; }
+      p.lede { margin: 0 0 1.5rem; opacity: .75; }
+      fieldset { border: 1px solid currentColor; border-radius: 4px; padding: .75rem 1rem 1rem; margin: 0 0 1rem; opacity: .9; }
+      label { display: inline-block; margin-right: 1.25rem; }
+      input, select { font: inherit; padding: .2rem .35rem; }
+      button { font: inherit; padding: .4rem .9rem; cursor: pointer; }
+      pre { white-space: pre-wrap; word-break: break-all; border: 1px solid currentColor; border-radius: 4px; padding: 1rem; opacity: .9; }
+      .warn { opacity: .75; }
+    </style>
+  </head>
+  <body>
+    <h1>lighter-ts — signing in the browser</h1>
+    <p class="lede">
+      No bundler, no install, no network. An ephemeral key is generated in this page, a transaction
+      is built and signed, and nothing is submitted.
+    </p>
+
+    <fieldset>
+      <legend>order</legend>
+      <label>chain
+        <select id="chain">
+          <option value="300" selected>testnet (300)</option>
+          <option value="304">mainnet (304)</option>
+        </select>
+      </label>
+      <label>market index <input id="market" value="0" size="4" inputmode="numeric" /></label>
+      <label>size <input id="size" value="0.5" size="8" /></label>
+      <label>price <input id="price" value="2500.00" size="10" /></label>
+      <label>side
+        <select id="side"><option value="0" selected>buy</option><option value="1">sell</option></select>
+      </label>
+      <p class="warn">
+        The size and price above are decimal strings and are scaled here by the market's declared
+        decimals using exact integer arithmetic — never a float parse. In an application
+        the SDK's own market handle does this for you and reports what it produced.
+      </p>
+      <button id="go" type="button">generate a key and sign</button>
+    </fieldset>
+
+    <pre id="out">ready.</pre>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "lighter-ts": "../../dist/index.js",
+          "lighter-ts/crypto": "../../dist/crypto/index.js",
+          "lighter-ts/tx": "../../dist/tx/index.js",
+          "lighter-ts/client": "../../dist/client/index.js",
+          "lighter-ts/rest": "../../dist/rest/index.js",
+          "lighter-ts/ws": "../../dist/ws/index.js",
+          "lighter-ts/config": "../../dist/config/index.js",
+          "lighter-ts/errors": "../../dist/errors.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import { ApiKey } from "lighter-ts/crypto";
+      import { buildCreateOrder, i16, i64, signTx, txHashHex, txSubmission, u8, u32 } from "lighter-ts/tx";
+
+      const out = document.getElementById("out");
+      const log = (text) => { out.textContent = text; };
+
+      /**
+       * Scale a decimal string by 10^decimals and return the resulting *digits*, exactly.
+       *
+       * String surgery, then one integer parse — the whole point. A float multiply loses money
+       * (`8.2 * 1e6` is 8199999.999999999), and `int(price.replace(".", ""))` is right only while
+       * the string happens to be padded to the market's precision: "2500.1" would become 25001,
+       * off by 100x (docs/protocol-notes.md §9). A string carrying more precision than the market
+       * can express is rejected rather than truncated.
+       */
+      function scaledDigits(value, decimals) {
+        if (!/^[0-9]+(\.[0-9]+)?$/.test(value)) throw new Error(`not a decimal number: ${value}`);
+        const [whole, frac = ""] = value.split(".");
+        if (frac.length > decimals) {
+          throw new Error(`${value} carries ${frac.length} decimals; this field allows ${decimals}`);
+        }
+        return whole + frac.padEnd(decimals, "0");
+      }
+
+      function hex(bytes) {
+        return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+      }
+
+      document.getElementById("go").addEventListener("click", () => {
+        try {
+          const chainId = Number.parseInt(document.getElementById("chain").value, 10);
+          const marketIndex = Number.parseInt(document.getElementById("market").value, 10);
+          const isAsk = Number.parseInt(document.getElementById("side").value, 10);
+
+          // ETH-PERP's decimals on testnet. In an application these come from `/orderBooks`, via
+          // `client.markets.get(symbol)`; they are hard-coded here so the page makes no request.
+          const SIZE_DECIMALS = 4;
+          const PRICE_DECIMALS = 2;
+
+          // `BaseAmount` is an int64 and so a BigInt; `Price` is a uint32, whose entire domain sits
+          // inside the safe-integer range, so the codec types it a JS number. Both are exact
+          // integer counts parsed from the digits — neither is floating-point money.
+          const baseAmount = BigInt(scaledDigits(document.getElementById("size").value.trim(), SIZE_DECIMALS));
+          const price = Number.parseInt(scaledDigits(document.getElementById("price").value.trim(), PRICE_DECIMALS), 10);
+
+          // Generated here, held in memory, never persisted and never sent. `ApiKey.generate()`
+          // draws from `globalThis.crypto` inside the call.
+          const key = ApiKey.generate();
+
+          // 2030-01-01T00:00:00Z, in unix milliseconds. Fixed so the hash is reproducible.
+          const expiredAt = 1893456000000n;
+
+          const unsigned = buildCreateOrder(
+            {
+              marketIndex: i16(marketIndex),
+              clientOrderIndex: i64(1n),
+              baseAmount: i64(baseAmount),
+              price: u32(price),
+              isAsk: u8(isAsk),
+              orderType: u8(0),      // LIMIT
+              timeInForce: u8(1),    // GOOD_TILL_TIME
+              reduceOnly: u8(0),
+              triggerPrice: u32(0),
+              orderExpiry: i64(expiredAt),
+            },
+            { accountIndex: i64(1n), apiKeyIndex: u8(1), nonce: i64(0n), expiredAt: i64(expiredAt) },
+          );
+
+          const hash = txHashHex(unsigned, chainId);
+          const signed = signTx(unsigned, key, chainId);   // synchronous — no await anywhere
+          const submission = txSubmission(signed, chainId);
+
+          log(
+            [
+              `chain id     ${chainId}  (explicit — hash element 0, never inferred from a URL)`,
+              `public key   ${key.publicKeyHex}`,
+              ``,
+              `baseAmount   ${baseAmount}   (integer, 10^-${SIZE_DECIMALS})`,
+              `price        ${price}   (integer, 10^-${PRICE_DECIMALS})`,
+              ``,
+              `tx hash      ${hash}`,
+              `signature    ${hex(signed.sig)}`,
+              `             ${signed.sig.length} bytes, produced synchronously`,
+              ``,
+              `tx_type      ${submission.txType}`,
+              `tx_info      ${submission.txInfo}`,
+              ``,
+              `Nothing was submitted. This page has no submit path.`,
+            ].join("\n"),
+          );
+        } catch (error) {
+          log(`${error?.name ?? "Error"}: ${error?.message ?? String(error)}`);
+        }
+      });
+    </script>
+  </body>
+</html>
