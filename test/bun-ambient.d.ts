@@ -16,8 +16,17 @@ declare namespace Bun {
 
   interface BunStatic {
     readonly argv: string[];
+    readonly env: Record<string, string | undefined>;
     readonly version: string;
-    file(path: string | URL): { text(): Promise<string> };
+    readonly Glob: {
+      new (pattern: string): {
+        scan(directory?: string): AsyncIterable<string>;
+      };
+    };
+    file(path: string | URL): {
+      exists(): Promise<boolean>;
+      text(): Promise<string>;
+    };
     gzipSync(input: Uint8Array): Uint8Array;
     serve(options: Record<string, unknown>): {
       readonly port: number;
