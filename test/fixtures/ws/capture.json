@@ -1,33 +1,11 @@
 {
- "capturedFromUrl": "wss://mainnet.zklighter.elliot.ai/stream",
- "durationSeconds": 40,
- "subscribedChannels": [
-  "order_book/1",
-  "trade/1",
-  "market_stats/1"
- ],
- "note": "Captured with the global WebSocket only, no SDK code. Frame counts are capped per (direction, type, channel) at 6 so rare frames are not drowned out by book updates.",
- "summary": {
-  "frameCountsByType": {},
-  "keepalive": {
-   "pingCount": 0,
-   "pingTimesMs": [],
-   "gapsMs": [],
-   "note": "Application-level JSON ping/pong, not WebSocket control frames."
-  },
-  "close": {
-   "code": 1002,
-   "reason": "Expected 101 status code",
-   "wasClean": false
+  "capturedFromUrl": "wss://mainnet.zklighter.elliot.ai/stream?encoding=json",
+  "frames": [],
+  "captureFailed": {
+    "reason": "geo-restricted",
+    "apiCode": 20558,
+    "apiMessage": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
+    "observedCloseCode": 1002,
+    "observedCloseReason": "Expected 101 status code"
   }
- },
- "frames": [],
- "captureFailed": {
-  "reason": "geo-restricted",
-  "apiCode": 20558,
-  "apiMessage": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "observedCloseCode": 1002,
-  "observedCloseReason": "Expected 101 status code",
-  "note": "The WebSocket upgrade is refused before any frame is exchanged. A plain HTTPS GET to the same stream URL returns HTTP 400 with the code-20558 body above, which is the only way to see the real reason -- a failed upgrade carries no payload. Browser-like User-Agent and Origin headers make no difference; this is jurisdiction, not bot detection. Re-run this capture from a permitted jurisdiction to populate the fixtures."
- }
 }

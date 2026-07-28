@@ -1,0 +1,6 @@
+{
+  "family": "mark_price_candle",
+  "status": "not-captured",
+  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
+  "probes": []
+}

@@ -1,0 +1,30 @@
+{
+  "observations": [
+    {
+      "session": "handshake:encoding=json",
+      "close": {
+        "tMs": 159,
+        "wallMs": 1785275573793,
+        "code": 1002,
+        "reason": "Expected 101 status code",
+        "wasClean": false
+      }
+    },
+    {
+      "session": "handshake:no-query",
+      "close": {
+        "tMs": 155,
+        "wallMs": 1785275573793,
+        "code": 1002,
+        "reason": "Expected 101 status code",
+        "wasClean": false
+      }
+    }
+  ],
+  "preflight": {
+    "status": 400,
+    "raw": "{\n    \"code\": 20558,\n    \"message\": \"You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms\"\n}",
+    "code": 20558,
+    "message": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms"
+  }
+}

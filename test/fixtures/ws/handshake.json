@@ -1,0 +1,62 @@
+{
+  "encoded": {
+    "label": "handshake:encoding=json",
+    "url": "wss://mainnet.zklighter.elliot.ai/stream?encoding=json",
+    "opened": false,
+    "frames": [],
+    "close": {
+      "tMs": 159,
+      "wallMs": 1785275573793,
+      "code": 1002,
+      "reason": "Expected 101 status code",
+      "wasClean": false
+    },
+    "binaryFrames": [],
+    "errorEvent": false,
+    "expectedDurationMs": 5000,
+    "observedDurationMs": 261,
+    "endCause": "server-close"
+  },
+  "defaultEncoding": {
+    "label": "handshake:no-query",
+    "url": "wss://mainnet.zklighter.elliot.ai/stream",
+    "opened": false,
+    "frames": [],
+    "close": {
+      "tMs": 155,
+      "wallMs": 1785275573793,
+      "code": 1002,
+      "reason": "Expected 101 status code",
+      "wasClean": false
+    },
+    "binaryFrames": [],
+    "errorEvent": false,
+    "expectedDurationMs": 5000,
+    "observedDurationMs": 257,
+    "endCause": "server-close"
+  },
+  "observation": {
+    "encoded": {
+      "connectedFrameIndex": -1,
+      "earlySubscribeFrameIndex": -1,
+      "earlySubscribeWasBeforeConnected": false,
+      "earlySubscriptionResponseFrameIndex": -1,
+      "earlySubscriptionHonored": false,
+      "binaryFrameCount": 0
+    },
+    "defaultEncoding": {
+      "connectedFrameIndex": -1,
+      "earlySubscribeFrameIndex": -1,
+      "earlySubscribeWasBeforeConnected": false,
+      "earlySubscriptionResponseFrameIndex": -1,
+      "earlySubscriptionHonored": false,
+      "binaryFrameCount": 0
+    }
+  },
+  "preflight": {
+    "status": 400,
+    "raw": "{\n    \"code\": 20558,\n    \"message\": \"You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms\"\n}",
+    "code": 20558,
+    "message": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms"
+  }
+}
