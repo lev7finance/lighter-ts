@@ -1,0 +1,287 @@
+{
+  "family": "mark_price_candle",
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "mark_price_candle/1/1m",
+      "session": {
+        "label": "channel:mark_price_candle/1/1m",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"session_id\":\"49afb1f0-3b19-4624-b384-ddebac4f0218\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"mark_price_candle/1/1m\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 660,
+            "wallMs": 1785276568622,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":306}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276568568,\"type\":\"subscribed/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 1066,
+            "wallMs": 1785276569028,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":314}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276568889,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 1480,
+            "wallMs": 1785276569442,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":318}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276569388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 1982,
+            "wallMs": 1785276569945,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":325}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276569888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 2480,
+            "wallMs": 1785276570442,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":333}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276570388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 2980,
+            "wallMs": 1785276570942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":336}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276570888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 3493,
+            "wallMs": 1785276571455,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63989.3,\"c\":63989.3,\"sc\":340}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276571387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 4016,
+            "wallMs": 1785276571978,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":348}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276571888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 4541,
+            "wallMs": 1785276572503,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":351}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276572388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 5066,
+            "wallMs": 1785276573028,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":363}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276572888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 5482,
+            "wallMs": 1785276573444,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":379}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276573387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 5982,
+            "wallMs": 1785276573944,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":382}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276573888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 6482,
+            "wallMs": 1785276574444,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":384}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276574388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 6979,
+            "wallMs": 1785276574942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":386}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276574887,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 7482,
+            "wallMs": 1785276575444,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":390}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276575387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 7983,
+            "wallMs": 1785276575945,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":404}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276575888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 8480,
+            "wallMs": 1785276576442,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":410}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276576388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 8981,
+            "wallMs": 1785276576943,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":413}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276576888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 9486,
+            "wallMs": 1785276577448,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":418}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276577388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 9981,
+            "wallMs": 1785276577943,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":422}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276577887,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 10510,
+            "wallMs": 1785276578472,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":425}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276578387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 11029,
+            "wallMs": 1785276578991,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":427}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276578887,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 11553,
+            "wallMs": 1785276579515,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":433}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276579388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 11980,
+            "wallMs": 1785276579942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":434}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276579887,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 12481,
+            "wallMs": 1785276580443,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":437}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276580388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 12980,
+            "wallMs": 1785276580942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":440}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276580888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 13481,
+            "wallMs": 1785276581443,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":443}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276581388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 13981,
+            "wallMs": 1785276581943,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":445}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276581888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 14504,
+            "wallMs": 1785276582467,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":446}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276582387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 15023,
+            "wallMs": 1785276582986,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":448}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276582888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 15547,
+            "wallMs": 1785276583509,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":456}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276583387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 15980,
+            "wallMs": 1785276583942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":458}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276583888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 16480,
+            "wallMs": 1785276584442,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":462}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276584388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 16981,
+            "wallMs": 1785276584943,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":478}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276584888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 17516,
+            "wallMs": 1785276585478,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":480}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276585387,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 18042,
+            "wallMs": 1785276586004,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":483}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276585887,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 18567,
+            "wallMs": 1785276586529,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":484}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276586388,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 18980,
+            "wallMs": 1785276586942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":490}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276586888,\"type\":\"update/mark_price_candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 19980,
+            "wallMs": 1785276587942,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":63990.3,\"h\":63990.3,\"l\":63972,\"c\":63972,\"sc\":492}],\"channel\":\"mark_price_candle:1:1m\",\"timestamp\":1785276587888,\"type\":\"update/mark_price_candle\"}"
+          }
+        ],
+        "close": {
+          "tMs": 20000,
+          "wallMs": 1785276587963,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20101,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/mark_price_candle",
+        "firstInboundChannel": "mark_price_candle:1:1m",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "totalInboundDataFrames": 39,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "scriptVersion": "2",
+  "host": "testnet.zklighter.elliot.ai",
+  "market": "1",
+  "account": "8",
+  "argv": [
+    "--host",
+    "testnet.zklighter.elliot.ai",
+    "--market",
+    "1",
+    "--account",
+    "8",
+    "--keepalive-only",
+    "--keepalive-seconds",
+    "360",
+    "--idle-seconds",
+    "180"
+  ],
+  "startedAt": "2026-07-28T22:20:09.123Z",
+  "endedAt": "2026-07-28T22:26:20.831Z",
+  "egressIp": "99.35.221.133",
+  "clientEgressIp": "99.35.221.133",
+  "relay": null,
+  "authTokenSupplied": false,
+  "spotMarket": "2048",
+  "poolAccount": "281474976710654",
+  "poolAccountDiscoverySource": "account_all/1 snapshot frame 2",
+  "status": "focused-capture-complete"
+}

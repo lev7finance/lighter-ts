@@ -1,0 +1,70 @@
+{
+  "family": "height",
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "height",
+      "session": {
+        "label": "channel:height",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 497,
+            "wallMs": 1785276588561,
+            "raw": "{\"session_id\":\"7f90376c-16c8-4d58-8d16-ef4d3829da4d\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 497,
+            "wallMs": 1785276588561,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 1115,
+            "wallMs": 1785276589178,
+            "raw": "{\"channel\":\"height\",\"height\":451230,\"timestamp\":1785276589124,\"type\":\"subscribed/height\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 3613,
+            "wallMs": 1785276591677,
+            "raw": "{\"channel\":\"height\",\"height\":451244,\"timestamp\":1785276591623,\"type\":\"update/height\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 19113,
+            "wallMs": 1785276607177,
+            "raw": "{\"channel\":\"height\",\"height\":451245,\"timestamp\":1785276607123,\"type\":\"update/height\"}"
+          }
+        ],
+        "close": {
+          "tMs": 20003,
+          "wallMs": 1785276608067,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20104,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/height",
+        "firstInboundChannel": "height",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4
+        ],
+        "totalInboundDataFrames": 3,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
+}

@@ -1,0 +1,1010 @@
+{
+ "units": [
+  {
+   "key": "w0-ws-live-capture",
+   "title": "Capture real WebSocket traffic before the WS layer is designed",
+   "wave": 0,
+   "labels": [
+    "websocket",
+    "testing"
+   ],
+   "files": [
+    "scripts/capture-ws-fixtures.ts",
+    "test/fixtures/ws/"
+   ],
+   "dependsOn": [],
+   "risk": "medium",
+   "intent": "Raw socket script, no SDK. Record real frames for every channel: subscribe/ack shapes, channel-key format, snapshot vs update payloads, keepalive timing, close codes, truncation. The WS units are designed FROM these fixtures, so this must land first."
+  },
+  {
+   "key": "w0-rest-golden-fixtures",
+   "title": "Capture live REST responses as golden fixtures",
+   "wave": 0,
+   "labels": [
+    "rest",
+    "testing"
+   ],
+   "files": [
+    "scripts/refresh-fixtures.ts",
+    "test/fixtures/rest/"
+   ],
+   "dependsOn": [],
+   "risk": "low",
+   "intent": "Commit real responses for the core read endpoints. Must include /withdrawalDelay (returns no `code` field at all) and an unauthenticated call to an authed endpoint (reveals the auth query-param/header split). These are evidence for the model layer, not a test of it."
+  },
+  {
+   "key": "w0-worker-sign-benchmark",
+   "title": "Gate: full sign() and verify() CPU time on a deployed Worker",
+   "wave": 0,
+   "labels": [
+    "infra",
+    "crypto",
+    "testing"
+   ],
+   "files": [
+    "test/portability/worker.ts",
+    "test/portability/wrangler.jsonc",
+    "scripts/run-workerd-vectors.ts"
+   ],
+   "dependsOn": [],
+   "risk": "high",
+   "intent": "docs/decisions.md D4. Desktop numbers are 19-35 ns/mul across Bun/Node/Deno, 15-25x better than the feared threshold, but that is extrapolated from a hot loop on Apple Silicon. This measures a COMPLETE signature on a deployed Worker via cloudflare.cpu_time_ms at p50/p99. Not wrangler dev, not extrapolation. Blocks wave 2."
+  },
+  {
+   "key": "w0-openapi-snapshot",
+   "title": "Vendor and pin the OpenAPI snapshot",
+   "wave": 0,
+   "labels": [
+    "rest",
+    "infra"
+   ],
+   "files": [
+    "spec/openapi.snapshot.json",
+    "spec/README.md"
+   ],
+   "dependsOn": [],
+   "risk": "low",
+   "intent": "spec/openapi.snapshot.json does not exist in this repo. Copy it from the Python SDK, pin its digest, and document in spec/README.md why it must never be authoritative: it is unversioned, demonstrably wrong in places, and there is no live endpoint to refresh from (all /swagger and /openapi paths return 403)."
+  },
+  {
+   "key": "w0-ua-probe",
+   "title": "Probe the CDN's User-Agent behaviour from workerd",
+   "wave": 0,
+   "labels": [
+    "transport",
+    "testing"
+   ],
+   "files": [
+    "scripts/probe-user-agent.ts"
+   ],
+   "dependsOn": [],
+   "risk": "medium",
+   "intent": "docs/decisions.md D5. Two measured documents contradicted each other and both were right for their own runtime. The existing evidence is curl-based and says nothing about what workerd's DEFAULT User-Agent does against the CDN. Hit /orderBooks from workerd with no override and record the result. If it 403s, the SDK fails in its primary deployment target."
+  },
+  {
+   "key": "repo-scaffold",
+   "title": "Scaffold the package: tsconfigs, bunfig, licence, CI skeleton",
+   "wave": 1,
+   "labels": [
+    "infra"
+   ],
+   "files": [
+    "tsconfig.json",
+    "tsconfig.build.json",
+    "tsconfig.bundler.json",
+    "tsconfig.examples.json",
+    "bunfig.toml",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    ".github/dependabot.yml",
+    "scripts/check-no-deps.ts"
+   ],
+   "dependsOn": [],
+   "risk": "low",
+   "intent": "Everything except package.json and the CI workflow files, which belong to the final integration unit so leaf units never contend for them."
+  },
+  {
+   "key": "errors-and-redaction",
+   "title": "Error hierarchy and secret redaction",
+   "wave": 1,
+   "labels": [
+    "infra"
+   ],
+   "files": [
+    "src/errors.ts",
+    "src/util/redact.ts",
+    "src/version.ts"
+   ],
+   "dependsOn": [
+    "repo-scaffold"
+   ],
+   "risk": "low",
+   "intent": "One LighterError hierarchy with structural type guards, never tuples. Must carry the raw numeric API code intact -- neither reference SDK documents the code set, so unknown codes must survive rather than being flattened. Redaction covers private keys and auth tokens in both log output and error messages."
+  },
+  {
+   "key": "util-primitives",
+   "title": "Byte, JSON and exact-decimal primitives",
+   "wave": 1,
+   "labels": [
+    "infra"
+   ],
+   "files": [
+    "src/util/bytes.ts",
+    "src/util/json.ts",
+    "src/util/decimal.ts"
+   ],
+   "dependsOn": [
+    "errors-and-redaction"
+   ],
+   "risk": "medium",
+   "intent": "No Buffer, no btoa, no Node built-ins. decimal.ts is load-bearing for money: exact decimal <-> bigint with explicit rounding modes. See docs/protocol-notes.md section 9 for the four float hazards in the reference that these must not reproduce."
+  },
+  {
+   "key": "config-endpoints",
+   "title": "Endpoint profiles and injectable runtime config",
+   "wave": 1,
+   "labels": [
+    "infra"
+   ],
+   "files": [
+    "src/config/endpoints.ts",
+    "src/config/config.ts",
+    "src/config/index.ts"
+   ],
+   "dependsOn": [
+    "util-primitives"
+   ],
+   "risk": "low",
+   "intent": "Chain ID is bound to the profile (mainnet 304, testnet 300) and is an input to every transaction hash -- it is not discoverable from /systemConfig. fetch, WebSocket and now() are injectable so tests need no network and Workers can supply its own globals."
+  },
+  {
+   "key": "crypto-field",
+   "title": "GF(p) base field arithmetic",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/field/constants.ts",
+    "src/crypto/field/fp.ts"
+   ],
+   "dependsOn": [
+    "errors-and-redaction"
+   ],
+   "risk": "high",
+   "intent": "p = 2^64 - 2^32 + 1. Canonical bigint throughout. Use plain (a*b) % P -- measured 2.5-4x faster than hand-folded reduction on every engine (bench/README.md), which inverts the Go intuition. Pinned by conformance/vectors/goldilocks.json including nonCanonicalNotes."
+  },
+  {
+   "key": "crypto-fp5",
+   "title": "GF(p^5) quintic extension arithmetic",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/field/fp5.ts"
+   ],
+   "dependsOn": [
+    "crypto-field"
+   ],
+   "risk": "high",
+   "intent": "GF(p)[X]/(X^5 - 3). Pinned by conformance/vectors/gfp5.json, 46 cases x 18 operations. Legendre returns a field element (1, p-1, or 0), not a boolean. sqrt(0) returns (0, true) -- a zero guard breaks vector case 0. Reject negative repeated-Frobenius counts."
+  },
+  {
+   "key": "poseidon2-constants",
+   "title": "Generate the Poseidon2 constants module from vectors",
+   "wave": 1,
+   "labels": [
+    "crypto",
+    "infra"
+   ],
+   "files": [
+    "scripts/gen-poseidon2-constants.ts",
+    "src/crypto/poseidon2/constants.generated.ts"
+   ],
+   "dependsOn": [
+    "repo-scaffold"
+   ],
+   "risk": "low",
+   "intent": "All 130 constants are already dumped mechanically into conformance/vectors/poseidon2.json under `constants`. Generate the module from that file and pin its digest. Do not transcribe by hand: a one-digit slip is wrong for every input and traceable to nothing."
+  },
+  {
+   "key": "poseidon2-permutation",
+   "title": "Poseidon2 permutation",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/poseidon2/permutation.ts"
+   ],
+   "dependsOn": [
+    "crypto-field",
+    "poseidon2-constants"
+   ],
+   "risk": "high",
+   "intent": "Width 12, x^7, 4 full / 22 partial / 4 full, and a linear layer BEFORE round 0. The 4-lane external step reads original inputs -- snapshot each chunk before writing or the permutation is silently wrong. Internal layer is sum + state[i]*diag[i] over all 12 lanes, diagonal used raw, lane 0 not special-cased. See docs/protocol-notes.md section 2."
+  },
+  {
+   "key": "poseidon2-sponge",
+   "title": "Poseidon2 sponge and hash wrappers",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/poseidon2/index.ts"
+   ],
+   "dependsOn": [
+    "poseidon2-permutation",
+    "crypto-fp5"
+   ],
+   "risk": "high",
+   "intent": "hashToQuinticExtension, hashNoPad, hashNToOne, hashTwoToOne, hashNToMNoPad. hashTwoToOne builds an 8-element input with capacity lanes zero, not a 12-lane compression. Guard hashNToMNoPad against non-positive output counts -- the reference loops forever. Only ONE Poseidon2 is needed despite the reference importing two variants."
+  },
+  {
+   "key": "crypto-scalar",
+   "title": "Scalar field Z/nZ and its 40-byte codec",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/scalar.ts",
+    "src/crypto/field/recode.ts"
+   ],
+   "dependsOn": [
+    "crypto-field"
+   ],
+   "risk": "high",
+   "intent": "The decoder REDUCES and never rejects. CRITICAL: JavaScript % follows the sign of the dividend, so every subtraction and the signature equation need modN(x) = ((x % n) + n) % n. Getting this wrong makes signing fail while every other layer is correct. See docs/protocol-notes.md section 5.0."
+  },
+  {
+   "key": "crypto-point",
+   "title": "ECgFp5 point arithmetic and codec",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/point.ts"
+   ],
+   "dependsOn": [
+    "crypto-fp5"
+   ],
+   "risk": "high",
+   "intent": "Prime order, cofactor 1. Pinned by conformance/vectors/curve.json. Note encode() returns non-canonical limbs in the reference (generator encodes as ORDER+4, canonically 4) -- we canonicalize and the bytes agree."
+  },
+  {
+   "key": "crypto-scalarmul",
+   "title": "Scalar multiplication",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/scalarmul.ts"
+   ],
+   "dependsOn": [
+    "crypto-point",
+    "crypto-scalar"
+   ],
+   "risk": "high",
+   "intent": "Windowed, branchless table lookup, [s]P and [s]G + [e]P. Signing is fixed-base [k]G, so a precomputed comb table on G is the pre-authorized fallback if the wave-0 Worker gate fails (docs/decisions.md D4) -- structure the code so it can be added without a rewrite."
+  },
+  {
+   "key": "crypto-nonce",
+   "title": "Hedged-deterministic signing nonce -- SECURITY GATED",
+   "wave": 1,
+   "labels": [
+    "crypto",
+    "testing"
+   ],
+   "files": [
+    "src/crypto/nonce.ts"
+   ],
+   "dependsOn": [
+    "poseidon2-sponge",
+    "crypto-scalar"
+   ],
+   "risk": "high",
+   "intent": "docs/decisions.md D2. Derive k from private key + message hash mixed with fresh randomness, using Poseidon2 (NOT a hand-rolled SHA-256). A broken derivation passes every signature conformance test, because verification cannot see where k came from, and leaks the key on the second signature. This unit does not merge without: fixed (sk,msg,entropy)->k vectors including all-zero entropy, same-key/different-message, different-key/same-message, k in [1,n), and a nonce-reuse test that actually recovers the private key. Never call crypto.getRandomValues at module scope -- Workers forbids it."
+  },
+  {
+   "key": "crypto-schnorr-key",
+   "title": "Schnorr sign/verify and the ApiKey type",
+   "wave": 1,
+   "labels": [
+    "crypto"
+   ],
+   "files": [
+    "src/crypto/schnorr.ts",
+    "src/crypto/key.ts",
+    "src/crypto/index.ts"
+   ],
+   "dependsOn": [
+    "crypto-scalarmul",
+    "poseidon2-sponge",
+    "crypto-nonce"
+   ],
+   "risk": "high",
+   "intent": "80-byte signature: s then e, each 40 bytes LE. REJECT the neutral public key unconditionally, with no opt-out flag -- it is a universal forgery (docs/decisions.md D1). Sign/verify/key import use REDUCING parsers; fp5FromBytes reduces, fp5FromBytesStrict rejects (D3). The `malleable` vectors in schnorr.json are part of this unit's gate."
+  },
+  {
+   "key": "tx-constants",
+   "title": "Protocol constants, enums and branded integer types",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/constants.ts",
+    "src/tx/enums.ts",
+    "src/tx/brands.ts"
+   ],
+   "dependsOn": [
+    "errors-and-redaction"
+   ],
+   "risk": "low",
+   "intent": "Every bound and tick from the reference, reproduced exactly -- these are protocol values. Branded U8/U16/I16/U32/I64/U64 with smart constructors so an int64 cannot be passed where a uint32 belongs."
+  },
+  {
+   "key": "tx-field-encode",
+   "title": "Protocol integer to field element encoding",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/field-encode.ts"
+   ],
+   "dependsOn": [
+    "tx-constants",
+    "crypto-field"
+   ],
+   "risk": "high",
+   "intent": "Negative values sign-extend to 64 bits then reduce: -1 becomes 4294967294, NOT p-1. The lo/hi split is per-FIELD not per-width -- exactly four sites (Transfer.Amount, Transfer.USDCFee, Withdraw.Amount, UpdateMargin.USDCAmount). BaseAmount and OrderExpiry both exceed 32 bits and are NOT split. UpdateMargin uses an ARITHMETIC shift and negative values are reachable. See docs/protocol-notes.md section 3."
+  },
+  {
+   "key": "tx-attributes",
+   "title": "Transaction attribute registry and hash aggregation",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/attributes.ts"
+   ],
+   "dependsOn": [
+    "tx-field-encode",
+    "poseidon2-sponge"
+   ],
+   "risk": "high",
+   "intent": "Nonzero types ascending, padded to 4, each contributing TWO elements (type, value) including padding zeros. Empty set returns the tx hash directly as 40 LE bytes; otherwise concatenate the two 5-element hashes and re-hash. Pinned by tx.json attributeHashes."
+  },
+  {
+   "key": "tx-schema-engine",
+   "title": "Declarative schema vocabulary, generic hasher and JSON emitter",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/schema.ts",
+    "src/tx/hash.ts",
+    "src/tx/serialize.ts"
+   ],
+   "dependsOn": [
+    "tx-attributes"
+   ],
+   "risk": "high",
+   "intent": "One data-driven table drives hashing AND serialization so a new transaction type is one entry, not three code sites. serialize.ts is hand-rolled because JSON.stringify cannot emit bigint."
+  },
+  {
+   "key": "tx-schemas-orders",
+   "title": "Order transaction schemas and types",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/schemas/orders.ts",
+    "src/tx/types/orders.ts",
+    "src/tx/grouped-hash.ts"
+   ],
+   "dependsOn": [
+    "tx-schema-engine"
+   ],
+   "risk": "medium",
+   "intent": "Codes 14, 15, 16, 17, 28. Grouped orders fold leg hashes pairwise SEEDED WITH LEG 0 -- the reference initializes an empty accumulator and then never uses it. Each leg contributes exactly 10 elements."
+  },
+  {
+   "key": "tx-schemas-account",
+   "title": "Account, pool and staking transaction schemas",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/schemas/account.ts",
+    "src/tx/types/account.ts"
+   ],
+   "dependsOn": [
+    "tx-schema-engine"
+   ],
+   "risk": "medium",
+   "intent": "Codes 8, 9, 10, 11, 12, 13, 18, 19, 20, 29, 35, 36, 41, 42, 45. change_pub_key appends the 40-byte public key as five field elements after the header."
+  },
+  {
+   "key": "tx-validate-orders",
+   "title": "Order validation",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/validate/orders.ts"
+   ],
+   "dependsOn": [
+    "tx-schemas-orders"
+   ],
+   "risk": "medium",
+   "intent": "Every rule from the reference with the exact error per violation. Spot markets cannot be reduce-only; stop/take-profit require perps, a trigger price and an expiry."
+  },
+  {
+   "key": "tx-validate-grouped",
+   "title": "Grouped order validation",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/validate/grouped.ts"
+   ],
+   "dependsOn": [
+    "tx-validate-orders"
+   ],
+   "risk": "medium",
+   "intent": "OTO and OCO take exactly 2 legs, OTOCO exactly 3, each with distinct rules on side, nil-ness of size, reduce-only, and expiry agreement. See docs/protocol-notes.md section 4."
+  },
+  {
+   "key": "tx-validate-account",
+   "title": "Account transaction validation",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/validate/account.ts"
+   ],
+   "dependsOn": [
+    "tx-schemas-account"
+   ],
+   "risk": "medium",
+   "intent": "Public pool and staking pool indices must sit in the sub-account range (>= 2^47). The per-market cancel-all attribute is only legal with ImmediateCancelAll. UpdateMargin has no lower bound, so negative amounts are valid input."
+  },
+  {
+   "key": "tx-l1-templates",
+   "title": "L1 EIP-191 message templates",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/l1/hex16.ts",
+    "src/tx/l1/templates.ts",
+    "src/tx/l1/eip191.ts",
+    "src/tx/l1/signer.ts",
+    "src/tx/l1/attach.ts",
+    "src/tx/l1/index.ts"
+   ],
+   "dependsOn": [
+    "tx-constants",
+    "tx-schemas-account"
+   ],
+   "risk": "medium",
+   "intent": "FOUR flows, not three: change_pub_key, transfer, approve_integrator, create_sub_account. Every numeric argument renders as 0x plus exactly 16 zero-padded lowercase hex digits. Pinned byte-for-byte by tx.json l1Messages. This unit builds the MESSAGE and defines the injected L1Signer interface -- it ships no secp256k1 (docs/decisions.md D6)."
+  },
+  {
+   "key": "tx-pipeline-builders",
+   "title": "Transaction builders and the sign/submit pipeline",
+   "wave": 2,
+   "labels": [
+    "codec"
+   ],
+   "files": [
+    "src/tx/opts.ts",
+    "src/tx/build.ts",
+    "src/tx/pipeline.ts",
+    "src/tx/index.ts"
+   ],
+   "dependsOn": [
+    "tx-validate-orders",
+    "tx-validate-grouped",
+    "tx-validate-account",
+    "crypto-schnorr-key"
+   ],
+   "risk": "high",
+   "intent": "20 pure builders plus txHash / signTx / toTxInfo / txSubmission. Default expiredAt is now + 599_000 ms. This is where the whole stack meets the 38 end-to-end vectors in tx.json."
+  },
+  {
+   "key": "rest-models-core",
+   "title": "Core REST models",
+   "wave": 3,
+   "labels": [
+    "rest"
+   ],
+   "files": [
+    "src/models/common.ts",
+    "src/models/market.ts",
+    "src/models/order.ts",
+    "src/models/account.ts",
+    "src/models/transaction.ts"
+   ],
+   "dependsOn": [
+    "config-endpoints",
+    "w0-rest-golden-fixtures"
+   ],
+   "risk": "medium",
+   "intent": "Hand-authored, from the captured fixtures and the vendored snapshot. Monetary and size fields stay decimal strings -- never number (docs/decisions.md D7). The long-tail generated models are cut from v1 (D10); expose raw typed route access for the tail instead."
+  },
+  {
+   "key": "rest-models-aux",
+   "title": "Referral, RFQ, lease, pool and misc models",
+   "wave": 3,
+   "labels": [
+    "rest"
+   ],
+   "files": [
+    "src/models/referral.ts",
+    "src/models/rfq.ts",
+    "src/models/lease.ts",
+    "src/models/pool.ts",
+    "src/models/misc.ts"
+   ],
+   "dependsOn": [
+    "rest-models-core"
+   ],
+   "risk": "low",
+   "intent": "The remaining hand-authored surfaces. Same string-money rule."
+  },
+  {
+   "key": "rest-routes",
+   "title": "Route table: all operations as data",
+   "wave": 3,
+   "labels": [
+    "rest"
+   ],
+   "files": [
+    "src/rest/route-types.ts",
+    "src/rest/routes.ts"
+   ],
+   "dependsOn": [
+    "rest-models-core",
+    "rest-models-aux",
+    "w0-openapi-snapshot"
+   ],
+   "risk": "medium",
+   "intent": "Every operation as a phantom-typed RouteDef so the client facade is derived rather than hand-maintained. 76 endpoint paths exist in the Python client."
+  },
+  {
+   "key": "rest-transport",
+   "title": "fetch-based transport: auth, retry, timeout, error classification",
+   "wave": 3,
+   "labels": [
+    "transport",
+    "rest"
+   ],
+   "files": [
+    "src/rest/transport.ts"
+   ],
+   "dependsOn": [
+    "rest-routes",
+    "errors-and-redaction",
+    "w0-ua-probe"
+   ],
+   "risk": "high",
+   "intent": "Success rule: an error is `code` present and not 200, OR HTTP not 2xx. A MISSING code is success -- /withdrawalDelay returns {\"seconds\":...} with no code. Non-JSON bodies are normal (Cloudflare HTML interstitials) and must raise a distinct transport error rather than a SyntaxError. Auth goes in the `auth` query param or the Authorization header; prefer the header. User-Agent is runtime-conditional per docs/decisions.md D5."
+  },
+  {
+   "key": "rest-client-facade",
+   "title": "Grouped REST client and pagination",
+   "wave": 3,
+   "labels": [
+    "rest"
+   ],
+   "files": [
+    "src/rest/client.ts",
+    "src/rest/paginate.ts",
+    "src/rest/candles.ts",
+    "src/rest/index.ts"
+   ],
+   "dependsOn": [
+    "rest-transport"
+   ],
+   "risk": "medium",
+   "intent": "Grouped facade over the route table, cursor normalisation with async iterators, and the single-letter candle key mapping."
+  },
+  {
+   "key": "ws-backoff-ratelimit",
+   "title": "Reconnect backoff and rate limiting",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/backoff.ts",
+    "src/ws/ratelimit.ts"
+   ],
+   "dependsOn": [
+    "util-primitives"
+   ],
+   "risk": "low",
+   "intent": "Full-jitter exponential backoff with close-code classification, token bucket, inflight semaphore. The reference client has no reconnect at all -- on_error and on_close both raise."
+  },
+  {
+   "key": "ws-protocol-codec",
+   "title": "WS envelope discrimination and frame builders",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/protocol.ts",
+    "src/ws/errors.ts"
+   ],
+   "dependsOn": [
+    "util-primitives",
+    "w0-ws-live-capture"
+   ],
+   "risk": "medium",
+   "intent": "Server opens with {\"type\":\"connected\"}; subscribe only after. Keepalive is application-level JSON ping/pong, not control frames -- which is why no `ws` package is needed and this works identically in browsers and Workers. Unknown message types are ignored with a warning, never fatal."
+  },
+  {
+   "key": "ws-mock-harness",
+   "title": "In-process WebSocket mock for deterministic tests",
+   "wave": 3,
+   "labels": [
+    "websocket",
+    "testing"
+   ],
+   "files": [
+    "test/ws-harness.ts"
+   ],
+   "dependsOn": [
+    "ws-protocol-codec",
+    "w0-ws-live-capture"
+   ],
+   "risk": "medium",
+   "intent": "Replays captured fixtures, and can inject gaps, close codes, latency and malformed frames. Every other WS unit tests against this rather than the network."
+  },
+  {
+   "key": "ws-transport",
+   "title": "Socket lifecycle, keepalive and reconnect",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/transport.ts"
+   ],
+   "dependsOn": [
+    "ws-protocol-codec",
+    "ws-backoff-ratelimit"
+   ],
+   "risk": "high",
+   "intent": "Uses the global WebSocket -- no `ws` package -- so it runs in browsers, Workers, Bun, Deno and Node 22+. Node 20 lacks a global WebSocket, so accept an injected constructor. Staleness watchdog plus automatic resubscribe after reconnect."
+  },
+  {
+   "key": "ws-channel-registry",
+   "title": "Typed channel registry and payload types",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/types.ts",
+    "src/ws/channels.ts",
+    "src/ws/account-assets-stream.ts"
+   ],
+   "dependsOn": [
+    "ws-protocol-codec"
+   ],
+   "risk": "medium",
+   "intent": "Every channel as a typed ChannelSpec, with payload interfaces derived from the wave-0 capture rather than from prose."
+  },
+  {
+   "key": "ws-subscription",
+   "title": "Subscription object with bounded queue and overflow policy",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/subscription.ts"
+   ],
+   "dependsOn": [
+    "ws-channel-registry"
+   ],
+   "risk": "medium",
+   "intent": "AsyncIterable plus callback over one implementation. Bounded queue with an explicit overflow policy -- a slow consumer must not grow memory without bound."
+  },
+  {
+   "key": "ws-client",
+   "title": "LighterWsClient",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/client.ts",
+    "src/ws/index.ts"
+   ],
+   "dependsOn": [
+    "ws-transport",
+    "ws-subscription",
+    "ws-mock-harness"
+   ],
+   "risk": "high",
+   "intent": "Ties transport, registry and subscriptions together. Resubscribe-on-reconnect is this unit's responsibility and is the thing most likely to be silently wrong."
+  },
+  {
+   "key": "ws-send-tx",
+   "title": "Correlated transaction submission over WebSocket",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/send-tx.ts"
+   ],
+   "dependsOn": [
+    "ws-client"
+   ],
+   "risk": "medium",
+   "intent": "jsonapi/sendtx and sendtxbatch with request/response correlation, timeouts, and correlation cleanup on reconnect."
+  },
+  {
+   "key": "ws-orderbook",
+   "title": "Order book state with gap detection",
+   "wave": 3,
+   "labels": [
+    "websocket"
+   ],
+   "files": [
+    "src/ws/orderbook.ts"
+   ],
+   "dependsOn": [
+    "ws-client"
+   ],
+   "risk": "high",
+   "intent": "Snapshot then deltas, price-indexed and SORTED -- the reference appends new levels to the end, so its book stops being sorted after the first update and bids[0] is no longer the best bid. Track sequence/offset and resync on gap; the reference has no gap detection at all. Compare sizes exactly, never through float. See docs/protocol-notes.md section 10."
+  },
+  {
+   "key": "client-market-registry",
+   "title": "Market, asset and system-config registry",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/markets.ts",
+    "src/client/assets.ts",
+    "src/client/system-config.ts"
+   ],
+   "dependsOn": [
+    "rest-client-facade"
+   ],
+   "risk": "medium",
+   "intent": "The client cannot size an order without per-market decimals. 227 markets, each with supported_size_decimals / supported_price_decimals / supported_quote_decimals. Snapshot and refresh policy included."
+  },
+  {
+   "key": "client-nonce",
+   "title": "Nonce management",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/nonce/types.ts",
+    "src/client/nonce/optimistic.ts",
+    "src/client/nonce/server.ts",
+    "src/client/nonce/manual.ts",
+    "src/client/nonce/key-pool.ts",
+    "src/client/nonce/index.ts"
+   ],
+   "dependsOn": [
+    "rest-client-facade"
+   ],
+   "risk": "high",
+   "intent": "Lease-based allocation per (account, api key). A network timeout must NOT roll back the lease -- the transaction may have landed. Per-key mutex: JS is single-threaded but await yields, so a promise-chain lock is still required. Multi-key rotation included."
+  },
+  {
+   "key": "client-order-math",
+   "title": "Order sizing, slippage and leverage arithmetic",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/math/book.ts",
+    "src/client/math/slippage.ts",
+    "src/client/math/quote.ts",
+    "src/client/math/leverage.ts",
+    "src/client/math/index.ts"
+   ],
+   "dependsOn": [
+    "client-market-registry"
+   ],
+   "risk": "high",
+   "intent": "Integer/rational end to end. No number, no Math.round. Rounding direction is explicit per call site: a buy's acceptable price rounds DOWN, a sell's rounds UP, so rounding never loosens slippage protection. The reference's four float hazards (docs/protocol-notes.md section 9) become regression tests."
+  },
+  {
+   "key": "client-core",
+   "title": "LighterClient core: submit, receipts, account state",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/lighter-client.ts",
+    "src/client/account.ts",
+    "src/client/receipt.ts",
+    "src/client/submit.ts"
+   ],
+   "dependsOn": [
+    "tx-pipeline-builders",
+    "client-nonce",
+    "client-market-registry",
+    "ws-send-tx"
+   ],
+   "risk": "high",
+   "intent": "Build -> validate -> hash -> sign -> serialize -> submit over HTTP or WS -> confirm. Submission is idempotent-aware given the nonce lease semantics."
+  },
+  {
+   "key": "client-write-surface",
+   "title": "Transfers, withdrawals, margin, pools, staking, integrator",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/write/transfer.ts",
+    "src/client/write/withdraw.ts",
+    "src/client/write/account-config.ts",
+    "src/client/write/margin.ts",
+    "src/client/write/pools.ts",
+    "src/client/write/staking.ts",
+    "src/client/write/integrator.ts",
+    "src/client/write/memo.ts",
+    "src/client/write/fast-withdraw.ts"
+   ],
+   "dependsOn": [
+    "client-core",
+    "tx-l1-templates"
+   ],
+   "risk": "medium",
+   "intent": "The non-order write methods. The four L1-signed flows take an injected L1Signer."
+  },
+  {
+   "key": "client-keys-auth",
+   "title": "API key management and auth tokens",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/keys.ts",
+    "src/client/auth-token.ts",
+    "src/client/auth-schedule.ts"
+   ],
+   "dependsOn": [
+    "client-core"
+   ],
+   "risk": "medium",
+   "intent": "Auth token = \"<deadline>:<accountIndex>:<apiKeyIndex>:<hexSignature>\", where the message text is packed 8 bytes per field element little-endian with the final chunk zero-padded. Pinned by tx.json authTokens. The scheduler mirrors the reference's 6-hour aligned boundaries with 8-hour expiry so windows overlap."
+  },
+  {
+   "key": "client-trading-facade",
+   "title": "Trading facade: market handles, brackets, batches",
+   "wave": 4,
+   "labels": [
+    "client"
+   ],
+   "files": [
+    "src/client/market-handle.ts",
+    "src/client/brackets.ts",
+    "src/client/batch.ts",
+    "src/client/sequence.ts",
+    "src/client/index.ts"
+   ],
+   "dependsOn": [
+    "client-order-math",
+    "client-write-surface",
+    "client-keys-auth"
+   ],
+   "risk": "medium",
+   "intent": "The ergonomic surface most users touch. setLeverage takes a decimal string or exact numerator/denominator, never a fractional number (docs/decisions.md D7)."
+  },
+  {
+   "key": "public-api-barrel",
+   "title": "Public API barrel, package.json, exports map and CI",
+   "wave": 5,
+   "labels": [
+    "infra"
+   ],
+   "files": [
+    "src/index.ts",
+    "package.json",
+    ".github/workflows/ci.yml",
+    ".github/workflows/publish.yml",
+    "size-budget.json",
+    "scripts/report-size.ts"
+   ],
+   "dependsOn": [
+    "client-trading-facade",
+    "rest-client-facade",
+    "ws-client"
+   ],
+   "risk": "medium",
+   "intent": "This unit owns EVERY shared file: the root barrel, package.json, both workflows, and the size budget (docs/decisions.md D8). No leaf unit edits them -- that is what keeps the waves parallel-safe. Zero runtime dependencies, asserted in CI."
+  },
+  {
+   "key": "portability-harness",
+   "title": "Prove it runs on Bun, Node, Deno and workerd",
+   "wave": 5,
+   "labels": [
+    "testing",
+    "infra"
+   ],
+   "files": [
+    "test/portability/run-vectors.ts",
+    "test/portability/behaviour.ts"
+   ],
+   "dependsOn": [
+    "public-api-barrel",
+    "w0-worker-sign-benchmark"
+   ],
+   "risk": "medium",
+   "intent": "The same vector suite executed under every target runtime. This is what makes the 'runs anywhere' claim testable rather than aspirational."
+  },
+  {
+   "key": "docs-and-readme",
+   "title": "README and per-module documentation",
+   "wave": 5,
+   "labels": [
+    "docs"
+   ],
+   "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "docs/rest.md",
+    "docs/ws.md",
+    "docs/crypto.md",
+    "docs/client.md"
+   ],
+   "dependsOn": [
+    "public-api-barrel"
+   ],
+   "risk": "low",
+   "intent": "README must state the supported deployment tier explicitly: paid-tier Workers; free-tier signing is not supported (docs/decisions.md D4). Document the injected L1Signer seam with a worked viem adapter."
+  },
+  {
+   "key": "examples-acceptance",
+   "title": "Acceptance examples: read, sign, submit, stream, L1",
+   "wave": 5,
+   "labels": [
+    "examples"
+   ],
+   "files": [
+    "examples/"
+   ],
+   "dependsOn": [
+    "public-api-barrel"
+   ],
+   "risk": "low",
+   "intent": "A small acceptance set rather than one-for-one parity with the ~63 Python examples (docs/decisions.md D10). Each example is typechecked against dist/ in CI."
+  }
+ ]
+}

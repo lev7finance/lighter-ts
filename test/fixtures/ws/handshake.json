@@ -1,0 +1,112 @@
+{
+  "encoded": {
+    "label": "handshake:encoding=json",
+    "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+    "opened": true,
+    "frames": [
+      {
+        "dir": "out",
+        "tMs": 510,
+        "wallMs": 1785277209775,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 510,
+        "wallMs": 1785277209776,
+        "raw": "{\"session_id\":\"bf9b62a8-27aa-4da7-882c-c3b77966052d\",\"type\":\"connected\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 1129,
+        "wallMs": 1785277210394,
+        "raw": "{\"channel\":\"height\",\"height\":451380,\"timestamp\":1785277210340,\"type\":\"subscribed/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 2628,
+        "wallMs": 1785277211894,
+        "raw": "{\"channel\":\"height\",\"height\":451382,\"timestamp\":1785277211840,\"type\":\"update/height\"}"
+      }
+    ],
+    "close": {
+      "tMs": 5006,
+      "wallMs": 1785277214271,
+      "code": 1000,
+      "reason": "probe complete",
+      "wasClean": true
+    },
+    "binaryFrames": [],
+    "errorEvent": false,
+    "expectedDurationMs": 5000,
+    "observedDurationMs": 5107,
+    "endCause": "duration"
+  },
+  "defaultEncoding": {
+    "label": "handshake:no-query",
+    "url": "wss://testnet.zklighter.elliot.ai/stream",
+    "opened": true,
+    "frames": [
+      {
+        "dir": "out",
+        "tMs": 498,
+        "wallMs": 1785277209767,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 498,
+        "wallMs": 1785277209768,
+        "raw": "{\"session_id\":\"aa081e6a-1de1-4481-9335-77d090d2365f\",\"type\":\"connected\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 1114,
+        "wallMs": 1785277210384,
+        "raw": "{\"channel\":\"height\",\"height\":451380,\"timestamp\":1785277210331,\"type\":\"subscribed/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 2614,
+        "wallMs": 1785277211884,
+        "raw": "{\"channel\":\"height\",\"height\":451382,\"timestamp\":1785277211830,\"type\":\"update/height\"}"
+      }
+    ],
+    "close": {
+      "tMs": 5002,
+      "wallMs": 1785277214271,
+      "code": 1000,
+      "reason": "probe complete",
+      "wasClean": true
+    },
+    "binaryFrames": [],
+    "errorEvent": false,
+    "expectedDurationMs": 5000,
+    "observedDurationMs": 5103,
+    "endCause": "duration"
+  },
+  "observation": {
+    "encoded": {
+      "connectedFrameIndex": 1,
+      "earlySubscribeFrameIndex": 0,
+      "earlySubscribeWasBeforeConnected": true,
+      "earlySubscriptionResponseFrameIndex": 2,
+      "earlySubscriptionHonored": true,
+      "binaryFrameCount": 0
+    },
+    "defaultEncoding": {
+      "connectedFrameIndex": 1,
+      "earlySubscribeFrameIndex": 0,
+      "earlySubscribeWasBeforeConnected": true,
+      "earlySubscriptionResponseFrameIndex": 2,
+      "earlySubscriptionHonored": true,
+      "binaryFrameCount": 0
+    }
+  },
+  "preflight": {
+    "status": 400,
+    "raw": "gws: websocket version not supported",
+    "code": null,
+    "message": null
+  }
+}

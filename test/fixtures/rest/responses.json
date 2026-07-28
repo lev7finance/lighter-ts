@@ -1,0 +1,621 @@
+{
+ "capturedFromBase": "https://mainnet.zklighter.elliot.ai",
+ "note": "Captured with fetch only, no SDK code. Large arrays are truncated (see each entry's `truncated` list). Error responses are fixtures too — classifying them correctly is the transport layer's job. Values are live market data and will not match a later capture; assert on SHAPE, not on numbers.",
+ "cases": {
+  "orderBooks": {
+   "why": "market metadata: per-market decimals drive all client-side sizing",
+   "request": {
+    "path": "/api/v1/orderBooks"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "order_books: 227 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "order_books": [
+     {
+      "symbol": "MAGS",
+      "market_id": 155,
+      "market_type": "perp",
+      "base_asset_id": 0,
+      "quote_asset_id": 0,
+      "status": "inactive",
+      "taker_fee": "0.0000",
+      "is_taker_fee_enabled": true,
+      "maker_fee": "0.0000",
+      "is_maker_fee_enabled": true,
+      "liquidation_fee": "1.0000",
+      "min_base_amount": "0.100",
+      "min_quote_amount": "10.000000",
+      "order_quote_limit": "5000000.000000",
+      "supported_size_decimals": 3,
+      "supported_price_decimals": 3,
+      "supported_quote_decimals": 6,
+      "created_at": "1772570399858",
+      "multiplier": "1.000000000000000000"
+     },
+     {
+      "symbol": "RAIL",
+      "market_id": 184,
+      "market_type": "perp",
+      "base_asset_id": 0,
+      "quote_asset_id": 0,
+      "status": "active",
+      "taker_fee": "0.0000",
+      "is_taker_fee_enabled": true,
+      "maker_fee": "0.0000",
+      "is_maker_fee_enabled": true,
+      "liquidation_fee": "1.0000",
+      "min_base_amount": "2.00",
+      "min_quote_amount": "10.000000",
+      "order_quote_limit": "5000000.000000",
+      "supported_size_decimals": 2,
+      "supported_price_decimals": 4,
+      "supported_quote_decimals": 6,
+      "created_at": "1779749721522",
+      "multiplier": "1.000000000000000000"
+     },
+     {
+      "symbol": "DIA",
+      "market_id": 152,
+      "market_type": "perp",
+      "base_asset_id": 0,
+      "quote_asset_id": 0,
+      "status": "inactive",
+      "taker_fee": "0.0000",
+      "is_taker_fee_enabled": true,
+      "maker_fee": "0.0000",
+      "is_maker_fee_enabled": true,
+      "liquidation_fee": "1.0000",
+      "min_base_amount": "0.0100",
+      "min_quote_amount": "10.000000",
+      "order_quote_limit": "5000000.000000",
+      "supported_size_decimals": 4,
+      "supported_price_decimals": 2,
+      "supported_quote_decimals": 6,
+      "created_at": "1772570399731",
+      "multiplier": "1.000000000000000000"
+     }
+    ]
+   }
+  },
+  "systemConfig": {
+   "why": "pool indices and integrator fee caps",
+   "request": {
+    "path": "/api/v1/systemConfig"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [],
+   "body": {
+    "code": 200,
+    "liquidity_pool_index": 281474976710654,
+    "staking_pool_index": 281474976624800,
+    "funding_fee_rebate_account_index": 713888,
+    "market_maker_incentive_account_index": 723106,
+    "liquidity_pool_cooldown_period": 300000,
+    "staking_pool_lockup_period": 259200000,
+    "max_integrator_spot_taker_fee": 10000,
+    "max_integrator_spot_maker_fee": 10000,
+    "max_integrator_perps_taker_fee": 1000,
+    "max_integrator_perps_maker_fee": 1000
+   }
+  },
+  "layer1BasicInfo": {
+   "why": "L1 chain id and contract addresses",
+   "request": {
+    "path": "/api/v1/layer1BasicInfo"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [],
+   "body": {
+    "code": 200,
+    "l1_providers": [
+     {
+      "chainId": 1,
+      "networkId": 1,
+      "latestBlockNumber": 0
+     }
+    ],
+    "l1_providers_health": true,
+    "validator_info": [],
+    "contract_addresses": [
+     {
+      "name": "ZkLighterContract",
+      "address": "0x3B4D794a66304F130a4Db8F2551B0070dfCf5ca7"
+     },
+     {
+      "name": "USDCContract",
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+     }
+    ],
+    "latest_l1_generic_block": 0,
+    "latest_l1_governance_block": 0,
+    "latest_l1_desert_block": 0
+   }
+  },
+  "nextNonce": {
+   "why": "smallest success envelope",
+   "request": {
+    "path": "/api/v1/nextNonce?account_index=1&api_key_index=0"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [],
+   "body": {
+    "code": 200,
+    "nonce": 1
+   }
+  },
+  "account": {
+   "why": "account shape",
+   "request": {
+    "path": "/api/v1/account?by=index&value=1"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "accounts[0].can_rfq_market_ids: 55 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "total": 1,
+    "accounts": [
+     {
+      "code": 0,
+      "account_type": 0,
+      "index": 1,
+      "l1_address": "0x0000000000000000000000000000000000000000",
+      "cancel_all_time": 0,
+      "total_order_count": 0,
+      "total_isolated_order_count": 0,
+      "pending_order_count": 0,
+      "available_balance": "0.000000",
+      "status": 1,
+      "collateral": "0.000000",
+      "transaction_time": 1784665093666991,
+      "account_trading_mode": 0,
+      "account_index": 1,
+      "name": "",
+      "description": "",
+      "can_invite": true,
+      "referral_points_percentage": "",
+      "can_rfq": true,
+      "can_rfq_market_ids": [
+       "0",
+       "1",
+       "2"
+      ],
+      "created_at": 0,
+      "metadata": {
+       "color": ""
+      },
+      "positions": [],
+      "assets": [],
+      "total_asset_value": "0",
+      "cross_asset_value": "0",
+      "cross_initial_margin_requirement": "0.000000",
+      "cross_maintenance_margin_requirement": "0.000000",
+      "shares": [],
+      "pending_unlocks": []
+     }
+    ]
+   }
+  },
+  "orderBookOrders": {
+   "why": "book levels as decimal strings",
+   "request": {
+    "path": "/api/v1/orderBookOrders?market_id=1&limit=5"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "asks: 5 entries -> 3",
+    "bids: 5 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "total_asks": 5,
+    "asks": [
+     {
+      "order_index": 562952978921192,
+      "order_id": "562952978921192",
+      "owner_account_index": 702384,
+      "initial_base_amount": "0.21328",
+      "remaining_base_amount": "0.17551",
+      "price": "64504.2",
+      "order_expiry": 1785114051354,
+      "transaction_time": 0
+     },
+     {
+      "order_index": 562952978921214,
+      "order_id": "562952978921214",
+      "owner_account_index": 281474976510410,
+      "initial_base_amount": "0.00077",
+      "remaining_base_amount": "0.00077",
+      "price": "64506.2",
+      "order_expiry": 1785028251299,
+      "transaction_time": 0
+     },
+     {
+      "order_index": 562952978903166,
+      "order_id": "562952978903166",
+      "owner_account_index": 734999,
+      "initial_base_amount": "0.18000",
+      "remaining_base_amount": "0.18000",
+      "price": "64506.4",
+      "order_expiry": 1787446502572,
+      "transaction_time": 0
+     }
+    ],
+    "total_bids": 5,
+    "bids": [
+     {
+      "order_index": 844421858182976,
+      "order_id": "844421858182976",
+      "owner_account_index": 281474976641952,
+      "initial_base_amount": "0.02613",
+      "remaining_base_amount": "0.02613",
+      "price": "64500.1",
+      "order_expiry": 1787446857399,
+      "transaction_time": 0
+     },
+     {
+      "order_index": 844421858182986,
+      "order_id": "844421858182986",
+      "owner_account_index": 7684,
+      "initial_base_amount": "0.03720",
+      "remaining_base_amount": "0.03336",
+      "price": "64500.0",
+      "order_expiry": 1787446856842,
+      "transaction_time": 0
+     },
+     {
+      "order_index": 844421858182985,
+      "order_id": "844421858182985",
+      "owner_account_index": 317087,
+      "initial_base_amount": "0.07437",
+      "remaining_base_amount": "0.07437",
+      "price": "64500.0",
+      "order_expiry": 1787446856841,
+      "transaction_time": 0
+     }
+    ]
+   }
+  },
+  "recentTrades": {
+   "why": "trade shape",
+   "request": {
+    "path": "/api/v1/recentTrades?market_id=1&limit=5"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "trades: 5 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "trades": [
+     {
+      "trade_id": 26101748593,
+      "trade_id_str": "26101748593",
+      "tx_hash": "0000001975dc1cb90000019f9bf07f52000000000000000000000000000000000000000000000000",
+      "type": "trade",
+      "market_id": 1,
+      "size": "0.00009",
+      "price": "64504.2",
+      "usd_amount": "5.805378",
+      "ask_id": 562952978921192,
+      "ask_id_str": "562952978921192",
+      "bid_id": 844421858182967,
+      "bid_id_str": "844421858182967",
+      "ask_client_id": 240200955866317,
+      "ask_client_id_str": "240200955866317",
+      "bid_client_id": 49029667912,
+      "bid_client_id_str": "49029667912",
+      "ask_account_id": 702384,
+      "bid_account_id": 281474976516060,
+      "is_maker_ask": true,
+      "block_height": 299820553,
+      "timestamp": 1785027657554,
+      "taker_position_size_before": "0.13021",
+      "taker_entry_quote_before": "8389.676672",
+      "taker_initial_margin_fraction_before": 200,
+      "maker_fee": 28,
+      "maker_position_size_before": "0.50767",
+      "maker_entry_quote_before": "32716.048238",
+      "maker_initial_margin_fraction_before": 3333,
+      "transaction_time": 1785027657572944,
+      "taker_allocated_margin_usdc_before": 169033241,
+      "taker_allocated_margin_usdc_after": 169149269
+     },
+     {
+      "trade_id": 26101748592,
+      "trade_id_str": "26101748592",
+      "tx_hash": "884f61f34306eae31a339cb483385cda1565bf1f248b9cabfac279476142c0251c9528c2bb8dd03a",
+      "type": "trade",
+      "market_id": 1,
+      "size": "0.00020",
+      "price": "64500.2",
+      "usd_amount": "12.900040",
+      "ask_id": 562952978921342,
+      "ask_id_str": "562952978921342",
+      "bid_id": 844421858182967,
+      "bid_id_str": "844421858182967",
+      "ask_client_id": 197453804626182,
+      "ask_client_id_str": "197453804626182",
+      "bid_client_id": 49029667912,
+      "bid_client_id_str": "49029667912",
+      "ask_account_id": 27927,
+      "bid_account_id": 281474976516060,
+      "is_maker_ask": true,
+      "block_height": 299820553,
+      "timestamp": 1785027657554,
+      "taker_position_size_before": "0.13001",
+      "taker_entry_quote_before": "8376.776632",
+      "taker_initial_margin_fraction_before": 200,
+      "maker_fee": 38,
+      "maker_position_size_before": "34.35917",
+      "maker_entry_quote_before": "2211380.547741",
+      "maker_initial_margin_fraction_before": 500,
+      "transaction_time": 1785027657572884,
+      "taker_allocated_margin_usdc_before": 168776201,
+      "taker_allocated_margin_usdc_after": 169033241
+     },
+     {
+      "trade_id": 26101748568,
+      "trade_id_str": "26101748568",
+      "tx_hash": "0000001975dc1c3c0000019f9bf07dc3000000000000000000000000000000000000000000000000",
+      "type": "trade",
+      "market_id": 1,
+      "size": "0.00020",
+      "price": "64504.2",
+      "usd_amount": "12.900840",
+      "ask_id": 562952978921192,
+      "ask_id_str": "562952978921192",
+      "bid_id": 844421858182971,
+      "bid_id_str": "844421858182971",
+      "ask_client_id": 240200955866317,
+      "ask_client_id_str": "240200955866317",
+      "bid_client_id": 0,
+      "bid_client_id_str": "0",
+      "ask_account_id": 702384,
+      "bid_account_id": 734091,
+      "is_maker_ask": true,
+      "block_height": 299820552,
+      "timestamp": 1785027657155,
+      "taker_fee": 50,
+      "taker_position_size_before": "0.00135",
+      "taker_entry_quote_before": "87.076258",
+      "taker_initial_margin_fraction_before": 500,
+      "maker_fee": 28,
+      "maker_position_size_before": "0.50787",
+      "maker_entry_quote_before": "32728.936945",
+      "maker_initial_margin_fraction_before": 3333,
+      "transaction_time": 1785027657515706,
+      "integrator_taker_fee": 150,
+      "integrator_taker_fee_collector_index": 724927
+     }
+    ]
+   }
+  },
+  "candles": {
+   "why": "single-letter candle keys",
+   "request": {
+    "path": "/api/v1/candles?market_id=1&resolution=1h&start_timestamp=1750000000&end_timestamp=1750100000&count_back=5"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "c: 27 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "r": "1h",
+    "c": [
+     {
+      "t": 1750003200000,
+      "o": 105622.8,
+      "h": 105736.6,
+      "l": 105361.5,
+      "c": 105594.2,
+      "v": 602.98999,
+      "V": 63632159.996563,
+      "i": 35162587
+     },
+     {
+      "t": 1750006800000,
+      "o": 105594.2,
+      "h": 105856.3,
+      "l": 105506.2,
+      "c": 105754,
+      "v": 874.07621,
+      "V": 92361280.515111,
+      "i": 35183466
+     },
+     {
+      "t": 1750010400000,
+      "o": 105754,
+      "h": 105760.3,
+      "l": 105494.6,
+      "c": 105520.2,
+      "v": 615.68089,
+      "V": 64992406.998387,
+      "i": 35203586
+     }
+    ]
+   }
+  },
+  "assetDetails": {
+   "why": "asset decimals and margin mode",
+   "request": {
+    "path": "/api/v1/assetDetails"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 200,
+   "truncated": [
+    "asset_details: 9 entries -> 3"
+   ],
+   "body": {
+    "code": 200,
+    "asset_details": [
+     {
+      "asset_id": 9,
+      "symbol": "LDO",
+      "l1_decimals": 18,
+      "decimals": 8,
+      "min_transfer_amount": "2.00000000",
+      "min_withdrawal_amount": "2.00000000",
+      "margin_mode": "disabled",
+      "index_price": "0.371043",
+      "price_decimals": 6,
+      "l1_address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+      "loan_to_value": "0.0000",
+      "liquidation_threshold": "0.0000",
+      "liquidation_factor": "0.0000",
+      "liquidation_fee": "0.000000",
+      "global_supply_cap": "0.00000000",
+      "user_supply_cap": "0.00000000",
+      "total_supplied": "0.00000000",
+      "multiplier": "1.000000000000000000"
+     },
+     {
+      "asset_id": 3,
+      "symbol": "USDC",
+      "l1_decimals": 6,
+      "decimals": 6,
+      "min_transfer_amount": "1.000000",
+      "min_withdrawal_amount": "1.000000",
+      "margin_mode": "enabled",
+      "index_price": "1.000000",
+      "price_decimals": 6,
+      "l1_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "loan_to_value": "1.0000",
+      "liquidation_threshold": "1.0000",
+      "liquidation_factor": "1.0000",
+      "liquidation_fee": "0.000000",
+      "global_supply_cap": "0.000000",
+      "user_supply_cap": "0.000000",
+      "total_supplied": "0.000000",
+      "multiplier": "1.000000000000000000"
+     },
+     {
+      "asset_id": 6,
+      "symbol": "UNI",
+      "l1_decimals": 18,
+      "decimals": 8,
+      "min_transfer_amount": "0.20000000",
+      "min_withdrawal_amount": "0.20000000",
+      "margin_mode": "disabled",
+      "index_price": "3.670438",
+      "price_decimals": 6,
+      "l1_address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      "loan_to_value": "0.0000",
+      "liquidation_threshold": "0.0000",
+      "liquidation_factor": "0.0000",
+      "liquidation_fee": "0.000000",
+      "global_supply_cap": "0.00000000",
+      "user_supply_cap": "0.00000000",
+      "total_supplied": "0.00000000",
+      "multiplier": "1.000000000000000000"
+     }
+    ]
+   }
+  },
+  "withdrawalDelay-no-code-field": {
+   "why": "THE envelope counterexample: a success response carrying no `code` field at all",
+   "request": {
+    "path": "/api/v1/withdrawalDelay?account_index=1"
+   },
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": null,
+   "truncated": [],
+   "body": {
+    "seconds": 1805
+   }
+  },
+  "error-invalid-param": {
+   "why": "error code 20001, and note the trailing space in the message",
+   "request": {
+    "path": "/api/v1/orderBookOrders?market_id=99999&limit=5"
+   },
+   "status": 400,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 20001,
+   "truncated": [],
+   "body": {
+    "code": 20001,
+    "message": "invalid param "
+   }
+  },
+  "error-not-found": {
+   "why": "error code 29404 delivered inside an HTTP 400",
+   "request": {
+    "path": "/api/v1/account?by=index&value=999999999999"
+   },
+   "status": 400,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 29404,
+   "truncated": [],
+   "body": {
+    "code": 29404,
+    "message": "not found"
+   }
+  },
+  "error-missing-auth": {
+   "why": "reveals that auth is accepted as either an `auth` query param or an Authorization header",
+   "request": {
+    "path": "/api/v1/transferFeeInfo?account_index=1"
+   },
+   "status": 400,
+   "contentType": "application/json; charset=utf-8",
+   "bodyIsJson": true,
+   "apiCode": 20001,
+   "truncated": [],
+   "body": {
+    "code": 20001,
+    "message": "invalid param : auth query param and Authorization header are empty"
+   }
+  },
+  "error-geo-restricted": {
+   "why": "API code 20558 in an HTTP 400 — reads succeed while writes fail, see protocol-notes 8.3",
+   "request": {
+    "path": "/api/v1/sendTx"
+   },
+   "status": 400,
+   "contentType": "application/json",
+   "bodyIsJson": true,
+   "apiCode": 20558,
+   "truncated": [],
+   "body": {
+    "code": 20558,
+    "message": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms"
+   }
+  }
+ }
+}

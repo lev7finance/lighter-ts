@@ -1,0 +1,74 @@
+{
+  "name": "lighter-ts",
+  "version": "0.1.0",
+  "description": "Pure-TypeScript SDK for the Lighter exchange. Zero native dependencies, zero runtime dependencies. Runs on Bun, Node, Deno, Cloudflare Workers and browsers.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lev7finance/lighter-ts.git"
+  },
+  "homepage": "https://github.com/lev7finance/lighter-ts#readme",
+  "bugs": {
+    "url": "https://github.com/lev7finance/lighter-ts/issues"
+  },
+  "keywords": [
+    "lighter",
+    "zklighter",
+    "perpetuals",
+    "dex",
+    "trading",
+    "sdk",
+    "poseidon",
+    "schnorr",
+    "typescript",
+    "cloudflare-workers",
+    "bun",
+    "deno"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "bun@1.3.0",
+  "engines": {
+    "node": ">=20.11.0",
+    "bun": ">=1.1.0"
+  },
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./crypto": { "types": "./dist/crypto/index.d.ts", "default": "./dist/crypto/index.js" },
+    "./tx": { "types": "./dist/tx/index.d.ts", "default": "./dist/tx/index.js" },
+    "./rest": { "types": "./dist/rest/index.d.ts", "default": "./dist/rest/index.js" },
+    "./ws": { "types": "./dist/ws/index.d.ts", "default": "./dist/ws/index.js" },
+    "./client": { "types": "./dist/client/index.d.ts", "default": "./dist/client/index.js" },
+    "./config": { "types": "./dist/config/index.d.ts", "default": "./dist/config/index.js" },
+    "./errors": { "types": "./dist/errors.d.ts", "default": "./dist/errors.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "src", "README.md", "LICENSE", "CHANGELOG.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist coverage .tmp *.tsbuildinfo",
+    "lint": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.bundler.json --noEmit",
+    "typecheck": "bun run lint",
+    "test": "bun test",
+    "test:node": "node --experimental-strip-types test/portability/run-vectors.ts",
+    "test:deno": "deno run --allow-read test/portability/run-vectors.ts",
+    "test:workerd": "bun run scripts/run-workerd-vectors.ts",
+    "test:all": "bun run test && bun run build && bun run test:node && bun run test:deno && bun run test:workerd",
+    "size": "bun run scripts/report-size.ts",
+    "check:deps": "bun run scripts/check-no-deps.ts",
+    "vectors": "cd conformance/oracle && go run . -out ../vectors",
+    "ledger": "bun run scripts/unit-ledger.ts",
+    "prepublishOnly": "bun run clean && bun run build && bun run lint && bun run test && bun run size"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260726.1",
+    "@types/node": "^26.1.1",
+    "typescript": "^5.7.0",
+    "wrangler": "^4.114.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

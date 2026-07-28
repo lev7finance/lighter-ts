@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.wrangler/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Go conformance oracle build artifacts (go.sum IS committed, for reproducibility)
+conformance/oracle/oracle

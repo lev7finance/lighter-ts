@@ -1,0 +1,10 @@
+{
+  "name": "lighter-ts-worker-benchmark-issue-3",
+  "main": "worker.ts",
+  "compatibility_date": "2026-07-28",
+  "compatibility_flags": [],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

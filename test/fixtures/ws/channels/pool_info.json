@@ -1,0 +1,56 @@
+{
+  "family": "pool_info",
+  "authMode": "refusal-probe",
+  "probes": [
+    {
+      "channel": "pool_info/281474976710654",
+      "session": {
+        "label": "channel:pool_info/281474976710654",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 609,
+            "wallMs": 1785277114593,
+            "raw": "{\"session_id\":\"c9a3c73b-1d1d-4749-9fa2-f42e99467900\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 609,
+            "wallMs": 1785277114594,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"pool_info/281474976710654\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 1228,
+            "wallMs": 1785277115212,
+            "raw": "{\"channel\":\"pool_info:281474976710654\",\"pool_info\":{\"status\":0,\"operator_fee\":\"0.0000\",\"min_operator_share_rate\":\"0.0000\",\"total_shares\":498200000000,\"operator_shares\":498200000000,\"annual_percentage_yield\":0.024479971440434973,\"sharpe_ratio\":11.422819750226113,\"daily_returns\":[{\"timestamp\":1783195200,\"daily_return\":1.199040866595169e-14},{\"timestamp\":1783281600,\"daily_return\":2.1276913564349798e-10},{\"timestamp\":1783368000,\"daily_return\":1.3988810110276972e-14},{\"timestamp\":1783454400,\"daily_return\":4.0758574293420224e-10},{\"timestamp\":1783540800,\"daily_return\":0},{\"timestamp\":1783627200,\"daily_return\":6.969758103991808e-11},{\"timestamp\":1783713600,\"daily_return\":0.0000020312176420844708},{\"timestamp\":1783800000,\"daily_return\":3.80990594628372e-9},{\"timestamp\":1783886400,\"daily_return\":1.6071807884543432e-8},{\"timestamp\":1783972800,\"daily_return\":1.507914615395123e-8},{\"timestamp\":1784059200,\"daily_return\":0.000007912568746215598},{\"timestamp\":1784145600,\"daily_return\":0.000010893216066731881},{\"timestamp\":1784232000,\"daily_return\":1.4001149128972656e-8},{\"timestamp\":1784318400,\"daily_return\":1.1196395210966159e-7},{\"timestamp\":1784404800,\"daily_return\":4.642542128507898e-9},{\"timestamp\":1784491200,\"daily_return\":2.9275854407373458e-8},{\"timestamp\":1784577600,\"daily_return\":4.9813544400478804e-9},{\"timestamp\":1784664000,\"daily_return\":4.2739016548054565e-8},{\"timestamp\":1784750400,\"daily_return\":0.000008020438388767204},{\"timestamp\":1784836800,\"daily_return\":0.00001126424465613951},{\"timestamp\":1784923200,\"daily_return\":0.0000019936363642170107},{\"timestamp\":1785009600,\"daily_return\":1.1681851819211886e-7},{\"timestamp\":1785096000,\"daily_return\":6.435081956190913e-8},{\"timestamp\":1785182400,\"daily_return\":0.000007485118863836959},{\"timestamp\":1785268800,\"daily_return\":0.00000526949382351205}],\"share_prices\":[{\"timestamp\":1783108800,\"share_price\":0.001},{\"timestamp\":1783195200,\"share_price\":0.001000000000000012},{\"timestamp\":1783281600,\"share_price\":0.001000000000212781},{\"timestamp\":1783368000,\"share_price\":0.001000000000212795},{\"timestamp\":1783454400,\"share_price\":0.0010000000006203807},{\"timestamp\":1783540800,\"share_price\":0.0010000000006203807},{\"timestamp\":1783627200,\"share_price\":0.0010000000006900782},{\"timestamp\":1783713600,\"share_price\":0.0010000020319077217},{\"timestamp\":1783800000,\"share_price\":0.0010000020357176355},{\"timestamp\":1783886400,\"share_price\":0.0010000020517894762},{\"timestamp\":1783972800,\"share_price\":0.0010000020668686532},{\"timestamp\":1784059200,\"share_price\":0.0010000099794537536},{\"timestamp\":1784145600,\"share_price\":0.0010000208727785286},{\"timestamp\":1784232000,\"share_price\":0.0010000208867799699},{\"timestamp\":1784318400,\"share_price\":0.0010000209987462605},{\"timestamp\":1784404800,\"share_price\":0.0010000210033889},{\"timestamp\":1784491200,\"share_price\":0.0010000210326653694},{\"timestamp\":1784577600,\"share_price\":0.0010000210376468286},{\"timestamp\":1784664000,\"share_price\":0.0010000210803867444},{\"timestamp\":1784750400,\"share_price\":0.001000029100994207},{\"timestamp\":1784836800,\"share_price\":0.001000040365566664},{\"timestamp\":1784923200,\"share_price\":0.0010000423592835025},{\"timestamp\":1785009600,\"share_price\":0.001000042476106969},{\"timestamp\":1785096000,\"share_price\":0.0010000425404605219},{\"timestamp\":1785182400,\"share_price\":0.0010000500258978062},{\"timestamp\":1785268800,\"share_price\":0.0010000552956552409}],\"strategies\":[{\"collateral\":\"498227548.970977\"},null,null,null,null,null,null,null]},\"type\":\"subscribed/pool_info\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60000,
+          "wallMs": 1785277173985,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/pool_info",
+        "firstInboundChannel": "pool_info:281474976710654",
+        "nextThreeUpdateFrameIndices": [],
+        "updateOutcome": "none-observed-in-fixed-window",
+        "totalInboundDataFrames": 1,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
+}

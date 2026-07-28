@@ -1,0 +1,11 @@
+{
+  "capturedFromUrl": "wss://mainnet.zklighter.elliot.ai/stream?encoding=json",
+  "frames": [],
+  "captureFailed": {
+    "reason": "geo-restricted",
+    "apiCode": 20558,
+    "apiMessage": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
+    "observedCloseCode": 1002,
+    "observedCloseReason": "Expected 101 status code"
+  }
+}
