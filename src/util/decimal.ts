@@ -24,10 +24,10 @@
  *    and a lossy float on another. Every function here returns `bigint` or `string`.
  *
  * **`mode` is required wherever a value can be lost.** There is no default, because the direction
- * is a per-call-site decision: `docs/decisions.md` D7 says a buy's acceptable price rounds up and a
- * sell's rounds down, while `spec/07-high-level-client.md` §3.2 tabulates buy `FLOOR` / sell `CEIL`
- * to tighten rather than loosen the slippage cap. Resolving that is the order-math unit's job, and
- * a default here would silently pick a side on its behalf. For the same reason there are no
+ * is a per-call-site decision: `docs/decisions.md` D7 and
+ * `spec/07-high-level-client.md` §3.2 tabulate buy `FLOOR` / sell `CEIL` to tighten rather than
+ * loosen the slippage cap. Applying that policy is the order-math unit's job, and a default here
+ * would silently pick a side on its behalf. For the same reason there are no
  * `CONSERVATIVE` / `AGGRESSIVE` aliases in this module: those are policy, and policy lives with the
  * order math.
  *

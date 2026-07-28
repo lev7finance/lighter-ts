@@ -87,10 +87,8 @@ export type TriggerFamily = "stopLoss" | "takeProfit";
  *   **down** so they never pay more than they asked, a **sell**'s rounds **up** so they never accept
  *   less (§3.2).
  *
- * There is deliberately no way to ask for the opposite direction on a price a human typed.
- * `docs/decisions.md` D7's illustrative wording ("a buy's acceptable price rounds up") contradicts
- * the invariant stated in the same paragraph; the invariant wins. The *market-order* price cap is
- * not derived here at all — it is delegated whole to `slippageBound`.
+ * There is deliberately no way to ask for the opposite direction on a price a human typed. The
+ * *market-order* price cap is not derived here at all — it is delegated whole to `slippageBound`.
  */
 export type PriceRounding = "exact" | "conservative";
 

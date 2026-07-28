@@ -44,9 +44,9 @@
  *
  * A market order's `price` field is not a price to trade at — it is the **worst** price the order
  * may fill at, which is why `maxSlippage` has no default. The bound rounds in the direction that
- * cannot loosen protection: a **buy's** acceptable price rounds **up** to the tick, a **sell's**
- * rounds **down** (`docs/decisions.md` D7). `mode: "exact"` opts out and refuses a bound that is
- * not representable rather than moving it.
+ * cannot loosen protection: a **buy's** maximum acceptable price rounds **down** to the tick, while
+ * a **sell's** minimum acceptable price rounds **up** (`docs/decisions.md` D7). `mode: "exact"`
+ * opts out and refuses a bound that is not representable rather than moving it.
  */
 
 import {

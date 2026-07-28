@@ -838,7 +838,7 @@
     "client-market-registry"
    ],
    "risk": "high",
-   "intent": "Integer/rational end to end. No number, no Math.round. Rounding direction is explicit per call site: a buy's acceptable price rounds UP, a sell's rounds DOWN, so rounding never loosens slippage protection. The reference's four float hazards (docs/protocol-notes.md section 9) become regression tests."
+   "intent": "Integer/rational end to end. No number, no Math.round. Rounding direction is explicit per call site: a buy's acceptable price rounds DOWN, a sell's rounds UP, so rounding never loosens slippage protection. The reference's four float hazards (docs/protocol-notes.md section 9) become regression tests."
   },
   {
    "key": "client-core",

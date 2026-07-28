@@ -306,9 +306,15 @@ async function importPurityGroup(rec: Recorder): Promise<Loaded> {
     else watches.push(w);
   }
 
+  // Node 20 exposes these as lazy accessors and replaces each descriptor with a data property on
+  // first read. The SDK constructs its UTF-8 codecs at import, so materialise the host-owned
+  // descriptors before the baseline; every descriptor change after this point remains observable.
+  void globalThis.TextEncoder;
+  void globalThis.TextDecoder;
+
   // Snapshot *after* installing, so a runtime that materialises a lazy global on first read (Node
   // does this for `fetch`) does not register as a mutation caused by the import.
-  const before: readonly string[] = ownKeys();
+  const before: ReadonlyMap<PropertyKey, PropertyDescriptor> = globalSnapshot();
 
   const loaded: PartialLoaded = {};
   for (const subpath of SUBPATHS) {
@@ -350,7 +356,7 @@ async function importPurityGroup(rec: Recorder): Promise<Loaded> {
     });
   }
 
-  const after: readonly string[] = ownKeys();
+  const after: ReadonlyMap<PropertyKey, PropertyDescriptor> = globalSnapshot();
 
   await rec.check(group, "every watched global is spy-able on this runtime", (): void => {
     if (missing.length > 0) {
@@ -360,11 +366,23 @@ async function importPurityGroup(rec: Recorder): Promise<Loaded> {
     }
   });
 
-  await rec.check(group, "no global was added or removed", (): void => {
-    const added: string[] = after.filter((k: string): boolean => !before.includes(k));
-    const removed: string[] = before.filter((k: string): boolean => !after.includes(k));
-    if (added.length > 0 || removed.length > 0) {
-      throw new Error(`globalThis changed: +[${added.join(", ")}] -[${removed.join(", ")}]`);
+  await rec.check(group, "no global binding or descriptor changed", (): void => {
+    const added: string[] = [];
+    const removed: string[] = [];
+    const changed: string[] = [];
+    for (const [key, descriptor] of after) {
+      const previous: PropertyDescriptor | undefined = before.get(key);
+      if (previous === undefined) added.push(renderPropertyKey(key));
+      else if (!sameDescriptor(previous, descriptor)) changed.push(renderPropertyKey(key));
+    }
+    for (const key of before.keys()) {
+      if (!after.has(key)) removed.push(renderPropertyKey(key));
+    }
+    if (added.length > 0 || removed.length > 0 || changed.length > 0) {
+      throw new Error(
+        `globalThis changed: +[${added.join(", ")}] -[${removed.join(", ")}] ` +
+          `modified=[${changed.join(", ")}]`,
+      );
     }
   });
 
@@ -393,8 +411,31 @@ async function importPurityGroup(rec: Recorder): Promise<Loaded> {
   return { crypto, tx, rest, ws, errors };
 }
 
-function ownKeys(): readonly string[] {
-  return Reflect.ownKeys(globalThis).map((k: string | symbol): string => String(k));
+function globalSnapshot(): ReadonlyMap<PropertyKey, PropertyDescriptor> {
+  const snapshot = new Map<PropertyKey, PropertyDescriptor>();
+  for (const key of Reflect.ownKeys(globalThis)) {
+    const descriptor: PropertyDescriptor | undefined = Object.getOwnPropertyDescriptor(
+      globalThis,
+      key,
+    );
+    if (descriptor !== undefined) snapshot.set(key, descriptor);
+  }
+  return snapshot;
+}
+
+function sameDescriptor(left: PropertyDescriptor, right: PropertyDescriptor): boolean {
+  return (
+    left.configurable === right.configurable &&
+    left.enumerable === right.enumerable &&
+    left.writable === right.writable &&
+    Object.is(left.value, right.value) &&
+    left.get === right.get &&
+    left.set === right.set
+  );
+}
+
+function renderPropertyKey(key: PropertyKey): string {
+  return typeof key === "symbol" ? key.toString() : String(key);
 }
 
 /* -------------------------------------------------------------------------------------------------

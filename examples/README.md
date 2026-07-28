@@ -99,11 +99,10 @@ free tier's ~10 ms budget is.
 
 ## The rules these examples follow, and why
 
-**No third-party imports.** This package has zero runtime dependencies and these files add none —
-a grep for `viem`, `ethers` or any scoped package across `examples/` comes back empty.
-`l1-change-pub-key.ts` writes its signer against the structural `EthPersonalSigner` interface and
-shows the viem call shape in a comment. viem's `signMessage` takes an **options object**, so it does
-not satisfy that interface verbatim; the one-line adapter is real, not ceremonial
+**No executable third-party imports.** This package has zero runtime dependencies and these files
+add none. `l1-change-pub-key.ts` writes its signer against the structural `EthPersonalSigner`
+interface and mentions viem and ethers only inside its explanatory comment. viem's `signMessage`
+takes an **options object**, so the one-line adapter shown there is real, not ceremonial
 (`docs/decisions.md` D6).
 
 **No `number` for money.** Sizes, prices, notionals and slippage bounds are decimal strings, and the
@@ -113,8 +112,7 @@ four documented arithmetic hazards here (`docs/protocol-notes.md` §9) and each 
 at the call site, which is why every human-tier call in these examples prints `receipt.applied` —
 the integers that were actually signed.
 
-**Rounding direction is stated.** A buy's acceptable price rounds **up** and a sell's rounds
-**down**, so rounding can never loosen slippage protection. A resting order rounds the other way, for
-the same reason.
+**Rounding direction is stated.** A buy's maximum acceptable price rounds **down** and a sell's
+minimum acceptable price rounds **up**, so rounding can never loosen slippage protection.
 
 **Nothing that can move money defaults to mainnet.**

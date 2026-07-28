@@ -4,14 +4,12 @@
  * This is a two-line formula and the most dangerous arithmetic in the SDK, because every way of
  * getting it wrong produces a *valid order at a worse price* rather than an error.
  *
- * ## The rounding rule, and a documentation conflict resolved here
+ * ## The rounding rule
  *
  * The normative invariant is **rounding never loosens slippage protection**
- * (`docs/decisions.md` D7, `docs/protocol-notes.md` §9). Both of those documents then illustrate it
- * as "a buy's acceptable price rounds up, a sell's rounds down", which is the opposite of the
- * invariant they state: a buy's acceptable price is a *maximum*, so rounding it up permits the user
- * to pay more than the exact bound allows. `docs/spec/07-high-level-client.md` §3.2 and §3.5 give
- * the formulas, and they agree with the invariant, not with the illustration:
+ * (`docs/decisions.md` D7, `docs/protocol-notes.md` §9). A buy's acceptable price is a *maximum*,
+ * so rounding it up permits the user to pay more than the exact bound allows.
+ * `docs/spec/07-high-level-client.md` §3.2 and §3.5 give the formulas:
  *
  * ```
  * s = num/den
@@ -19,10 +17,9 @@
  * sell (isAsk = true ): acceptable = ceil ( ideal × (den − num) / den )     conservative
  * ```
  *
- * The invariant is implemented, the illustration is a wording defect in the two documents, and the
- * invariant is enforced mechanically by a property test rather than by this comment: for a seeded
- * corpus the conservative bound is never more permissive than the exact rational bound on either
- * side.
+ * The invariant is enforced mechanically by a property test rather than by this comment: for a
+ * seeded corpus the conservative bound is never more permissive than the exact rational bound on
+ * either side.
  *
  * `aggressive` swaps the two directions. It trades a marginally worse price for fill probability at
  * the boundary tick, it is never the default, and it is at most one tick from the exact bound.

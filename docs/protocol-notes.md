@@ -440,8 +440,9 @@ Found by reading `lighter-python/lighter/signer_client.py` and then executing th
    sizing by quote amount and a lossy `float` when sizing by base amount.
 
 **Consequence:** all price and size arithmetic is integer/rational end to end. No `number`, no
-`Math.round`. Rounding direction is stated per call site — a buy's acceptable price rounds up, a
-sell's rounds down — so rounding never loosens slippage protection.
+`Math.round`. Rounding direction is stated per call site — a buy's maximum acceptable price rounds
+down, while a sell's minimum acceptable price rounds up — so rounding never loosens slippage
+protection.
 
 ---
 
