@@ -802,7 +802,7 @@ describe("resubscribe on reconnect", () => {
   }
 
   test("reset is emitted once per loss, not once per socket state change", async () => {
-    const { server, client } = rig();
+    const { server, client } = rig({ reconnect: { random: (): number => 0.5 } });
     const sub = client.subscribe(channels.orderBook(0));
     const events = record(sub);
     await settle(server);
@@ -811,11 +811,15 @@ describe("resubscribe on reconnect", () => {
     expect(kinds(events)).toEqual(["snapshot"]);
 
     server.closeWith(1006);
-    await server.advance(60_000);
+    await settle(server);
+    expect(kinds(events)).toEqual(["snapshot", "reset"]);
+    await server.advance(1_000);
     expect(kinds(events)).toEqual(["snapshot", "reset", "snapshot"]);
 
     server.closeWith(1006);
-    await server.advance(60_000);
+    await settle(server);
+    expect(kinds(events)).toEqual(["snapshot", "reset", "snapshot", "reset"]);
+    await server.advance(1_000);
     expect(kinds(events)).toEqual(["snapshot", "reset", "snapshot", "reset", "snapshot"]);
   });
 
