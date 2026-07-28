@@ -1,6 +1,216 @@
 {
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "cases": [],
-  "frames": []
+  "cases": [
+    {
+      "name": "duplicate-subscribe",
+      "outboundFrameIndex": 1,
+      "inboundFrameIndices": [
+        3,
+        4
+      ]
+    },
+    {
+      "name": "unknown-unsubscribe",
+      "outboundFrameIndex": 5,
+      "inboundFrameIndices": [
+        6
+      ]
+    },
+    {
+      "name": "unknown-channel",
+      "outboundFrameIndex": 7,
+      "inboundFrameIndices": [
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "name": "invalid-type",
+      "outboundFrameIndex": 11,
+      "inboundFrameIndices": [
+        12
+      ]
+    },
+    {
+      "name": "invalid-json",
+      "outboundFrameIndex": 13,
+      "inboundFrameIndices": [
+        14
+      ]
+    },
+    {
+      "name": "invalid-auth",
+      "outboundFrameIndex": 15,
+      "inboundFrameIndices": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        22
+      ]
+    }
+  ],
+  "unsubscribeAckProbe": "height",
+  "unsubscribeAckOutboundFrameIndex": 21,
+  "unsubscribeAckInboundFrameIndices": [
+    22
+  ],
+  "session": {
+    "label": "errors",
+    "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+    "opened": true,
+    "frames": [
+      {
+        "dir": "in",
+        "tMs": 524,
+        "wallMs": 1785276548384,
+        "raw": "{\"session_id\":\"ff77207c-609c-408c-a54c-e3d701143901\",\"type\":\"connected\"}"
+      },
+      {
+        "dir": "out",
+        "tMs": 525,
+        "wallMs": 1785276548385,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+      },
+      {
+        "dir": "out",
+        "tMs": 525,
+        "wallMs": 1785276548385,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 726,
+        "wallMs": 1785276548585,
+        "raw": "{\"error\":{\"code\":30003,\"message\":\"Already Subscribed to : height\"}}"
+      },
+      {
+        "dir": "in",
+        "tMs": 1144,
+        "wallMs": 1785276549003,
+        "raw": "{\"channel\":\"height\",\"height\":451230,\"timestamp\":1785276548949,\"type\":\"subscribed/height\"}"
+      },
+      {
+        "dir": "out",
+        "tMs": 2025,
+        "wallMs": 1785276549885,
+        "raw": "{\"type\":\"unsubscribe\",\"channel\":\"trade/1\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 2291,
+        "wallMs": 1785276550151,
+        "raw": "{\"error\":{\"code\":30002,\"message\":\"Not Subscribed to : trade:1\"}}"
+      },
+      {
+        "dir": "out",
+        "tMs": 3525,
+        "wallMs": 1785276551384,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"not_a_channel/0\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 3669,
+        "wallMs": 1785276551529,
+        "raw": "{\"error\":{\"code\":30005,\"message\":\"Invalid Channel\"}}"
+      },
+      {
+        "dir": "in",
+        "tMs": 3669,
+        "wallMs": 1785276551529,
+        "raw": "{\"channel\":\"height\",\"height\":451233,\"timestamp\":1785276551449,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 4193,
+        "wallMs": 1785276552053,
+        "raw": "{\"channel\":\"height\",\"height\":451234,\"timestamp\":1785276551948,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "out",
+        "tMs": 5025,
+        "wallMs": 1785276552885,
+        "raw": "{\"type\":\"nonsense\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 5144,
+        "wallMs": 1785276553004,
+        "raw": "{\"error\":{\"code\":30001,\"message\":\"Invalid Type\"}}"
+      },
+      {
+        "dir": "out",
+        "tMs": 6525,
+        "wallMs": 1785276554385,
+        "raw": "not json at all"
+      },
+      {
+        "dir": "in",
+        "tMs": 6644,
+        "wallMs": 1785276554504,
+        "raw": "{\"error\":{\"code\":30000,\"message\":\"Invalid Json\"}}"
+      },
+      {
+        "dir": "out",
+        "tMs": 8026,
+        "wallMs": 1785276555885,
+        "raw": "{\"type\":\"subscribe\",\"channel\":\"account_tx/1\",\"auth\":\"<redacted>\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 8168,
+        "wallMs": 1785276556028,
+        "raw": "{\"channel\":\"height\",\"height\":451235,\"timestamp\":1785276555974,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 8177,
+        "wallMs": 1785276556036,
+        "raw": "{\"error\":{\"code\":20013,\"message\":\"invalid auth: invalid deadline: account_tx:1\"}}"
+      },
+      {
+        "dir": "in",
+        "tMs": 8668,
+        "wallMs": 1785276556528,
+        "raw": "{\"channel\":\"height\",\"height\":451236,\"timestamp\":1785276556473,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 9166,
+        "wallMs": 1785276557026,
+        "raw": "{\"channel\":\"height\",\"height\":451237,\"timestamp\":1785276556972,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 9643,
+        "wallMs": 1785276557502,
+        "raw": "{\"channel\":\"height\",\"height\":451238,\"timestamp\":1785276557448,\"type\":\"update/height\"}"
+      },
+      {
+        "dir": "out",
+        "tMs": 10525,
+        "wallMs": 1785276558385,
+        "raw": "{\"type\":\"unsubscribe\",\"channel\":\"height\"}"
+      },
+      {
+        "dir": "in",
+        "tMs": 10682,
+        "wallMs": 1785276558542,
+        "raw": "{\"type\": \"unsubscribed\", \"channel\": \"height\"}"
+      }
+    ],
+    "close": {
+      "tMs": 15001,
+      "wallMs": 1785276562861,
+      "code": 1000,
+      "reason": "probe complete",
+      "wasClean": true
+    },
+    "binaryFrames": [],
+    "errorEvent": false,
+    "expectedDurationMs": 15000,
+    "observedDurationMs": 15102,
+    "endCause": "duration"
+  }
 }

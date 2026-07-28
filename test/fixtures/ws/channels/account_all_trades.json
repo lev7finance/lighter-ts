@@ -1,6 +1,138 @@
 {
   "family": "account_all_trades",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "account_all_trades/8",
+      "session": {
+        "label": "channel:account_all_trades/8",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 473,
+            "wallMs": 1785277054352,
+            "raw": "{\"session_id\":\"dc6e8811-cc79-4394-839c-027bed299478\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 473,
+            "wallMs": 1785277054352,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"account_all_trades/8\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 591,
+            "wallMs": 1785277054470,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"daily_volume\":6029.901898,\"monthly_volume\":150011.303278,\"total_volume\":150011.303278,\"trades\":{},\"type\":\"subscribed/account_all_trades\",\"weekly_volume\":42440.941556}"
+          },
+          {
+            "dir": "in",
+            "tMs": 2708,
+            "wallMs": 1785277056587,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"1\":[{\"trade_id\":5769984,\"trade_id_str\":\"5769984\",\"tx_hash\":\"28043b42afd5d9bbcf604e22a2fa19c061e413d8a0b7e13f73cdbcc9844f4da055a12e17b8dc9369\",\"type\":\"trade\",\"market_id\":1,\"size\":\"0.00001\",\"price\":\"63960.0\",\"usd_amount\":\"0.639600\",\"ask_id\":562949966488741,\"ask_id_str\":\"562949966488741\",\"bid_id\":844424916667398,\"bid_id_str\":\"844424916667398\",\"ask_client_id\":178527705621210,\"ask_client_id_str\":\"178527705621210\",\"bid_client_id\":178527696079327,\"bid_client_id_str\":\"178527696079327\",\"ask_account_id\":8,\"bid_account_id\":281474976710540,\"is_maker_ask\":false,\"block_height\":451350,\"timestamp\":1785277051502,\"taker_position_size_before\":\"0.00001\",\"taker_entry_quote_before\":\"0.639966\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-0.02744\",\"maker_entry_quote_before\":\"1749.618202\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277056529043}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 4616,
+            "wallMs": 1785277058495,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"0\":[{\"trade_id\":5769990,\"trade_id_str\":\"5769990\",\"tx_hash\":\"076bc622f388cbbc60548cf8c5c501d3ea14e3ffbd9cebcbd16db2d748e52326f7e5431dd1768872\",\"type\":\"trade\",\"market_id\":0,\"size\":\"0.0001\",\"price\":\"1921.25\",\"usd_amount\":\"0.192125\",\"ask_id\":281474989863259,\"ask_id_str\":\"281474989863259\",\"bid_id\":562949940181263,\"bid_id_str\":\"562949940181263\",\"ask_client_id\":178527705812210,\"ask_client_id_str\":\"178527705812210\",\"bid_client_id\":178527695413411,\"bid_client_id_str\":\"178527695413411\",\"ask_account_id\":8,\"bid_account_id\":7,\"is_maker_ask\":false,\"block_height\":451350,\"timestamp\":1785277051502,\"taker_position_size_before\":\"0.0000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-738.9327\",\"maker_entry_quote_before\":\"1403630.096694\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277058440387}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 9565,
+            "wallMs": 1785277063444,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"2\":[{\"trade_id\":5770006,\"trade_id_str\":\"5770006\",\"tx_hash\":\"f7c4627ff2cecc188091e99e68696693f75a7e97b198da9aec0ef2354c58a3e53763255471799783\",\"type\":\"trade\",\"market_id\":2,\"size\":\"0.001\",\"price\":\"74.051\",\"usd_amount\":\"0.074051\",\"ask_id\":844424938673449,\"ask_id_str\":\"844424938673449\",\"bid_id\":1125899898319712,\"bid_id_str\":\"1125899898319712\",\"ask_client_id\":178527706305810,\"ask_client_id_str\":\"178527706305810\",\"bid_client_id\":178527695412911,\"bid_client_id_str\":\"178527695412911\",\"ask_account_id\":8,\"bid_account_id\":7,\"is_maker_ask\":false,\"block_height\":451350,\"timestamp\":1785277051502,\"taker_position_size_before\":\"0.000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":666,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"51.393\",\"maker_entry_quote_before\":\"3810.221609\",\"maker_initial_margin_fraction_before\":666,\"transaction_time\":1785277063381434}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 13205,
+            "wallMs": 1785277067084,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"1\":[{\"trade_id\":5770012,\"trade_id_str\":\"5770012\",\"tx_hash\":\"957ef4e41cedc340ab2cbebf4d171d44a86ed244e42e4deb2fa4576ea9734109e9e583c8f6b3817b\",\"type\":\"trade\",\"market_id\":1,\"size\":\"0.00001\",\"price\":\"64000.0\",\"usd_amount\":\"0.640000\",\"ask_id\":562949966488754,\"ask_id_str\":\"562949966488754\",\"bid_id\":844424916665793,\"bid_id_str\":\"844424916665793\",\"ask_client_id\":178527706061430,\"ask_client_id_str\":\"178527706061430\",\"bid_client_id\":178527706671510,\"bid_client_id_str\":\"178527706671510\",\"ask_account_id\":281474976710540,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451352,\"timestamp\":1785277065764,\"taker_position_size_before\":\"0.00000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-0.02743\",\"maker_entry_quote_before\":\"1748.980586\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277067029356}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 19848,
+            "wallMs": 1785277073728,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"0\":[{\"trade_id\":5770046,\"trade_id_str\":\"5770046\",\"tx_hash\":\"c41ab94ab14a32e4c8edc30fdfea87939444612a0a5ef3ab154ba4a72029ca85d38e1d5d8bda6047\",\"type\":\"trade\",\"market_id\":0,\"size\":\"0.0001\",\"price\":\"1924.74\",\"usd_amount\":\"0.192474\",\"ask_id\":281474989862904,\"ask_id_str\":\"281474989862904\",\"bid_id\":562949940180562,\"bid_id_str\":\"562949940180562\",\"ask_client_id\":178527695414111,\"ask_client_id_str\":\"178527695414111\",\"bid_client_id\":178527707335510,\"bid_client_id_str\":\"178527707335510\",\"ask_account_id\":7,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451353,\"timestamp\":1785277071503,\"taker_position_size_before\":\"-0.0001\",\"taker_entry_quote_before\":\"0.192125\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-738.9327\",\"maker_entry_quote_before\":\"1403630.099197\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277073672552}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 20754,
+            "wallMs": 1785277074633,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"2\":[{\"trade_id\":5770057,\"trade_id_str\":\"5770057\",\"tx_hash\":\"33b3cf2314305bbfca897b7c2aa359e292fb5905b39bbd285fd1e3ae21d84a0dde659fc306cc74f1\",\"type\":\"trade\",\"market_id\":2,\"size\":\"0.001\",\"price\":\"74.153\",\"usd_amount\":\"0.074153\",\"ask_id\":844424938673383,\"ask_id_str\":\"844424938673383\",\"bid_id\":1125899898319303,\"bid_id_str\":\"1125899898319303\",\"ask_client_id\":178527703974272,\"ask_client_id_str\":\"178527703974272\",\"bid_client_id\":178527707426210,\"bid_client_id_str\":\"178527707426210\",\"ask_account_id\":281474976710558,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451353,\"timestamp\":1785277071503,\"taker_position_size_before\":\"-0.001\",\"taker_entry_quote_before\":\"0.074051\",\"taker_initial_margin_fraction_before\":666,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"0.000\",\"maker_entry_quote_before\":\"0.000000\",\"maker_initial_margin_fraction_before\":1000,\"maker_position_sign_changed\":true,\"transaction_time\":1785277074577858}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 28738,
+            "wallMs": 1785277082617,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"1\":[{\"trade_id\":5770075,\"trade_id_str\":\"5770075\",\"tx_hash\":\"2e21fe6db775612e07af7a7de2b7c819aa94a033ae4ee507f0e89766600c54efcb2d1eed75cfa121\",\"type\":\"trade\",\"market_id\":1,\"size\":\"0.00001\",\"price\":\"63940.0\",\"usd_amount\":\"0.639400\",\"ask_id\":562949966488832,\"ask_id_str\":\"562949966488832\",\"bid_id\":844424916667938,\"bid_id_str\":\"844424916667938\",\"ask_client_id\":178527708209110,\"ask_client_id_str\":\"178527708209110\",\"bid_client_id\":178527691824823,\"bid_client_id_str\":\"178527691824823\",\"ask_account_id\":8,\"bid_account_id\":281474976710540,\"is_maker_ask\":false,\"block_height\":451353,\"timestamp\":1785277071503,\"taker_position_size_before\":\"0.00001\",\"taker_entry_quote_before\":\"0.640000\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-0.02744\",\"maker_entry_quote_before\":\"1749.622968\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277082473705}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 35073,
+            "wallMs": 1785277088953,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"2\":[{\"trade_id\":5770104,\"trade_id_str\":\"5770104\",\"tx_hash\":\"ef3b6edaef81b771e0548b9600e63c94e3696df73e49823260ba4b7c429115efbf38a6dc8673f22d\",\"type\":\"trade\",\"market_id\":2,\"size\":\"0.001\",\"price\":\"74.039\",\"usd_amount\":\"0.074039\",\"ask_id\":844424938673539,\"ask_id_str\":\"844424938673539\",\"bid_id\":1125899898319712,\"bid_id_str\":\"1125899898319712\",\"ask_client_id\":178527708857710,\"ask_client_id_str\":\"178527708857710\",\"bid_client_id\":178527695412911,\"bid_client_id_str\":\"178527695412911\",\"ask_account_id\":8,\"bid_account_id\":7,\"is_maker_ask\":false,\"block_height\":451355,\"timestamp\":1785277084199,\"taker_position_size_before\":\"0.000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":666,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"51.392\",\"maker_entry_quote_before\":\"3810.147382\",\"maker_initial_margin_fraction_before\":666,\"transaction_time\":1785277088896427}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 35101,
+            "wallMs": 1785277088981,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"0\":[{\"trade_id\":5770106,\"trade_id_str\":\"5770106\",\"tx_hash\":\"6fdfdab5da09c2a28bf4eb530fc4212ea927559aa6a09e13e75c9a8a533b1936d2ddcfcad6e575d1\",\"type\":\"trade\",\"market_id\":0,\"size\":\"0.0001\",\"price\":\"1924.23\",\"usd_amount\":\"0.192423\",\"ask_id\":281474989862904,\"ask_id_str\":\"281474989862904\",\"bid_id\":562949940180524,\"bid_id_str\":\"562949940180524\",\"ask_client_id\":178527695414111,\"ask_client_id_str\":\"178527695414111\",\"bid_client_id\":178527708860710,\"bid_client_id_str\":\"178527708860710\",\"ask_account_id\":7,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451355,\"timestamp\":1785277084199,\"taker_position_size_before\":\"0.0000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-738.9329\",\"maker_entry_quote_before\":\"1403630.484108\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277088926545}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 40071,
+            "wallMs": 1785277093951,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"1\":[{\"trade_id\":5770137,\"trade_id_str\":\"5770137\",\"tx_hash\":\"38e9d9429e81e0af1dc3ae4bfbaf4b7c7e94fdaa39f1f9a0ac344630b9592430535ff047d41a394e\",\"type\":\"trade\",\"market_id\":1,\"size\":\"0.00001\",\"price\":\"63940.0\",\"usd_amount\":\"0.639400\",\"ask_id\":562949966488891,\"ask_id_str\":\"562949966488891\",\"bid_id\":844424916667938,\"bid_id_str\":\"844424916667938\",\"ask_client_id\":178527709357410,\"ask_client_id_str\":\"178527709357410\",\"bid_client_id\":178527691824823,\"bid_client_id_str\":\"178527691824823\",\"ask_account_id\":8,\"bid_account_id\":281474976710540,\"is_maker_ask\":false,\"block_height\":451357,\"timestamp\":1785277091568,\"taker_position_size_before\":\"0.00000\",\"taker_entry_quote_before\":\"0.000000\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-0.02742\",\"maker_entry_quote_before\":\"1748.347732\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277093888155}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 47364,
+            "wallMs": 1785277101243,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"0\":[{\"trade_id\":5770194,\"trade_id_str\":\"5770194\",\"tx_hash\":\"3e32d2b32c69ebab4b6b3d997071a3ef8a63365bbc5451fced8195dca6a1d72b2f459c8817f6405f\",\"type\":\"trade\",\"market_id\":0,\"size\":\"0.0001\",\"price\":\"1920.24\",\"usd_amount\":\"0.192024\",\"ask_id\":281474989863402,\"ask_id_str\":\"281474989863402\",\"bid_id\":562949940181263,\"bid_id_str\":\"562949940181263\",\"ask_client_id\":178527710086810,\"ask_client_id_str\":\"178527710086810\",\"bid_client_id\":178527695413411,\"bid_client_id_str\":\"178527695413411\",\"ask_account_id\":8,\"bid_account_id\":7,\"is_maker_ask\":false,\"block_height\":451358,\"timestamp\":1785277098828,\"taker_position_size_before\":\"0.0001\",\"taker_entry_quote_before\":\"0.192423\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-738.9329\",\"maker_entry_quote_before\":\"1403630.486577\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277101187747}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 50411,
+            "wallMs": 1785277104291,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"2\":[{\"trade_id\":5770202,\"trade_id_str\":\"5770202\",\"tx_hash\":\"7a0d4d55ac7cd586976e962e5d5f980730f91e07b83114388a5314b36cd603210ff47b5a08385416\",\"type\":\"trade\",\"market_id\":2,\"size\":\"0.001\",\"price\":\"74.108\",\"usd_amount\":\"0.074108\",\"ask_id\":844424938673100,\"ask_id_str\":\"844424938673100\",\"bid_id\":1125899898319190,\"bid_id_str\":\"1125899898319190\",\"ask_client_id\":178527695413311,\"ask_client_id_str\":\"178527695413311\",\"bid_client_id\":178527710391610,\"bid_client_id_str\":\"178527710391610\",\"ask_account_id\":7,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451358,\"timestamp\":1785277098828,\"taker_position_size_before\":\"-0.001\",\"taker_entry_quote_before\":\"0.074039\",\"taker_initial_margin_fraction_before\":666,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"51.393\",\"maker_entry_quote_before\":\"3810.221306\",\"maker_initial_margin_fraction_before\":666,\"transaction_time\":1785277104235576}]},\"type\":\"update/account_all_trades\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 54262,
+            "wallMs": 1785277108142,
+            "raw": "{\"channel\":\"account_all_trades:8\",\"trades\":{\"1\":[{\"trade_id\":5770245,\"trade_id_str\":\"5770245\",\"tx_hash\":\"1148a8de37382801817fd504b5047ccf0b52feeba04b281312beadcde23e074cbfb876d06b3deb2c\",\"type\":\"trade\",\"market_id\":1,\"size\":\"0.00001\",\"price\":\"64000.0\",\"usd_amount\":\"0.640000\",\"ask_id\":562949966488754,\"ask_id_str\":\"562949966488754\",\"bid_id\":844424916665577,\"bid_id_str\":\"844424916665577\",\"ask_client_id\":178527706061430,\"ask_client_id_str\":\"178527706061430\",\"bid_client_id\":178527710775210,\"bid_client_id_str\":\"178527710775210\",\"ask_account_id\":281474976710540,\"bid_account_id\":8,\"is_maker_ask\":true,\"block_height\":451360,\"timestamp\":1785277107795,\"taker_position_size_before\":\"-0.00001\",\"taker_entry_quote_before\":\"0.639400\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_position_size_before\":\"-0.02741\",\"maker_entry_quote_before\":\"1747.710114\",\"maker_initial_margin_fraction_before\":500,\"transaction_time\":1785277108082830}]},\"type\":\"update/account_all_trades\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60001,
+          "wallMs": 1785277113881,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60105,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/account_all_trades",
+        "firstInboundChannel": "account_all_trades:8",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "updateOutcome": "observed",
+        "totalInboundDataFrames": 14,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
 }

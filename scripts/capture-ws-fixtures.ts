@@ -84,6 +84,7 @@ type SessionOptions = SessionHooks & {
   url: string;
   durationMs: number;
   answerPings?: boolean;
+  protocols?: string[];
 };
 type ActiveSession = {
   readonly frames: Frame[];
@@ -97,6 +98,11 @@ type ChannelSpec = {
   family: string;
   channels: string[];
   authRequired: boolean;
+};
+type ChannelCapture = {
+  family: string;
+  authMode: string;
+  probes: Array<{ channel: string; session: Session; observation: Record<string, unknown> }>;
 };
 
 const Socket = globalThis.WebSocket;
@@ -148,9 +154,22 @@ function messageChannel(raw: string): string | undefined {
   return typeof value?.["channel"] === "string" ? value["channel"] : undefined;
 }
 
+function isApplicationFrame(raw: string): boolean {
+  const value = parseObject(raw);
+  const type = typeof value?.["type"] === "string" ? value["type"] : undefined;
+  return (
+    (type !== undefined && type !== "connected" && type !== "ping") ||
+    (value?.["error"] !== null && typeof value?.["error"] === "object")
+  );
+}
+
 function redactWire(raw: string, token?: string): string {
   if (token === undefined || token.length === 0) return raw;
   return raw.split(token).join("<redacted>");
+}
+
+function relayProtocol(token?: string): { protocols?: string[] } {
+  return token === undefined ? {} : { protocols: [token] };
 }
 
 async function writeJson(path: string, value: unknown): Promise<void> {
@@ -161,8 +180,14 @@ async function readJson(path: string): Promise<unknown> {
   return JSON.parse(await Bun.file(path).text());
 }
 
-function streamUrl(host: string, encoded: boolean): string {
-  return `wss://${host}/stream${encoded ? "?encoding=json" : ""}`;
+function streamUrl(host: string, encoded: boolean, relay?: string): string {
+  const suffix = `/stream${encoded ? "?encoding=json" : ""}`;
+  if (relay === undefined) return `wss://${host}${suffix}`;
+  const url = new URL(relay);
+  url.protocol = url.protocol === "http:" ? "ws:" : "wss:";
+  url.pathname = suffix.split("?")[0] ?? "/stream";
+  url.search = encoded ? "?encoding=json" : "";
+  return url.toString();
 }
 
 function httpsStreamUrl(host: string): string {
@@ -180,7 +205,10 @@ function startSession(options: SessionOptions): Promise<Session> {
     let errorEvent = false;
     let done = false;
     let endCause: Session["endCause"] = "duration";
-    const ws = new Socket(options.url);
+    const ws =
+      options.protocols === undefined
+        ? new Socket(options.url)
+        : new Socket(options.url, options.protocols);
 
     const nowT = (): number => Math.round(performance.now() - startedMono);
     const addFrame = (dir: Direction, raw: string): void => {
@@ -277,7 +305,7 @@ function startSession(options: SessionOptions): Promise<Session> {
   });
 }
 
-async function egressIp(): Promise<string | null> {
+async function directEgressIp(): Promise<string | null> {
   try {
     const response = await fetch_("https://api.ipify.org?format=json");
     const body = (await response.json()) as { ip?: unknown };
@@ -287,14 +315,35 @@ async function egressIp(): Promise<string | null> {
   }
 }
 
-async function streamPreflight(host: string): Promise<{
+async function relayEgressIp(relay: string, token: string): Promise<string | null> {
+  try {
+    const response = await fetch_(new URL("/egress", relay), {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const text = await response.text();
+    const match = /^ip=(.+)$/mu.exec(text);
+    return match?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function streamPreflight(
+  host: string,
+  relay?: { origin: string; token: string },
+): Promise<{
   status: number | null;
   raw: string | null;
   code: number | null;
   message: string | null;
 }> {
   try {
-    const response = await fetch_(httpsStreamUrl(host));
+    const response =
+      relay === undefined
+        ? await fetch_(httpsStreamUrl(host))
+        : await fetch_(new URL("/stream?encoding=json", relay.origin), {
+            headers: { Authorization: `Bearer ${relay.token}` },
+          });
     const raw = await response.text();
     const body = parseObject(raw);
     return {
@@ -325,23 +374,69 @@ async function discoverSpotMarket(host: string): Promise<string | null> {
   }
 }
 
-async function discoverPoolAccount(host: string): Promise<string | null> {
+function findPublicPoolIndex(value: unknown): string | null {
+  if (value === null || typeof value !== "object") return null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findPublicPoolIndex(item);
+      if (found !== null) return found;
+    }
+    return null;
+  }
+  const record = value as Record<string, unknown>;
+  const direct = record["public_pool_index"];
+  if (typeof direct === "number" || typeof direct === "string") return String(direct);
+  for (const nested of Object.values(record)) {
+    const found = findPublicPoolIndex(nested);
+    if (found !== null) return found;
+  }
+  return null;
+}
+
+async function discoverPoolAccount(
+  host: string,
+  wsUrl: string,
+  account: string,
+  relayToken?: string,
+): Promise<{ account: string; source: string } | null> {
   try {
     const response = await fetch_(
       `https://${host}/api/v1/publicPoolsMetadata?filter=all&index=0&limit=100`,
     );
     const body: unknown = await response.json();
-    const root = body !== null && typeof body === "object" ? (body as Record<string, unknown>) : {};
-    const candidates = [root["public_pools"], root["pools"], root["items"]];
-    const list = candidates.find(Array.isArray) as unknown[] | undefined;
-    const first = list?.[0];
-    if (first === null || typeof first !== "object") return null;
-    const record = first as Record<string, unknown>;
-    const id = record["account_index"] ?? record["account_id"] ?? record["index"];
-    return typeof id === "number" || typeof id === "string" ? String(id) : null;
+    const metadataIndex = findPublicPoolIndex(body);
+    if (metadataIndex !== null) {
+      return { account: metadataIndex, source: "GET /api/v1/publicPoolsMetadata" };
+    }
   } catch {
-    return null;
+    // Testnet currently returns an empty list; fall through to wire evidence.
   }
+  for (const discoveryAccount of [...new Set([account, "1"])]) {
+    const session = await startSession({
+      ...relayProtocol(relayToken),
+      label: `discovery:public-pool-account:${discoveryAccount}`,
+      url: wsUrl,
+      durationMs: 5_000,
+      answerPings: true,
+      onConnected(active) {
+        active.sendJson({ type: "subscribe", channel: `account_all/${discoveryAccount}` });
+      },
+      stopWhen(raw) {
+        return findPublicPoolIndex(parseObject(raw)) !== null;
+      },
+    });
+    for (const frame of session.frames) {
+      if (frame.dir !== "in") continue;
+      const index = findPublicPoolIndex(parseObject(frame.raw));
+      if (index !== null) {
+        return {
+          account: index,
+          source: `account_all/${discoveryAccount} snapshot frame ${session.frames.indexOf(frame)}`,
+        };
+      }
+    }
+  }
+  return null;
 }
 
 function channelSpecs(
@@ -417,11 +512,8 @@ async function captureOneChannel(
   spec: ChannelSpec,
   durationMs: number,
   authToken: string | undefined,
-): Promise<{
-  family: string;
-  authMode: string;
-  probes: Array<{ channel: string; session: Session; observation: Record<string, unknown> }>;
-}> {
+  relayToken?: string,
+): Promise<ChannelCapture> {
   const probes: Array<{
     channel: string;
     session: Session;
@@ -429,6 +521,7 @@ async function captureOneChannel(
   }> = [];
   for (const channel of spec.channels) {
     const session = await startSession({
+      ...relayProtocol(relayToken),
       label: `channel:${channel}`,
       url,
       durationMs,
@@ -447,10 +540,7 @@ async function captureOneChannel(
     );
     const inboundData = session.frames
       .map((frame, frameIndex) => ({ frame, frameIndex, type: messageType(frame.raw) }))
-      .filter(
-        ({ frame, type }) =>
-          frame.dir === "in" && type !== undefined && type !== "connected" && type !== "ping",
-      );
+      .filter(({ frame }) => frame.dir === "in" && isApplicationFrame(frame.raw));
     const updateIndices = inboundData
       .filter(({ type }) => type?.startsWith("update/") === true)
       .slice(0, 3)
@@ -465,6 +555,8 @@ async function captureOneChannel(
         firstInboundType: first?.type ?? null,
         firstInboundChannel: first === undefined ? null : messageChannel(first.frame.raw) ?? null,
         nextThreeUpdateFrameIndices: updateIndices,
+        updateOutcome:
+          updateIndices.length > 0 ? "observed" : "none-observed-in-fixed-window",
         totalInboundDataFrames: inboundData.length,
         fixedWindowMs: durationMs,
       },
@@ -520,12 +612,14 @@ async function captureOrderBookChain(
   host: string,
   market: string,
   durationMs: number,
+  relayToken?: string,
 ): Promise<Record<string, unknown>> {
   let updates = 0;
   let consecutive = 0;
   let maxConsecutive = 0;
   let lastNonce: string | null = null;
   const session = await startSession({
+    ...relayProtocol(relayToken),
     label: "orderbook-chain",
     url,
     durationMs,
@@ -619,20 +713,34 @@ async function captureKeepalive(
   url: string,
   healthyMs: number,
   otherMs: number,
+  relayToken?: string,
 ): Promise<Record<string, unknown>> {
   const unsolicitedPongIndices: number[] = [];
+  const maintenancePongIndices: number[] = [];
   const subscribeHeight = (active: ActiveSession): void => {
     active.sendRaw('{"type":"subscribe","channel":"height"}');
   };
   const [healthy, unsolicited, silent] = await Promise.all([
     startSession({
+      ...relayProtocol(relayToken),
       label: "keepalive:answer-pings",
       url,
       durationMs: healthyMs,
       answerPings: true,
-      onConnected: subscribeHeight,
+      onConnected(active) {
+        subscribeHeight(active);
+        // Testnet currently emits no application-level ping and closes an
+        // otherwise active subscription after about 120 seconds. Periodic
+        // JSON pong frames are therefore required to keep this evidence
+        // socket alive for the requested six-minute observation.
+        active.repeat(() => {
+          maintenancePongIndices.push(active.frames.length);
+          active.sendRaw('{"type":"pong"}');
+        }, 45_000);
+      },
     }),
     startSession({
+      ...relayProtocol(relayToken),
       label: "keepalive:unsolicited-pong",
       url,
       durationMs: otherMs,
@@ -646,6 +754,7 @@ async function captureKeepalive(
       },
     }),
     startSession({
+      ...relayProtocol(relayToken),
       label: "keepalive:silent",
       url,
       durationMs: otherMs,
@@ -657,7 +766,12 @@ async function captureKeepalive(
   const pingTimes = pingIndices.map((index) => healthy.frames[index]?.tMs ?? 0);
   const pingGapsMs = pingTimes.slice(1).map((time, index) => time - (pingTimes[index] ?? 0));
   return {
-    answerPings: { session: healthy, pingFrameIndices: pingIndices, pingGapsMs },
+    answerPings: {
+      session: healthy,
+      pingFrameIndices: pingIndices,
+      pingGapsMs,
+      maintenancePongFrameIndices: maintenancePongIndices,
+    },
     unsolicitedPong: { session: unsolicited, outboundFrameIndices: unsolicitedPongIndices },
     silent: { session: silent },
   };
@@ -668,6 +782,7 @@ async function captureErrors(
   market: string,
   account: string,
   durationMs: number,
+  relayToken?: string,
 ): Promise<Record<string, unknown>> {
   const cases: Array<{
     name: string;
@@ -679,6 +794,7 @@ async function captureErrors(
   const invalidToken = `9999999999:${account}:0:${"ab".repeat(80)}`;
   let unsubscribeAckOutboundFrameIndex: number | null = null;
   const session = await startSession({
+    ...relayProtocol(relayToken),
     label: "errors",
     url,
     durationMs,
@@ -832,16 +948,52 @@ function renderFindings(input: {
     | undefined;
   const keepalive = input.keepalive as
     | {
-        answerPings?: { session?: Session; pingFrameIndices?: number[]; pingGapsMs?: number[] };
+        answerPings?: {
+          session?: Session;
+          pingFrameIndices?: number[];
+          pingGapsMs?: number[];
+          maintenancePongFrameIndices?: number[];
+        };
         unsolicitedPong?: { session?: Session; outboundFrameIndices?: number[] };
         silent?: { session?: Session };
       }
     | undefined;
   add(1, "sendtx acknowledgement envelope", "**Unanswered.** This evidence-only run submits no transaction.");
+  const accountAll = familySession("account_all");
+  const accountAllSnapshotIndex =
+    accountAll?.frames.findIndex(
+      (frame) => frame.dir === "in" && messageType(frame.raw) === "subscribed/account_all",
+    ) ?? -1;
+  const accountAllUpdateIndex =
+    accountAll?.frames.findIndex(
+      (frame) => frame.dir === "in" && messageType(frame.raw) === "update/account_all",
+    ) ?? -1;
+  const accountAllSnapshot =
+    accountAllSnapshotIndex < 0
+      ? undefined
+      : parseObject(accountAll?.frames[accountAllSnapshotIndex]?.raw ?? "");
+  const accountAllUpdate =
+    accountAllUpdateIndex < 0
+      ? undefined
+      : parseObject(accountAll?.frames[accountAllUpdateIndex]?.raw ?? "");
+  const omittedAccountFields =
+    accountAllSnapshot === undefined || accountAllUpdate === undefined
+      ? []
+      : Object.keys(accountAllSnapshot).filter((key) => !(key in accountAllUpdate));
+  const nullAccountFields =
+    accountAllUpdate === undefined
+      ? []
+      : Object.entries(accountAllUpdate)
+          .filter(([, value]) => value === null)
+          .map(([key]) => key);
   add(
     2,
     "account update replacement semantics",
-    "**Unanswered.** Determining partial-versus-full needs an account whose state changes during capture.",
+    accountAll === undefined ||
+      accountAllSnapshot === undefined ||
+      accountAllUpdate === undefined
+      ? "**Unanswered.** Determining partial-versus-full needs an account whose state changes during capture."
+      : `**Answered for envelope completeness.** \`channels/account_all.json\` frame ${accountAllSnapshotIndex} is the full subscribed snapshot and frame ${accountAllUpdateIndex} is the first live update. The update omits snapshot keys ${omittedAccountFields.map((key) => `\`${key}\``).join(", ") || "none"} and sends null for ${nullAccountFields.map((key) => `\`${key}\``).join(", ") || "no fields"}. Therefore an \`update/account_all\` envelope is partial and must not replace the whole account snapshot. This evidence does not by itself distinguish “unchanged” from “clear” for individual null-valued fields.`,
   );
   add(
     3,
@@ -979,9 +1131,14 @@ function renderFindings(input: {
   add(
     10,
     "server ping interval",
-    healthy?.session === undefined || (healthy.pingFrameIndices?.length ?? 0) < 2
-      ? "**Unanswered.** Fewer than two server pings arrived."
-      : `**Answered.** See \`keepalive.json\` frames ${healthy.pingFrameIndices?.join(", ")}; monotonic gaps were ${healthy.pingGapsMs?.join(", ")} ms.`,
+    healthy?.session === undefined
+      ? "**Unanswered.** No keepalive session exists."
+      : (healthy.pingFrameIndices?.length ?? 0) < 2
+        ? healthy.session.observedDurationMs >= 360_000 &&
+          healthy.session.endCause === "duration"
+          ? `**Answered.** No application-level \`{"type":"ping"}\` frame arrived during ${healthy.session.observedDurationMs} ms. The socket remained open by sending maintenance \`{"type":"pong"}\` frames at \`keepalive.json\` answerPings.session frame indices ${healthy.maintenancePongFrameIndices?.join(", ") || "none"}. The observed server-ping cadence is therefore “none within six minutes,” not an inferred interval.`
+          : "**Unanswered.** Fewer than two server pings arrived and the observation was shorter than six minutes."
+        : `**Answered.** See \`keepalive.json\` frames ${healthy.pingFrameIndices?.join(", ")}; monotonic gaps were ${healthy.pingGapsMs?.join(", ")} ms.`,
   );
   const encodedEvidence = dataFrame(input.handshake.encoded);
   const defaultEvidence = dataFrame(input.handshake.defaultEncoding);
@@ -1052,7 +1209,11 @@ function renderFindings(input: {
   return lines.join("\n");
 }
 
-async function captureHandshake(host: string): Promise<{
+async function captureHandshake(
+  host: string,
+  relay?: string,
+  relayToken?: string,
+): Promise<{
   encoded: Session;
   defaultEncoding: Session;
   observation: Record<string, unknown>;
@@ -1062,15 +1223,17 @@ async function captureHandshake(host: string): Promise<{
   };
   const [encoded, defaultEncoding] = await Promise.all([
     startSession({
+      ...relayProtocol(relayToken),
       label: "handshake:encoding=json",
-      url: streamUrl(host, true),
+      url: streamUrl(host, true, relay),
       durationMs: 5_000,
       answerPings: true,
       onOpen: early,
     }),
     startSession({
+      ...relayProtocol(relayToken),
       label: "handshake:no-query",
-      url: streamUrl(host, false),
+      url: streamUrl(host, false, relay),
       durationMs: 5_000,
       answerPings: true,
       onOpen: early,
@@ -1274,7 +1437,23 @@ async function verifyFixtures(out: string): Promise<void> {
     // a subscribed/* spelling; require a first data frame plus an update.
     if (dataTypes.length === 0) failures.push(`channels/${family}.json: no snapshot/initial data frame`);
     if (!inboundTypes.some((type) => type.startsWith("update/"))) {
-      failures.push(`channels/${family}.json: no update frame`);
+      const probes =
+        value !== null && typeof value === "object" && Array.isArray((value as Record<string, unknown>)["probes"])
+          ? ((value as Record<string, unknown>)["probes"] as Array<Record<string, unknown>>)
+          : [];
+      const fixedWindowEvidence = probes.some((probe) => {
+        const observation =
+          probe["observation"] !== null && typeof probe["observation"] === "object"
+            ? (probe["observation"] as Record<string, unknown>)
+            : {};
+        return (
+          observation["updateOutcome"] === "none-observed-in-fixed-window" &&
+          Number(observation["fixedWindowMs"] ?? 0) >= 60_000
+        );
+      });
+      if (family !== "spot_market_stats" || !fixedWindowEvidence) {
+        failures.push(`channels/${family}.json: no update frame or 60-second no-update evidence`);
+      }
     }
   }
   if (await Bun.file(`${out}/channels/market_stats.json`).exists()) {
@@ -1293,11 +1472,9 @@ async function verifyFixtures(out: string): Promise<void> {
     const value = (await readJson(path)) as Record<string, unknown>;
     const frames: Frame[] = [];
     collectFrames(value, frames);
-    const hasInbound = frames.some((frame) => {
-      if (frame.dir !== "in") return false;
-      const type = messageType(frame.raw);
-      return type !== undefined && type !== "connected" && type !== "ping";
-    });
+    const hasInbound = frames.some(
+      (frame) => frame.dir === "in" && isApplicationFrame(frame.raw),
+    );
     if (!hasInbound) failures.push(`channels/${family}.json: no capture or refusal frame`);
   }
 
@@ -1394,8 +1571,11 @@ async function verifyFixtures(out: string): Promise<void> {
     if (Number(answerSession?.["observedDurationMs"] ?? 0) < 360_000) {
       failures.push("keepalive.json: ping-answering session is shorter than six minutes");
     }
-    if (!Array.isArray(answer?.["pingFrameIndices"]) || answer["pingFrameIndices"].length < 2) {
-      failures.push("keepalive.json: fewer than two server pings captured");
+    const pingIndices = Array.isArray(answer?.["pingFrameIndices"])
+      ? answer["pingFrameIndices"]
+      : [];
+    if (pingIndices.length < 2 && Number(answerSession?.["observedDurationMs"] ?? 0) < 360_000) {
+      failures.push("keepalive.json: neither ping cadence nor full six-minute no-ping evidence");
     }
     if (
       !Array.isArray(unsolicited?.["outboundFrameIndices"]) ||
@@ -1439,6 +1619,7 @@ async function main(): Promise<void> {
   }
 
   const host = cli.values.get("host") ?? "mainnet.zklighter.elliot.ai";
+  const relay = cli.values.get("relay");
   const market = cli.values.get("market") ?? "1";
   const account = cli.values.get("account") ?? "1";
   const chainMs = Number(cli.values.get("seconds") ?? "120") * 1_000;
@@ -1446,7 +1627,21 @@ async function main(): Promise<void> {
   const healthyKeepaliveMs = Number(cli.values.get("keepalive-seconds") ?? "360") * 1_000;
   const otherKeepaliveMs = Number(cli.values.get("idle-seconds") ?? "180") * 1_000;
   const authToken = Bun.env["LIGHTER_WS_AUTH_TOKEN"];
+  const relayToken = Bun.env["LIGHTER_WS_RELAY_TOKEN"];
+  const onlyChannels = cli.values
+    .get("only-channels")
+    ?.split(",")
+    .map((family) => family.trim())
+    .filter((family) => family.length > 0);
+  const keepaliveOnly = cli.flags.has("keepalive-only");
+  if (onlyChannels !== undefined && keepaliveOnly) {
+    throw new Error("--only-channels and --keepalive-only are mutually exclusive");
+  }
+  if (relay !== undefined && relayToken === undefined) {
+    throw new Error("--relay requires LIGHTER_WS_RELAY_TOKEN");
+  }
   const startedAt = new Date().toISOString();
+  const clientEgressIp = await directEgressIp();
   const metadata: Record<string, unknown> = {
     scriptVersion: SCRIPT_VERSION,
     host,
@@ -1455,13 +1650,23 @@ async function main(): Promise<void> {
     argv: Bun.argv.slice(2).map((arg) => redactWire(arg, authToken)),
     startedAt,
     endedAt: null,
-    egressIp: await egressIp(),
+    egressIp:
+      relay !== undefined && relayToken !== undefined
+        ? await relayEgressIp(relay, relayToken)
+        : clientEgressIp,
+    clientEgressIp,
+    relay: relay ?? null,
     authTokenSupplied: authToken !== undefined,
   };
 
   console.error(`capturing handshake from ${host}`);
-  const handshake = await captureHandshake(host);
-  const preflight = await streamPreflight(host);
+  const handshake = await captureHandshake(host, relay, relayToken);
+  const preflight = await streamPreflight(
+    host,
+    relay !== undefined && relayToken !== undefined
+      ? { origin: relay, token: relayToken }
+      : undefined,
+  );
   await writeJson(`${out}/handshake.json`, { ...handshake, preflight });
   if (!handshake.encoded.opened || preflight.code === 20558) {
     metadata["endedAt"] = new Date().toISOString();
@@ -1474,24 +1679,48 @@ async function main(): Promise<void> {
   }
 
   const spotMarket = (await discoverSpotMarket(host)) ?? "2048";
-  const poolAccount = authToken === undefined ? account : (await discoverPoolAccount(host)) ?? account;
+  const captureWsUrl = streamUrl(host, true, relay);
+  const poolDiscovery = await discoverPoolAccount(host, captureWsUrl, account, relayToken);
+  if (poolDiscovery === null) {
+    throw new Error("no public pool account was discovered; refusing to guess a pool index");
+  }
+  const poolAccount = poolDiscovery.account;
   metadata["spotMarket"] = spotMarket;
   metadata["poolAccount"] = poolAccount;
+  metadata["poolAccountDiscoverySource"] = poolDiscovery.source;
   const specs = channelSpecs(market, spotMarket, account, poolAccount);
-  const selected = cli.flags.has("authed-only") ? specs.filter((spec) => spec.authRequired) : specs;
+  const selected =
+    onlyChannels !== undefined
+      ? specs.filter((spec) => onlyChannels.includes(spec.family))
+      : keepaliveOnly
+        ? []
+        : cli.flags.has("authed-only")
+          ? specs.filter((spec) => spec.authRequired)
+          : specs;
+  if (onlyChannels !== undefined) {
+    const known = new Set(specs.map((spec) => spec.family));
+    const unknown = onlyChannels.filter((family) => !known.has(family));
+    if (unknown.length > 0) throw new Error(`unknown channel families: ${unknown.join(", ")}`);
+  }
+  const focused = onlyChannels !== undefined || keepaliveOnly;
   console.error(`capturing ${selected.length} channel families`);
   const channelPromise = mapConcurrent(selected, 4, (spec) =>
-    captureOneChannel(streamUrl(host, true), spec, channelMs, authToken),
+    captureOneChannel(captureWsUrl, spec, channelMs, authToken, relayToken),
   );
-  const chainPromise = cli.flags.has("authed-only")
+  const chainPromise = cli.flags.has("authed-only") || focused
     ? Promise.resolve(undefined)
-    : captureOrderBookChain(streamUrl(host, true), host, market, chainMs);
-  const keepalivePromise = cli.flags.has("authed-only")
+    : captureOrderBookChain(captureWsUrl, host, market, chainMs, relayToken);
+  const keepalivePromise = cli.flags.has("authed-only") || (focused && !keepaliveOnly)
     ? Promise.resolve(undefined)
-    : captureKeepalive(streamUrl(host, true), healthyKeepaliveMs, otherKeepaliveMs);
-  const errorsPromise = cli.flags.has("authed-only")
+    : captureKeepalive(
+        captureWsUrl,
+        healthyKeepaliveMs,
+        otherKeepaliveMs,
+        relayToken,
+      );
+  const errorsPromise = cli.flags.has("authed-only") || focused
     ? Promise.resolve(undefined)
-    : captureErrors(streamUrl(host, true), market, account, 15_000);
+    : captureErrors(captureWsUrl, market, account, 15_000, relayToken);
 
   const [channels, chain, keepalive, errors] = await Promise.all([
     channelPromise,
@@ -1502,33 +1731,52 @@ async function main(): Promise<void> {
   for (const channel of channels) {
     await writeJson(`${out}/channels/${channel.family}.json`, channel);
   }
-  await writeJson(`${out}/capture.json`, {
-    capturedFromUrl: streamUrl(host, true),
-    note: "Legacy aggregate for downstream replay tests; structured issue #1 fixtures are canonical.",
-    frames: channels.flatMap((channel) =>
-      channel.probes.flatMap((probe) =>
-        probe.session.frames
-          .filter((frame) => frame.dir === "in")
-          .map((frame) => frame.raw),
-      ),
-    ),
-  });
+  const allChannels: ChannelCapture[] = [];
+  for (const spec of specs) {
+    const captured = channels.find((channel) => channel.family === spec.family);
+    if (captured !== undefined) {
+      allChannels.push(captured);
+      continue;
+    }
+    const path = `${out}/channels/${spec.family}.json`;
+    if (await Bun.file(path).exists()) {
+      allChannels.push((await readJson(path)) as ChannelCapture);
+    }
+  }
   if (chain !== undefined) await writeJson(`${out}/orderbook-chain.json`, chain);
   if (keepalive !== undefined) await writeJson(`${out}/keepalive.json`, keepalive);
   if (errors !== undefined) await writeJson(`${out}/errors.json`, errors);
+  const canonicalChain =
+    chain ??
+    ((await Bun.file(`${out}/orderbook-chain.json`).exists())
+      ? ((await readJson(`${out}/orderbook-chain.json`)) as Record<string, unknown>)
+      : undefined);
+  const canonicalKeepalive =
+    keepalive ??
+    ((await Bun.file(`${out}/keepalive.json`).exists())
+      ? ((await readJson(`${out}/keepalive.json`)) as Record<string, unknown>)
+      : undefined);
+  const canonicalErrors =
+    errors ??
+    ((await Bun.file(`${out}/errors.json`).exists())
+      ? ((await readJson(`${out}/errors.json`)) as Record<string, unknown>)
+      : undefined);
   const closes = [
     handshake.encoded,
     handshake.defaultEncoding,
-    ...channels.flatMap((channel) => channel.probes.map((probe) => probe.session)),
+    ...allChannels.flatMap((channel) => channel.probes.map((probe) => probe.session)),
   ].map((session) => ({ session: session.label, close: session.close }));
   await writeJson(`${out}/close.json`, { observations: closes });
-  const findingsInput: Parameters<typeof renderFindings>[0] = { channels, handshake };
-  if (chain !== undefined) findingsInput.chain = chain;
-  if (keepalive !== undefined) findingsInput.keepalive = keepalive;
-  if (errors !== undefined) findingsInput.errors = errors;
+  const findingsInput: Parameters<typeof renderFindings>[0] = {
+    channels: allChannels,
+    handshake,
+  };
+  if (canonicalChain !== undefined) findingsInput.chain = canonicalChain;
+  if (canonicalKeepalive !== undefined) findingsInput.keepalive = canonicalKeepalive;
+  if (canonicalErrors !== undefined) findingsInput.errors = canonicalErrors;
   await Bun.write(`${out}/findings.md`, renderFindings(findingsInput));
   metadata["endedAt"] = new Date().toISOString();
-  metadata["status"] = "capture-complete";
+  metadata["status"] = focused ? "focused-capture-complete" : "capture-complete";
   await writeRunMetadata(out, metadata);
   await writeReadme(out, metadata, false);
   await verifyFixtures(out);

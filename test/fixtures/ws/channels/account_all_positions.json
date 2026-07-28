@@ -1,6 +1,150 @@
 {
   "family": "account_all_positions",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "account_all_positions/8",
+      "session": {
+        "label": "channel:account_all_positions/8",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 611,
+            "wallMs": 1785277114594,
+            "raw": "{\"session_id\":\"3d88c0db-8c15-48a3-ba4e-29024b128535\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 611,
+            "wallMs": 1785277114594,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"account_all_positions/8\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 733,
+            "wallMs": 1785277114715,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0000\",\"avg_entry_price\":\"0.00\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"},\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00000\",\"avg_entry_price\":\"0.0\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"},\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.000\",\"avg_entry_price\":\"0.000\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"subscribed/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 2474,
+            "wallMs": 1785277116456,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0001\",\"avg_entry_price\":\"1923.84\",\"position_value\":\"0.192175\",\"unrealized_pnl\":\"-0.000209\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 5636,
+            "wallMs": 1785277119618,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.001\",\"avg_entry_price\":\"74.147\",\"position_value\":\"0.074070\",\"unrealized_pnl\":\"-0.000077\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 9528,
+            "wallMs": 1785277123510,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00001\",\"avg_entry_price\":\"63960.0\",\"position_value\":\"0.639325\",\"unrealized_pnl\":\"-0.000275\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 14767,
+            "wallMs": 1785277128749,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0000\",\"avg_entry_price\":\"0.00\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 17911,
+            "wallMs": 1785277131893,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.000\",\"avg_entry_price\":\"0.000\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 21660,
+            "wallMs": 1785277135642,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00000\",\"avg_entry_price\":\"0.0\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 28181,
+            "wallMs": 1785277142163,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0001\",\"avg_entry_price\":\"1924.03\",\"position_value\":\"0.192250\",\"unrealized_pnl\":\"-0.000153\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 31804,
+            "wallMs": 1785277145786,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00001\",\"avg_entry_price\":\"63980.0\",\"position_value\":\"0.639555\",\"unrealized_pnl\":\"-0.000245\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 32217,
+            "wallMs": 1785277146199,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.001\",\"avg_entry_price\":\"74.151\",\"position_value\":\"0.074083\",\"unrealized_pnl\":\"-0.000068\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 41364,
+            "wallMs": 1785277155346,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0000\",\"avg_entry_price\":\"0.00\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 44022,
+            "wallMs": 1785277158005,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00000\",\"avg_entry_price\":\"0.0\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 45561,
+            "wallMs": 1785277159544,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.000\",\"avg_entry_price\":\"0.000\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 55668,
+            "wallMs": 1785277169651,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"1\":{\"market_id\":1,\"symbol\":\"BTC\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.00001\",\"avg_entry_price\":\"63993.0\",\"position_value\":\"0.639629\",\"unrealized_pnl\":\"-0.000301\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 56707,
+            "wallMs": 1785277170690,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"0\":{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"5.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0001\",\"avg_entry_price\":\"1923.65\",\"position_value\":\"0.192263\",\"unrealized_pnl\":\"-0.000102\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 56936,
+            "wallMs": 1785277170919,
+            "raw": "{\"channel\":\"account_all_positions:8\",\"positions\":{\"2\":{\"market_id\":2,\"symbol\":\"SOL\",\"initial_margin_fraction\":\"6.66\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":-1,\"position\":\"0.001\",\"avg_entry_price\":\"74.038\",\"position_value\":\"0.074105\",\"unrealized_pnl\":\"-0.000067\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"97631278.43778908\",\"margin_mode\":0,\"margin_set_flag\":0,\"allocated_margin\":\"0.000000\"}},\"shares\":[],\"type\":\"update/account_all_positions\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60001,
+          "wallMs": 1785277173984,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60103,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/account_all_positions",
+        "firstInboundChannel": "account_all_positions:8",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "updateOutcome": "observed",
+        "totalInboundDataFrames": 16,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
 }

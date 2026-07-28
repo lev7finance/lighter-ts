@@ -1,6 +1,55 @@
 {
   "family": "notification",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "refusal-probe",
+  "probes": [
+    {
+      "channel": "notification/1",
+      "session": {
+        "label": "channel:notification/1",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 473,
+            "wallMs": 1785276648847,
+            "raw": "{\"session_id\":\"b379e791-14ab-409a-8c70-6ece752802fb\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 473,
+            "wallMs": 1785276648847,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"notification/1\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 672,
+            "wallMs": 1785276649047,
+            "raw": "{\"error\":{\"code\":20001,\"message\":\"invalid param : auth field is required: notification:1\"}}"
+          }
+        ],
+        "close": {
+          "tMs": 20001,
+          "wallMs": 1785276668375,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": -1,
+        "firstInboundType": null,
+        "firstInboundChannel": null,
+        "nextThreeUpdateFrameIndices": [],
+        "totalInboundDataFrames": 0,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
 }

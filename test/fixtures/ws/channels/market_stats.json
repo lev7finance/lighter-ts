@@ -1,6 +1,159 @@
 {
   "family": "market_stats",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "market_stats/1",
+      "session": {
+        "label": "channel:market_stats/1",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 524,
+            "wallMs": 1785276548384,
+            "raw": "{\"session_id\":\"d6b421c2-50ca-406d-880b-fe64f3a0d25f\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 525,
+            "wallMs": 1785276548384,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"market_stats/1\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 726,
+            "wallMs": 1785276548585,
+            "raw": "{\"channel\":\"market_stats:1\",\"market_stats\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"64012.4\",\"mark_price\":\"63990.3\",\"mid_price\":\"63990.0\",\"best_ask_price\":\"64020.0\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931535.592735\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64020.0\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96534,\"daily_quote_token_volume\":2790304.7483200002,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.39833139917824545,\"base_interest_rate\":\"0.0100\"},\"timestamp\":1785276548446,\"type\":\"subscribed/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 3699,
+            "wallMs": 1785276551558,
+            "raw": "{\"channel\":\"market_stats:1\",\"market_stats\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"64012.4\",\"mark_price\":\"63989.3\",\"mid_price\":\"63990.0\",\"best_ask_price\":\"64020.0\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931521.035285\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64020.0\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96534,\"daily_quote_token_volume\":2790304.7483200002,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.39833139917824545,\"base_interest_rate\":\"0.0100\"},\"timestamp\":1785276551501,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 8930,
+            "wallMs": 1785276556790,
+            "raw": "{\"channel\":\"market_stats:1\",\"market_stats\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"64012.4\",\"mark_price\":\"63989.3\",\"mid_price\":\"63990.0\",\"best_ask_price\":\"64020.0\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931520.395392\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64020.0\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96537,\"daily_quote_token_volume\":2790306.66832,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.39833139917824545,\"base_interest_rate\":\"0.0100\"},\"timestamp\":1785276556732,\"type\":\"update/market_stats\"}"
+          }
+        ],
+        "close": {
+          "tMs": 20000,
+          "wallMs": 1785276567860,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/market_stats",
+        "firstInboundChannel": "market_stats:1",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4
+        ],
+        "totalInboundDataFrames": 3,
+        "fixedWindowMs": 20000
+      }
+    },
+    {
+      "channel": "market_stats/all",
+      "session": {
+        "label": "channel:market_stats/all",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"session_id\":\"ea546695-ca4e-45d8-b13f-9ddcb1471700\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"market_stats/all\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 663,
+            "wallMs": 1785276568625,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"0\":{\"symbol\":\"ETH\",\"market_id\":0,\"index_price\":\"1926.03\",\"mark_price\":\"1925.75\",\"mid_price\":\"1924.98\",\"best_ask_price\":\"1926.40\",\"best_bid_price\":\"1923.56\",\"open_interest\":\"1569216.067275\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"1923.63\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":1397.8363,\"daily_quote_token_volume\":2637793.526057,\"daily_price_low\":1856.54,\"daily_price_high\":1929.91,\"daily_price_change\":1.6293408143534147,\"base_interest_rate\":\"0.0100\"},\"1\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"64012.4\",\"mark_price\":\"63989.3\",\"mid_price\":\"63984.2\",\"best_ask_price\":\"64008.4\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931520.395392\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64008.6\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96539,\"daily_quote_token_volume\":2790307.948006,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.3804535332308754,\"base_interest_rate\":\"0.0100\"},\"2\":{\"symbol\":\"SOL\",\"market_id\":2,\"index_price\":\"74.215\",\"mark_price\":\"74.173\",\"mid_price\":\"74.121\",\"best_ask_price\":\"74.164\",\"best_bid_price\":\"74.078\",\"open_interest\":\"37300.785797\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"74.166\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":30117.087,\"daily_quote_token_volume\":2209528.46919,\"daily_price_low\":72.343,\"daily_price_high\":74.579,\"daily_price_change\":0.07016218258358745,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276568569,\"type\":\"subscribed/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 967,
+            "wallMs": 1785276568929,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"0\":{\"symbol\":\"ETH\",\"market_id\":0,\"index_price\":\"1926.03\",\"mark_price\":\"1925.75\",\"mid_price\":\"1924.75\",\"best_ask_price\":\"1926.33\",\"best_bid_price\":\"1923.16\",\"open_interest\":\"1569215.874700\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"1923.63\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":1397.8363,\"daily_quote_token_volume\":2637793.526057,\"daily_price_low\":1856.54,\"daily_price_high\":1929.91,\"daily_price_change\":1.6293408143534147,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276568872,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 3690,
+            "wallMs": 1785276571652,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"0\":{\"symbol\":\"ETH\",\"market_id\":0,\"index_price\":\"1925.08\",\"mark_price\":\"1924.61\",\"mid_price\":\"1924.61\",\"best_ask_price\":\"1926.01\",\"best_bid_price\":\"1923.21\",\"open_interest\":\"1568286.934756\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"1923.16\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":1397.8363,\"daily_quote_token_volume\":2637793.526057,\"daily_price_low\":1856.54,\"daily_price_high\":1929.91,\"daily_price_change\":1.6293408143534147,\"base_interest_rate\":\"0.0100\"},\"1\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"63998.0\",\"mark_price\":\"63972.0\",\"mid_price\":\"63984.3\",\"best_ask_price\":\"64008.5\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931268.551680\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64008.5\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96539,\"daily_quote_token_volume\":2790307.948006,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.3804535332308754,\"base_interest_rate\":\"0.0100\"},\"2\":{\"symbol\":\"SOL\",\"market_id\":2,\"index_price\":\"74.155\",\"mark_price\":\"74.110\",\"mid_price\":\"74.108\",\"best_ask_price\":\"74.151\",\"best_bid_price\":\"74.064\",\"open_interest\":\"37269.103790\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"74.162\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":30117.087,\"daily_quote_token_volume\":2209528.46919,\"daily_price_low\":72.343,\"daily_price_high\":74.579,\"daily_price_change\":0.07016218258358745,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276571519,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 7514,
+            "wallMs": 1785276575476,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"1\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"63998.0\",\"mark_price\":\"63972.0\",\"mid_price\":\"63979.6\",\"best_ask_price\":\"63999.1\",\"best_bid_price\":\"63960.0\",\"open_interest\":\"931267.911960\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"64008.5\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.9654,\"daily_quote_token_volume\":2790308.588091,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.3802967098453721,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276575419,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 14170,
+            "wallMs": 1785276582132,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"0\":{\"symbol\":\"ETH\",\"market_id\":0,\"index_price\":\"1925.08\",\"mark_price\":\"1924.61\",\"mid_price\":\"1924.15\",\"best_ask_price\":\"1925.56\",\"best_bid_price\":\"1922.74\",\"open_interest\":\"1568287.127217\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"1922.73\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":1397.8364,\"daily_quote_token_volume\":2637793.718373,\"daily_price_low\":1856.54,\"daily_price_high\":1929.91,\"daily_price_change\":1.6045097448739691,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276582070,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 14564,
+            "wallMs": 1785276582526,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"1\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"63998.0\",\"mark_price\":\"63972.0\",\"mid_price\":\"63966.4\",\"best_ask_price\":\"63992.7\",\"best_bid_price\":\"63940.0\",\"open_interest\":\"931267.272240\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"63960.0\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.9654,\"daily_quote_token_volume\":2790308.588091,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.3802967098453721,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276582470,\"type\":\"update/market_stats\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 19814,
+            "wallMs": 1785276587776,
+            "raw": "{\"channel\":\"market_stats:all\",\"market_stats\":{\"0\":{\"symbol\":\"ETH\",\"market_id\":0,\"index_price\":\"1925.08\",\"mark_price\":\"1924.61\",\"mid_price\":\"1923.91\",\"best_ask_price\":\"1925.35\",\"best_bid_price\":\"1922.46\",\"open_interest\":\"1568287.127217\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"1925.56\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":1397.8366,\"daily_quote_token_volume\":2637794.103202,\"daily_price_low\":1856.54,\"daily_price_high\":1929.91,\"daily_price_change\":1.7313066954073089,\"base_interest_rate\":\"0.0100\"},\"1\":{\"symbol\":\"BTC\",\"market_id\":1,\"index_price\":\"63998.0\",\"mark_price\":\"63972.0\",\"mid_price\":\"63962.9\",\"best_ask_price\":\"63985.7\",\"best_bid_price\":\"63940.0\",\"open_interest\":\"931267.272240\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"63940.0\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":43.96542,\"daily_quote_token_volume\":2790309.867091,\"daily_price_low\":62762.1,\"daily_price_high\":64093.5,\"daily_price_change\":0.27287269077564846,\"base_interest_rate\":\"0.0100\"},\"2\":{\"symbol\":\"SOL\",\"market_id\":2,\"index_price\":\"74.155\",\"mark_price\":\"74.110\",\"mid_price\":\"74.081\",\"best_ask_price\":\"74.119\",\"best_bid_price\":\"74.042\",\"open_interest\":\"37269.103790\",\"open_interest_limit\":\"72057594037927936.000000\",\"funding_clamp_small\":\"0.0500\",\"funding_clamp_big\":\"4.0000\",\"last_trade_price\":\"74.042\",\"current_funding_rate\":\"0.0012\",\"funding_rate\":\"0.0012\",\"funding_timestamp\":1785276000000,\"daily_base_token_volume\":30117.09,\"daily_quote_token_volume\":2209528.691547,\"daily_price_low\":72.343,\"daily_price_high\":74.579,\"daily_price_change\":-0.09444909193944463,\"base_interest_rate\":\"0.0100\"}},\"timestamp\":1785276587720,\"type\":\"update/market_stats\"}"
+          }
+        ],
+        "close": {
+          "tMs": 20000,
+          "wallMs": 1785276587963,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20101,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/market_stats",
+        "firstInboundChannel": "market_stats:all",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "totalInboundDataFrames": 7,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
 }

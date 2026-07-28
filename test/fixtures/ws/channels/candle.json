@@ -1,6 +1,77 @@
 {
   "family": "candle",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "candle/1/1m",
+      "session": {
+        "label": "channel:candle/1/1m",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"session_id\":\"6f6f3102-fc8c-47e6-a4b4-9309c0449b19\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 544,
+            "wallMs": 1785276568506,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"candle/1/1m\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 660,
+            "wallMs": 1785276568622,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":64020,\"h\":64020,\"l\":63960,\"c\":64008.6,\"v\":0.00002,\"V\":1.2796859999999999,\"i\":5767888}],\"channel\":\"candle:1:1m\",\"timestamp\":1785276568568,\"type\":\"subscribed/candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 3493,
+            "wallMs": 1785276571455,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":64020,\"h\":64020,\"l\":63960,\"c\":64008.5,\"v\":0.000030000000000000004,\"V\":1.919771,\"i\":5767928}],\"channel\":\"candle:1:1m\",\"timestamp\":1785276571387,\"type\":\"update/candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 7983,
+            "wallMs": 1785276575945,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":64020,\"h\":64020,\"l\":63960,\"c\":63960,\"v\":0.00004,\"V\":2.5593709999999996,\"i\":5767956}],\"channel\":\"candle:1:1m\",\"timestamp\":1785276575888,\"type\":\"update/candle\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 15023,
+            "wallMs": 1785276582986,
+            "raw": "{\"candles\":[{\"t\":1785276540000,\"o\":64020,\"h\":64020,\"l\":63940,\"c\":63940,\"v\":0.00005,\"V\":3.198771,\"i\":5767987}],\"channel\":\"candle:1:1m\",\"timestamp\":1785276582888,\"type\":\"update/candle\"}"
+          }
+        ],
+        "close": {
+          "tMs": 20000,
+          "wallMs": 1785276587962,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 20000,
+        "observedDurationMs": 20101,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/candle",
+        "firstInboundChannel": "candle:1:1m",
+        "nextThreeUpdateFrameIndices": [
+          3,
+          4,
+          5
+        ],
+        "totalInboundDataFrames": 4,
+        "fixedWindowMs": 20000
+      }
+    }
+  ]
 }

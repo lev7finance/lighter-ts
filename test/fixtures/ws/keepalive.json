@@ -1,5 +1,711 @@
 {
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "sessions": []
+  "answerPings": {
+    "session": {
+      "label": "keepalive:answer-pings",
+      "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+      "opened": true,
+      "frames": [
+        {
+          "dir": "in",
+          "tMs": 471,
+          "wallMs": 1785277221189,
+          "raw": "{\"session_id\":\"66828226-d7cf-4385-8d7d-15ada791c91b\",\"type\":\"connected\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 471,
+          "wallMs": 1785277221189,
+          "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1108,
+          "wallMs": 1785277221825,
+          "raw": "{\"channel\":\"height\",\"height\":451380,\"timestamp\":1785277221772,\"type\":\"subscribed/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1607,
+          "wallMs": 1785277222325,
+          "raw": "{\"channel\":\"height\",\"height\":451383,\"timestamp\":1785277222272,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2111,
+          "wallMs": 1785277222828,
+          "raw": "{\"channel\":\"height\",\"height\":451384,\"timestamp\":1785277222772,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2608,
+          "wallMs": 1785277223325,
+          "raw": "{\"channel\":\"height\",\"height\":451385,\"timestamp\":1785277223272,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 9588,
+          "wallMs": 1785277230306,
+          "raw": "{\"channel\":\"height\",\"height\":451386,\"timestamp\":1785277230252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 11089,
+          "wallMs": 1785277231807,
+          "raw": "{\"channel\":\"height\",\"height\":451387,\"timestamp\":1785277231752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 25089,
+          "wallMs": 1785277245807,
+          "raw": "{\"channel\":\"height\",\"height\":451388,\"timestamp\":1785277245752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 31087,
+          "wallMs": 1785277251805,
+          "raw": "{\"channel\":\"height\",\"height\":451389,\"timestamp\":1785277251752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 45472,
+          "wallMs": 1785277266190,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 51163,
+          "wallMs": 1785277271881,
+          "raw": "{\"channel\":\"height\",\"height\":451390,\"timestamp\":1785277271752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 63089,
+          "wallMs": 1785277283807,
+          "raw": "{\"channel\":\"height\",\"height\":451391,\"timestamp\":1785277283752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 71088,
+          "wallMs": 1785277291806,
+          "raw": "{\"channel\":\"height\",\"height\":451392,\"timestamp\":1785277291752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 89589,
+          "wallMs": 1785277310308,
+          "raw": "{\"channel\":\"height\",\"height\":451393,\"timestamp\":1785277310252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 90473,
+          "wallMs": 1785277311192,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 91086,
+          "wallMs": 1785277311804,
+          "raw": "{\"channel\":\"height\",\"height\":451394,\"timestamp\":1785277311751,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 105588,
+          "wallMs": 1785277326306,
+          "raw": "{\"channel\":\"height\",\"height\":451395,\"timestamp\":1785277326252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 111088,
+          "wallMs": 1785277331807,
+          "raw": "{\"channel\":\"height\",\"height\":451396,\"timestamp\":1785277331752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 131088,
+          "wallMs": 1785277351806,
+          "raw": "{\"channel\":\"height\",\"height\":451397,\"timestamp\":1785277351752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 135474,
+          "wallMs": 1785277356193,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 141087,
+          "wallMs": 1785277361806,
+          "raw": "{\"channel\":\"height\",\"height\":451398,\"timestamp\":1785277361752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 151088,
+          "wallMs": 1785277371807,
+          "raw": "{\"channel\":\"height\",\"height\":451399,\"timestamp\":1785277371752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 166089,
+          "wallMs": 1785277386808,
+          "raw": "{\"channel\":\"height\",\"height\":451401,\"timestamp\":1785277386752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 171108,
+          "wallMs": 1785277391827,
+          "raw": "{\"channel\":\"height\",\"height\":451403,\"timestamp\":1785277391772,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 171608,
+          "wallMs": 1785277392327,
+          "raw": "{\"channel\":\"height\",\"height\":451405,\"timestamp\":1785277392272,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 172109,
+          "wallMs": 1785277392828,
+          "raw": "{\"channel\":\"height\",\"height\":451407,\"timestamp\":1785277392774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 172608,
+          "wallMs": 1785277393327,
+          "raw": "{\"channel\":\"height\",\"height\":451408,\"timestamp\":1785277393273,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 173588,
+          "wallMs": 1785277394307,
+          "raw": "{\"channel\":\"height\",\"height\":451409,\"timestamp\":1785277394252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 180477,
+          "wallMs": 1785277401196,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 188088,
+          "wallMs": 1785277408807,
+          "raw": "{\"channel\":\"height\",\"height\":451410,\"timestamp\":1785277408752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 191132,
+          "wallMs": 1785277411851,
+          "raw": "{\"channel\":\"height\",\"height\":451411,\"timestamp\":1785277411752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 204587,
+          "wallMs": 1785277425306,
+          "raw": "{\"channel\":\"height\",\"height\":451412,\"timestamp\":1785277425251,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 211086,
+          "wallMs": 1785277431805,
+          "raw": "{\"channel\":\"height\",\"height\":451413,\"timestamp\":1785277431752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 215087,
+          "wallMs": 1785277435806,
+          "raw": "{\"channel\":\"height\",\"height\":451414,\"timestamp\":1785277435752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 225478,
+          "wallMs": 1785277446198,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 231086,
+          "wallMs": 1785277451806,
+          "raw": "{\"channel\":\"height\",\"height\":451415,\"timestamp\":1785277451752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 235167,
+          "wallMs": 1785277455887,
+          "raw": "{\"channel\":\"height\",\"height\":451417,\"timestamp\":1785277455772,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 235694,
+          "wallMs": 1785277456413,
+          "raw": "{\"channel\":\"height\",\"height\":451419,\"timestamp\":1785277456274,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 236087,
+          "wallMs": 1785277456807,
+          "raw": "{\"channel\":\"height\",\"height\":451421,\"timestamp\":1785277456752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 242092,
+          "wallMs": 1785277462812,
+          "raw": "{\"channel\":\"height\",\"height\":451422,\"timestamp\":1785277462752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 251087,
+          "wallMs": 1785277471807,
+          "raw": "{\"channel\":\"height\",\"height\":451423,\"timestamp\":1785277471752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 262088,
+          "wallMs": 1785277482808,
+          "raw": "{\"channel\":\"height\",\"height\":451424,\"timestamp\":1785277482752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 270479,
+          "wallMs": 1785277491199,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 271087,
+          "wallMs": 1785277491806,
+          "raw": "{\"channel\":\"height\",\"height\":451425,\"timestamp\":1785277491751,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 286586,
+          "wallMs": 1785277507305,
+          "raw": "{\"channel\":\"height\",\"height\":451426,\"timestamp\":1785277507252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 291087,
+          "wallMs": 1785277511807,
+          "raw": "{\"channel\":\"height\",\"height\":451427,\"timestamp\":1785277511751,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 296087,
+          "wallMs": 1785277516806,
+          "raw": "{\"channel\":\"height\",\"height\":451429,\"timestamp\":1785277516752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 306086,
+          "wallMs": 1785277526806,
+          "raw": "{\"channel\":\"height\",\"height\":451430,\"timestamp\":1785277526752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 311087,
+          "wallMs": 1785277531807,
+          "raw": "{\"channel\":\"height\",\"height\":451431,\"timestamp\":1785277531752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 314108,
+          "wallMs": 1785277534828,
+          "raw": "{\"channel\":\"height\",\"height\":451432,\"timestamp\":1785277534773,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 314608,
+          "wallMs": 1785277535328,
+          "raw": "{\"channel\":\"height\",\"height\":451434,\"timestamp\":1785277535272,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 315088,
+          "wallMs": 1785277535808,
+          "raw": "{\"channel\":\"height\",\"height\":451435,\"timestamp\":1785277535751,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 315480,
+          "wallMs": 1785277536200,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 317087,
+          "wallMs": 1785277537807,
+          "raw": "{\"channel\":\"height\",\"height\":451436,\"timestamp\":1785277537752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 327587,
+          "wallMs": 1785277548307,
+          "raw": "{\"channel\":\"height\",\"height\":451437,\"timestamp\":1785277548252,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 331109,
+          "wallMs": 1785277551829,
+          "raw": "{\"channel\":\"height\",\"height\":451438,\"timestamp\":1785277551752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 344087,
+          "wallMs": 1785277564808,
+          "raw": "{\"channel\":\"height\",\"height\":451440,\"timestamp\":1785277564752,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 351087,
+          "wallMs": 1785277571807,
+          "raw": "{\"channel\":\"height\",\"height\":451441,\"timestamp\":1785277571752,\"type\":\"update/height\"}"
+        }
+      ],
+      "close": {
+        "tMs": 360001,
+        "wallMs": 1785277580722,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      },
+      "binaryFrames": [],
+      "errorEvent": false,
+      "expectedDurationMs": 360000,
+      "observedDurationMs": 360102,
+      "endCause": "duration"
+    },
+    "pingFrameIndices": [],
+    "pingGapsMs": [],
+    "maintenancePongFrameIndices": [
+      10,
+      15,
+      20,
+      29,
+      35,
+      43,
+      53
+    ]
+  },
+  "unsolicitedPong": {
+    "session": {
+      "label": "keepalive:unsolicited-pong",
+      "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+      "opened": true,
+      "frames": [
+        {
+          "dir": "in",
+          "tMs": 492,
+          "wallMs": 1785277221210,
+          "raw": "{\"session_id\":\"76b232bf-af0f-4aa9-a4e9-46dd06e5cb6b\",\"type\":\"connected\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 492,
+          "wallMs": 1785277221210,
+          "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1112,
+          "wallMs": 1785277221830,
+          "raw": "{\"channel\":\"height\",\"height\":451380,\"timestamp\":1785277221774,\"type\":\"subscribed/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1610,
+          "wallMs": 1785277222327,
+          "raw": "{\"channel\":\"height\",\"height\":451383,\"timestamp\":1785277222274,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2115,
+          "wallMs": 1785277222832,
+          "raw": "{\"channel\":\"height\",\"height\":451384,\"timestamp\":1785277222777,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2611,
+          "wallMs": 1785277223328,
+          "raw": "{\"channel\":\"height\",\"height\":451385,\"timestamp\":1785277223274,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 9612,
+          "wallMs": 1785277230329,
+          "raw": "{\"channel\":\"height\",\"height\":451386,\"timestamp\":1785277230275,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 11113,
+          "wallMs": 1785277231831,
+          "raw": "{\"channel\":\"height\",\"height\":451387,\"timestamp\":1785277231775,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 25112,
+          "wallMs": 1785277245830,
+          "raw": "{\"channel\":\"height\",\"height\":451388,\"timestamp\":1785277245774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 31114,
+          "wallMs": 1785277251832,
+          "raw": "{\"channel\":\"height\",\"height\":451389,\"timestamp\":1785277251775,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 45493,
+          "wallMs": 1785277266211,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 51163,
+          "wallMs": 1785277271881,
+          "raw": "{\"channel\":\"height\",\"height\":451390,\"timestamp\":1785277271774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 63111,
+          "wallMs": 1785277283829,
+          "raw": "{\"channel\":\"height\",\"height\":451391,\"timestamp\":1785277283774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 71110,
+          "wallMs": 1785277291829,
+          "raw": "{\"channel\":\"height\",\"height\":451392,\"timestamp\":1785277291774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 89612,
+          "wallMs": 1785277310330,
+          "raw": "{\"channel\":\"height\",\"height\":451393,\"timestamp\":1785277310275,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 90493,
+          "wallMs": 1785277311211,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 91111,
+          "wallMs": 1785277311829,
+          "raw": "{\"channel\":\"height\",\"height\":451394,\"timestamp\":1785277311775,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 105687,
+          "wallMs": 1785277326405,
+          "raw": "{\"channel\":\"height\",\"height\":451395,\"timestamp\":1785277326274,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 111111,
+          "wallMs": 1785277331830,
+          "raw": "{\"channel\":\"height\",\"height\":451396,\"timestamp\":1785277331774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 131110,
+          "wallMs": 1785277351829,
+          "raw": "{\"channel\":\"height\",\"height\":451397,\"timestamp\":1785277351774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 135494,
+          "wallMs": 1785277356212,
+          "raw": "{\"type\":\"pong\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 141110,
+          "wallMs": 1785277361829,
+          "raw": "{\"channel\":\"height\",\"height\":451398,\"timestamp\":1785277361774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 151109,
+          "wallMs": 1785277371828,
+          "raw": "{\"channel\":\"height\",\"height\":451399,\"timestamp\":1785277371774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 166110,
+          "wallMs": 1785277386829,
+          "raw": "{\"channel\":\"height\",\"height\":451401,\"timestamp\":1785277386774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 171114,
+          "wallMs": 1785277391833,
+          "raw": "{\"channel\":\"height\",\"height\":451403,\"timestamp\":1785277391777,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 171614,
+          "wallMs": 1785277392333,
+          "raw": "{\"channel\":\"height\",\"height\":451405,\"timestamp\":1785277392277,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 172109,
+          "wallMs": 1785277392828,
+          "raw": "{\"channel\":\"height\",\"height\":451407,\"timestamp\":1785277392774,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 172613,
+          "wallMs": 1785277393332,
+          "raw": "{\"channel\":\"height\",\"height\":451408,\"timestamp\":1785277393277,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 173611,
+          "wallMs": 1785277394330,
+          "raw": "{\"channel\":\"height\",\"height\":451409,\"timestamp\":1785277394275,\"type\":\"update/height\"}"
+        }
+      ],
+      "close": {
+        "tMs": 180002,
+        "wallMs": 1785277400721,
+        "code": 1000,
+        "reason": "probe complete",
+        "wasClean": true
+      },
+      "binaryFrames": [],
+      "errorEvent": false,
+      "expectedDurationMs": 180000,
+      "observedDurationMs": 180103,
+      "endCause": "duration"
+    },
+    "outboundFrameIndices": [
+      10,
+      15,
+      20
+    ]
+  },
+  "silent": {
+    "session": {
+      "label": "keepalive:silent",
+      "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+      "opened": true,
+      "frames": [
+        {
+          "dir": "in",
+          "tMs": 481,
+          "wallMs": 1785277221199,
+          "raw": "{\"session_id\":\"995713a2-33e3-4ee3-89ae-cc88d82151a8\",\"type\":\"connected\"}"
+        },
+        {
+          "dir": "out",
+          "tMs": 481,
+          "wallMs": 1785277221199,
+          "raw": "{\"type\":\"subscribe\",\"channel\":\"height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1108,
+          "wallMs": 1785277221825,
+          "raw": "{\"channel\":\"height\",\"height\":451380,\"timestamp\":1785277221772,\"type\":\"subscribed/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 1610,
+          "wallMs": 1785277222327,
+          "raw": "{\"channel\":\"height\",\"height\":451383,\"timestamp\":1785277222273,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2111,
+          "wallMs": 1785277222828,
+          "raw": "{\"channel\":\"height\",\"height\":451384,\"timestamp\":1785277222772,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 2608,
+          "wallMs": 1785277223325,
+          "raw": "{\"channel\":\"height\",\"height\":451385,\"timestamp\":1785277223272,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 9600,
+          "wallMs": 1785277230318,
+          "raw": "{\"channel\":\"height\",\"height\":451386,\"timestamp\":1785277230264,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 11101,
+          "wallMs": 1785277231819,
+          "raw": "{\"channel\":\"height\",\"height\":451387,\"timestamp\":1785277231764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 25101,
+          "wallMs": 1785277245819,
+          "raw": "{\"channel\":\"height\",\"height\":451388,\"timestamp\":1785277245764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 31100,
+          "wallMs": 1785277251818,
+          "raw": "{\"channel\":\"height\",\"height\":451389,\"timestamp\":1785277251764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 51163,
+          "wallMs": 1785277271881,
+          "raw": "{\"channel\":\"height\",\"height\":451390,\"timestamp\":1785277271764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 63101,
+          "wallMs": 1785277283819,
+          "raw": "{\"channel\":\"height\",\"height\":451391,\"timestamp\":1785277283764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 71100,
+          "wallMs": 1785277291818,
+          "raw": "{\"channel\":\"height\",\"height\":451392,\"timestamp\":1785277291764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 89602,
+          "wallMs": 1785277310320,
+          "raw": "{\"channel\":\"height\",\"height\":451393,\"timestamp\":1785277310264,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 91100,
+          "wallMs": 1785277311818,
+          "raw": "{\"channel\":\"height\",\"height\":451394,\"timestamp\":1785277311764,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 105687,
+          "wallMs": 1785277326405,
+          "raw": "{\"channel\":\"height\",\"height\":451395,\"timestamp\":1785277326264,\"type\":\"update/height\"}"
+        },
+        {
+          "dir": "in",
+          "tMs": 111100,
+          "wallMs": 1785277331819,
+          "raw": "{\"channel\":\"height\",\"height\":451396,\"timestamp\":1785277331764,\"type\":\"update/height\"}"
+        }
+      ],
+      "close": {
+        "tMs": 120600,
+        "wallMs": 1785277341319,
+        "code": 1000,
+        "reason": "read tcp 172.31.84.115:8888->172.31.81.91:8060: i/o timeout",
+        "wasClean": false
+      },
+      "binaryFrames": [],
+      "errorEvent": false,
+      "expectedDurationMs": 180000,
+      "observedDurationMs": 120701,
+      "endCause": "server-close"
+    }
+  }
 }

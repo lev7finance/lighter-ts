@@ -1,6 +1,56 @@
 {
   "family": "spot_market_stats",
-  "status": "not-captured",
-  "reason": "You are accessing Lighter from a restricted jurisdiction. For more information, see the https://lighter.xyz/terms",
-  "probes": []
+  "authMode": "none",
+  "probes": [
+    {
+      "channel": "spot_market_stats/2048",
+      "session": {
+        "label": "channel:spot_market_stats/2048",
+        "url": "wss://testnet.zklighter.elliot.ai/stream?encoding=json",
+        "opened": true,
+        "frames": [
+          {
+            "dir": "in",
+            "tMs": 492,
+            "wallMs": 1785277054371,
+            "raw": "{\"session_id\":\"3f182c97-6559-4995-bcc2-ae9015b5ab0e\",\"type\":\"connected\"}"
+          },
+          {
+            "dir": "out",
+            "tMs": 492,
+            "wallMs": 1785277054371,
+            "raw": "{\"type\":\"subscribe\",\"channel\":\"spot_market_stats/2048\"}"
+          },
+          {
+            "dir": "in",
+            "tMs": 612,
+            "wallMs": 1785277054491,
+            "raw": "{\"channel\":\"spot_market_stats:2048\",\"spot_market_stats\":{\"symbol\":\"ETH/USDC\",\"market_id\":2048,\"index_price\":\"1922.677906\",\"mid_price\":\"\",\"best_ask_price\":\"\",\"best_bid_price\":\"0.01\",\"last_trade_price\":\"0.01\",\"daily_base_token_volume\":0,\"daily_quote_token_volume\":0,\"daily_price_low\":0,\"daily_price_high\":0,\"daily_price_change\":0},\"timestamp\":1785277054435,\"type\":\"subscribed/spot_market_stats\"}"
+          }
+        ],
+        "close": {
+          "tMs": 60001,
+          "wallMs": 1785277113881,
+          "code": 1000,
+          "reason": "probe complete",
+          "wasClean": true
+        },
+        "binaryFrames": [],
+        "errorEvent": false,
+        "expectedDurationMs": 60000,
+        "observedDurationMs": 60102,
+        "endCause": "duration"
+      },
+      "observation": {
+        "outboundSubscribeFrameIndex": 1,
+        "firstInboundFrameIndex": 2,
+        "firstInboundType": "subscribed/spot_market_stats",
+        "firstInboundChannel": "spot_market_stats:2048",
+        "nextThreeUpdateFrameIndices": [],
+        "updateOutcome": "none-observed-in-fixed-window",
+        "totalInboundDataFrames": 1,
+        "fixedWindowMs": 60000
+      }
+    }
+  ]
 }
