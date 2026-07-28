@@ -142,15 +142,9 @@ market-order bound does offer `mode: "aggressive"`, which swaps the two directio
 marginally worse price for fill probability at the boundary tick; it is never the default and it is
 at most one tick from the exact bound.
 
-> **A documentation conflict, resolved.** `docs/decisions.md` D7 and `docs/protocol-notes.md` §9 both
-> state the invariant above and then illustrate it as "a buy's acceptable price rounds up, a sell's
-> rounds down" — which is the opposite of the invariant they state, since rounding a buy's ceiling
-> *up* permits paying more than the exact bound allows. `docs/spec/07-high-level-client.md` §3.2 and
-> §3.5 give the formulas and agree with the invariant. **The invariant is what is implemented** —
-> `roundingFor` in `src/client/math/slippage.ts` and `priceRoundingMode` in
-> `src/client/brackets.ts` are the two places it is expressed — and it is enforced by a property test over a seeded
-> corpus: the conservative bound is never more permissive than the exact rational bound, on either
-> side. The illustration is a wording defect in those two documents.
+The invariant is implemented by `roundingFor` in `src/client/math/slippage.ts` and
+`priceRoundingMode` in `src/client/brackets.ts`. A seeded property-test corpus asserts that the
+conservative bound is never more permissive than the exact rational bound on either side.
 
 `checkDepth` (default `false`) chooses between two market-order semantics. `false` matches the
 reference's `create_market_order_limited_slippage`: the cap is computed from the best price and a

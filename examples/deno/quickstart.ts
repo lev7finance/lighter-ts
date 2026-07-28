@@ -9,22 +9,12 @@
  * - **Whether it moves real funds:** no. Nothing is submitted.
  *
  * ```sh
- * # from a checkout of this repository — the bare specifier resolves via package.json
  * LIGHTER_ACCOUNT_INDEX=… LIGHTER_API_KEY_INDEX=… \
- *   deno run --allow-net --allow-env examples/deno/quickstart.ts
+ *   deno run --allow-net --allow-env quickstart.ts
  * ```
  *
- * In your own Deno project there is no checkout and no `node_modules`, so the specifiers carry the
- * `npm:` prefix and nothing else changes:
- *
- * ```ts
- * import { LighterClient } from "npm:lighter-ts/client";
- * import { ApiKey } from "npm:lighter-ts/crypto";
- * ```
- *
- * The imports below are the bare form because that is what resolves inside this repository and what
- * the CI typecheck expects. The module graph is identical either way, and since this package has
- * **zero runtime dependencies**, `npm:lighter-ts` pulls exactly one thing.
+ * The executable imports below use `npm:lighter-ts/*` directly. Copy this one file anywhere; there
+ * is no import map, package.json, node_modules directory, or source edit to make first.
  *
  * ## Why Deno needs no adaptation
  *
@@ -42,19 +32,12 @@
  * signature (`bench/README.md`, 2 000 000 iterations after warmup, desktop Apple Silicon).
  */
 
-import { LighterClient, type MarketInfo } from "lighter-ts/client";
-import { ApiKey } from "lighter-ts/crypto";
-import {
-  buildCreateOrder,
-  CHAIN_ID,
-  type CreateOrderTx,
-  i16,
-  i64,
-  signTx,
-  txHashHex,
-  u8,
-  u32,
-} from "lighter-ts/tx";
+// @ts-ignore -- NodeNext does not understand Deno's npm: scheme; Deno resolves and types it.
+import { LighterClient, type MarketInfo } from "npm:lighter-ts/client";
+// @ts-ignore -- NodeNext does not understand Deno's npm: scheme; Deno resolves and types it.
+import { ApiKey } from "npm:lighter-ts/crypto";
+// @ts-ignore -- NodeNext does not understand Deno's npm: scheme; Deno resolves and types it.
+import { buildCreateOrder, CHAIN_ID, type CreateOrderTx, i16, i64, signTx, txHashHex, u8, u32 } from "npm:lighter-ts/tx";
 
 /**
  * The helpers below are inlined rather than imported from `../env.ts`, unlike every other example
@@ -139,7 +122,8 @@ async function main(): Promise<void> {
 
     // ---- sign (offline) -------------------------------------------------------------------------
     const provided: string | undefined = optionalEnv("LIGHTER_API_PRIVATE_KEY");
-    const key: ApiKey = provided === undefined ? ApiKey.generate() : ApiKey.fromPrivateKey(provided);
+    const key: ApiKey =
+      provided === undefined ? ApiKey.generate() : ApiKey.fromPrivateKey(provided);
     if (provided === undefined) console.log("(no LIGHTER_API_PRIVATE_KEY — using an ephemeral key)");
 
     const unsigned: CreateOrderTx = buildCreateOrder(

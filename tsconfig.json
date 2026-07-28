@@ -21,7 +21,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "types": ["node", "bun-types"]
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts", "bench/**/*.ts"],
   "exclude": ["node_modules", "dist", "conformance/oracle"]

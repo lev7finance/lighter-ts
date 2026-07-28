@@ -171,10 +171,11 @@ Monetary and size values are decimal strings or explicitly scaled `bigint` with 
 end to end. `number` is permitted only for timestamps and counts, and only where the safe-integer
 range is provably sufficient.
 
-Rounding direction is stated per call site: a buy's acceptable price rounds **up**, a sell's rounds
-**down**, so rounding never loosens slippage protection. Python's `round()` is banker's rounding and
-`Math.round` is half-up — neither is a valid translation of the other, and the reference's four
-float hazards (`docs/protocol-notes.md` §9) become regression tests.
+Rounding direction is stated per call site: a buy's maximum acceptable price rounds **down**, while
+a sell's minimum acceptable price rounds **up**, so rounding never loosens slippage protection.
+Python's `round()` is banker's rounding and `Math.round` is half-up — neither is a valid translation
+of the other, and the reference's four float hazards (`docs/protocol-notes.md` §9) become regression
+tests.
 
 ## D8 — One owner per file, enforced mechanically
 

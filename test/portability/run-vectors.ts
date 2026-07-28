@@ -42,17 +42,16 @@
  * place `Number` appears is on fields the protocol itself declares 32 bits or narrower, and it is
  * routed through {@link num} so the rule is visible in one place.
  *
- * ## Two things deliberately not asserted
+ * ## One thing deliberately not asserted
  *
  * - `tx.json` → `txHashes[*].txInfoJson` is `""` in every current row: the Go oracle does not emit
  *   the JSON. Comparing `"" === ""` would look like coverage and be none, so it is skipped
  *   explicitly. `toTxInfo` is gated by hand-authored goldens in `test/tx/pipeline.test.ts`.
- * - `tx.json` → `l1Messages[*].eip191HashHex` is a keccak256 digest. This package ships no
- *   keccak256 and never will (`docs/decisions.md` D6, D10), so the value is not reproducible here.
- *   What *is* asserted is the whole of this side of the seam: the exact message `body`, its UTF-8
- *   bytes, and that `eip191Message(body)` is the EIP-191 prefix followed by those bytes — which is
- *   the input the injected L1 signer hashes. Re-implementing keccak256 inside the harness would
- *   test the harness, not the library.
+ *
+ * `tx.json` → `l1Messages[*].eip191HashHex` is a Keccak-256 digest. The published package correctly
+ * ships no Keccak implementation (`docs/decisions.md` D6, D10), but the portability verifier has a
+ * small independent implementation below. A digest vector is an acceptance oracle, so merely
+ * checking that it looks like 32 bytes would let any same-shaped corruption pass.
  *
  * ## Usage
  *
@@ -452,6 +451,128 @@ function fromHex(s: string): Uint8Array {
 }
 
 const UTF8: TextEncoder = new TextEncoder();
+
+/* -------------------------------------------------------------------------------------------------
+ * Keccak-256 — verifier-only, never part of the published package
+ * ---------------------------------------------------------------------------------------------- */
+
+const U64_MASK = 0xffff_ffff_ffff_ffffn;
+const KECCAK_RATE = 136;
+const KECCAK_RHO: readonly number[] = [
+  0, 1, 62, 28, 27,
+  36, 44, 6, 55, 20,
+  3, 10, 43, 25, 39,
+  41, 45, 15, 21, 8,
+  18, 2, 61, 56, 14,
+];
+const KECCAK_ROUND_CONSTANTS: readonly bigint[] = [
+  0x0000_0000_0000_0001n,
+  0x0000_0000_0000_8082n,
+  0x8000_0000_0000_808an,
+  0x8000_0000_8000_8000n,
+  0x0000_0000_0000_808bn,
+  0x0000_0000_8000_0001n,
+  0x8000_0000_8000_8081n,
+  0x8000_0000_0000_8009n,
+  0x0000_0000_0000_008an,
+  0x0000_0000_0000_0088n,
+  0x0000_0000_8000_8009n,
+  0x0000_0000_8000_000an,
+  0x0000_0000_8000_808bn,
+  0x8000_0000_0000_008bn,
+  0x8000_0000_0000_8089n,
+  0x8000_0000_0000_8003n,
+  0x8000_0000_0000_8002n,
+  0x8000_0000_0000_0080n,
+  0x0000_0000_0000_800an,
+  0x8000_0000_8000_000an,
+  0x8000_0000_8000_8081n,
+  0x8000_0000_0000_8080n,
+  0x0000_0000_8000_0001n,
+  0x8000_0000_8000_8008n,
+];
+
+function rotateLeft64(value: bigint, shift: number): bigint {
+  if (shift === 0) return value & U64_MASK;
+  const bits = BigInt(shift);
+  return ((value << bits) | (value >> (64n - bits))) & U64_MASK;
+}
+
+function keccakF1600(state: bigint[]): void {
+  const columns = new Array<bigint>(5).fill(0n);
+  const mixed = new Array<bigint>(25).fill(0n);
+  for (const roundConstant of KECCAK_ROUND_CONSTANTS) {
+    for (let x = 0; x < 5; x += 1) {
+      columns[x] =
+        (state[x] as bigint) ^
+        (state[x + 5] as bigint) ^
+        (state[x + 10] as bigint) ^
+        (state[x + 15] as bigint) ^
+        (state[x + 20] as bigint);
+    }
+    for (let x = 0; x < 5; x += 1) {
+      const delta =
+        (columns[(x + 4) % 5] as bigint) ^
+        rotateLeft64(columns[(x + 1) % 5] as bigint, 1);
+      for (let y = 0; y < 5; y += 1) {
+        const index = x + 5 * y;
+        state[index] = (state[index] as bigint) ^ delta;
+      }
+    }
+
+    for (let y = 0; y < 5; y += 1) {
+      for (let x = 0; x < 5; x += 1) {
+        const source = x + 5 * y;
+        const destination = y + 5 * ((2 * x + 3 * y) % 5);
+        mixed[destination] = rotateLeft64(
+          state[source] as bigint,
+          KECCAK_RHO[source] as number,
+        );
+      }
+    }
+
+    for (let y = 0; y < 5; y += 1) {
+      for (let x = 0; x < 5; x += 1) {
+        const index = x + 5 * y;
+        const next = ((x + 1) % 5) + 5 * y;
+        const afterNext = ((x + 2) % 5) + 5 * y;
+        state[index] =
+          ((mixed[index] as bigint) ^
+            ((~(mixed[next] as bigint)) & (mixed[afterNext] as bigint))) &
+          U64_MASK;
+      }
+    }
+    state[0] = (state[0] as bigint) ^ roundConstant;
+  }
+}
+
+/** Ethereum's Keccak-256, whose domain suffix is 0x01 rather than SHA3-256's 0x06. */
+function keccak256(input: Uint8Array): Uint8Array {
+  const padding = KECCAK_RATE - (input.length % KECCAK_RATE);
+  const padded = new Uint8Array(input.length + padding);
+  padded.set(input);
+  padded[input.length] = 0x01;
+  padded[padded.length - 1] = (padded[padded.length - 1] as number) | 0x80;
+
+  const state = new Array<bigint>(25).fill(0n);
+  for (let offset = 0; offset < padded.length; offset += KECCAK_RATE) {
+    for (let lane = 0; lane < KECCAK_RATE / 8; lane += 1) {
+      let value = 0n;
+      for (let byte = 0; byte < 8; byte += 1) {
+        value |= BigInt(padded[offset + lane * 8 + byte] as number) << BigInt(byte * 8);
+      }
+      state[lane] = (state[lane] as bigint) ^ value;
+    }
+    keccakF1600(state);
+  }
+
+  const digest = new Uint8Array(32);
+  for (let index = 0; index < digest.length; index += 1) {
+    const lane = state[Math.floor(index / 8)] as bigint;
+    digest[index] = Number((lane >> BigInt((index % 8) * 8)) & 0xffn);
+  }
+  return digest;
+}
 
 /** Decimal strings to an `Fp5`. Every coefficient in every vector file is canonical. */
 function el(limbs: readonly string[]): Fp5 {
@@ -1528,9 +1649,6 @@ function txSections(bundle: VectorBundle): readonly Section[] {
         eqStr(`${row.name} body (l1MessageFor)`, fromTx, row.body);
         eqStr(`${row.name} bodyUtf8Hex`, toHex(UTF8.encode(row.body)), row.bodyUtf8Hex);
 
-        // `eip191HashHex` is a keccak256 digest, and this package ships no keccak256
-        // (`docs/decisions.md` D6, D10). What is asserted is this side of the seam: the bytes an
-        // injected L1 signer is handed. Re-implementing keccak here would test the harness.
         const prefixed: Uint8Array = eip191Message(row.body);
         const expectedPrefix: Uint8Array = UTF8.encode(
           `${EIP191_PREFIX}${String(UTF8.encode(row.body).length)}`,
@@ -1540,9 +1658,12 @@ function txSections(bundle: VectorBundle): readonly Section[] {
           toHex(prefixed),
           toHex(expectedPrefix) + row.bodyUtf8Hex,
         );
-        if (!/^[0-9a-f]{64}$/.test(row.eip191HashHex)) {
-          fail(`${row.name} eip191HashHex shape`, row.eip191HashHex, "64 lowercase hex chars");
-        }
+        eqStr(
+          "Keccak-256 verifier self-test",
+          toHex(keccak256(new Uint8Array())),
+          "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+        );
+        eqStr(`${row.name} eip191HashHex`, toHex(keccak256(prefixed)), row.eip191HashHex);
       }),
     ),
     section(

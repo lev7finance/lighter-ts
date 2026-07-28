@@ -239,7 +239,7 @@ floating point on the other. Use one exact representation on both paths.
 
 **Consequence for the SDK:** all price/size arithmetic is integer/rational end to end — no
 `number`, no `Math.round`. Rounding direction is stated explicitly per call site (a buy's
-acceptable price rounds *up*, a sell's rounds *down*, so slippage protection is never loosened by
+acceptable price rounds *down*, a sell's rounds *up*, so slippage protection is never loosened by
 rounding), and these four cases become regression tests.
 
 ## The reference WebSocket client is 172 lines and not production-viable

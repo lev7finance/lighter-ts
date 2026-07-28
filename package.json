@@ -45,7 +45,7 @@
   },
   "files": ["dist", "src", "README.md", "LICENSE", "CHANGELOG.md"],
   "scripts": {
-    "build": "bun run clean && tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist coverage .tmp *.tsbuildinfo",
     "lint": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.bundler.json --noEmit",
     "typecheck": "bun run lint",
@@ -58,13 +58,12 @@
     "check:deps": "bun run scripts/check-no-deps.ts",
     "vectors": "cd conformance/oracle && go run . -out ../vectors",
     "ledger": "bun run scripts/unit-ledger.ts",
-    "prepublishOnly": "bun run build && bun run lint && bun run test && bun run size"
+    "prepublishOnly": "bun run clean && bun run build && bun run lint && bun run test && bun run size"
   },
   "dependencies": {},
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260726.1",
     "@types/node": "^26.1.1",
-    "bun-types": "^1.3.14",
     "typescript": "^5.7.0",
     "wrangler": "^4.114.0"
   },

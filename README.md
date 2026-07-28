@@ -41,8 +41,9 @@ empty.
 
 `"dependencies": {}` in `package.json`, and CI fails the build if that changes, if anything in
 `src/` imports a `node:` built-in or touches a Node global, or if a `.wasm`/`.node`/`.so`/`.dylib`
-file appears anywhere in the published files. `typescript`, `@types/node`, `bun-types`,
-`@cloudflare/workers-types` and `wrangler` are devDependencies and are not installed by consumers.
+file appears anywhere in the published files. `typescript`, `@types/node`,
+`@cloudflare/workers-types` and `wrangler` are devDependencies and are not installed by consumers;
+the small Bun test/tooling surface is declared locally for typechecking.
 
 ---
 
@@ -58,7 +59,12 @@ deno add npm:lighter-ts
 ESM only. There is no CommonJS entry point.
 
 **Node 20 has no global `WebSocket`.** REST and signing work there with nothing extra; the WebSocket
-layer needs a constructor passed in:
+layer needs a constructor passed in. `undici` is an application dependency in this example, not a
+dependency of `lighter-ts`; major version 6 supports the package's full Node 20 engine range:
+
+```sh
+npm install undici@6
+```
 
 ```ts
 import { WebSocket } from "undici";
@@ -358,9 +364,10 @@ Errors raised for a malformed key name lengths and reasons only, never key mater
 key-memory wiping: a `bigint` cannot be zeroed. Treat a private key used in a shared runtime as
 exposed to a local attacker.
 
-**Reporting.** Report a vulnerability privately through this repository's GitHub Security Advisories
-— "Report a vulnerability" on the Security tab. Please do not open a public issue for anything
-affecting key material, signature validity or transaction integrity.
+**Reporting.** Follow [SECURITY.md](https://github.com/lev7finance/lighter-ts/security/policy) and
+report a vulnerability privately through this repository's GitHub Security Advisories — "Report a
+vulnerability" on the Security tab. Please do not open a public issue for anything affecting key
+material, signature validity or transaction integrity.
 
 ---
 
