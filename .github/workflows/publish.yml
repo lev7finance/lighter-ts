@@ -55,14 +55,14 @@ jobs:
 
       # The same gates as CI. A release can be cut from a commit CI never ran, so they run again
       # here rather than being trusted.
+      - name: Build
+        run: bun run build
+
       - name: Typecheck (nodenext + bundler)
         run: bun run lint
 
       - name: Test
         run: bun test
-
-      - name: Build
-        run: bun run build
 
       - name: No dependencies, no Node built-ins in src/
         run: bun run check:deps

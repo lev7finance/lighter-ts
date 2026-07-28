@@ -58,7 +58,7 @@
     "check:deps": "bun run scripts/check-no-deps.ts",
     "vectors": "cd conformance/oracle && go run . -out ../vectors",
     "ledger": "bun run scripts/unit-ledger.ts",
-    "prepublishOnly": "bun run lint && bun run test && bun run build && bun run size"
+    "prepublishOnly": "bun run build && bun run lint && bun run test && bun run size"
   },
   "dependencies": {},
   "devDependencies": {

@@ -369,8 +369,8 @@ affecting key material, signature validity or transaction integrity.
 ```sh
 bun install
 bun test                 # unit + conformance
-bun run lint             # tsc under both nodenext and bundler resolution
 bun run build            # emit dist/
+bun run lint             # tsc under both nodenext and bundler resolution, including dist/ consumers
 bun run check:deps       # zero dependencies, no node: imports, no Node globals in src/
 bun run size             # every exports target resolves; per-subpath gzip budgets
 bun run test:all         # the above, then replay the vectors on Node, Deno and workerd

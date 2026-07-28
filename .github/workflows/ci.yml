@@ -59,6 +59,11 @@ jobs:
             exit 1
           fi
 
+      # The portability harness deliberately imports the emitted package, never src/. Build before
+      # typechecking so a clean checkout validates those imports against the consumer artifact.
+      - name: Build
+        run: bun run build
+
       # Both resolution modes. `nodenext` is how Node and Deno resolve the published package;
       # `bundler` is how Vite, esbuild and Next.js resolve it. A missing `.js` extension passes one
       # and fails the other, and the failure only shows up in a consumer's build.
@@ -102,9 +107,6 @@ jobs:
               process.exit(1);
             }
           '
-
-      - name: Build
-        run: bun run build
 
       # Risk R22: zero-dependency erosion is a one-line mistake. This gate is required, never
       # weakened, never `continue-on-error`. It also catches a `node:` import or a Node global in
